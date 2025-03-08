@@ -13,6 +13,6 @@ export default HomeTabView;
 
 const styles = StyleSheet.create({
     container: {
-
+ 
     }
 });
