@@ -1,8 +1,14 @@
-import * as process from 'node:process';
 import axios from 'axios';
+import {BASE_URL} from '@env';
+
+export type ResponseAPI<T> = {
+    data: T;
+    status: number;
+    statusText: string;
+}
 
 const AxiosInstance = axios.create({
-    baseURL: process.env.VUE_APP_BASE_URL,
+    baseURL: BASE_URL,
     timeout: 20000,
     headers: {
         'Content-Type': 'application/json',

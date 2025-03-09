@@ -12,7 +12,12 @@ export const updateMarsRoverPhotosAction = (data: MarsRoverPhotoRes) => ({
     payload: data,
 });
 
-export const fetchMarsRoverPhotosAction = (path: string, params: any) => ({
+export const fetchMarsRoverPhotosAction = (path: string, params?: any) => ({
   type: SAGA_ACTION.HOME_ACTION.FETCH_MARS_ROVER_PHOTOS,
   payload: {path, params},
+});
+
+export const fetchAPOD = (path: string, params?: any) => ({
+    type: SAGA_ACTION.HOME_ACTION.FETCH_APOD_REQUEST,
+    payload: {path, params},
 });

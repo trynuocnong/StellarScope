@@ -1,31 +1,21 @@
 import * as React from 'react';
+import {useEffect} from 'react';
 import HomeTabView from './view';
-import {APODRes} from '../../utils/DTO';
+import {useDispatch, useSelector} from 'react-redux';
+import {selectAPOD} from '../../redux/selectors/homeSelector.ts';
+import {fetchAPOD} from '../../redux/actions/HomeAction.ts';
 
 export default () => {
-    const [apod, setApod] = React.useState<APODRes | null>(null);
-    const [error, setError] = React.useState<string | null>(null);
+  const apod = useSelector(selectAPOD);
+  const dispatch = useDispatch();
 
-    React.useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('https://api.nasa.gov/planetary/apod?api_key=7M2rC2BAr9oZguJacm8013LjBNOACrLCk6a7J39G');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data: APODRes = await response.json();
-                setApod(data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'An error occurred');
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    if (error) {
-        return <p>Error: {error}</p>;
+  useEffect(() => {
+    if (apod.title === '') {
+        console.log('call');
+      dispatch(fetchAPOD('planetary/apod'));
     }
+  }, [apod, dispatch]);
 
-    return <HomeTabView data={apod} />;
+    console.log(apod);
+  return <HomeTabView data={apod} />;
 };
