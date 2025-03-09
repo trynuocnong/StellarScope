@@ -31,6 +31,7 @@ export default ({ state, navigation, descriptors }: BottomTabBarProps) => {
                 };
                 return (
                     <PlatformPressable
+                        key={route.key}
                         accessibilityState={isFocused ? { selected: true } : {}}
                         accessibilityLabel={options.tabBarAccessibilityLabel}
                         testID={options.tabBarButtonTestID}
@@ -42,17 +43,19 @@ export default ({ state, navigation, descriptors }: BottomTabBarProps) => {
                             {label}
                         </Text>
                     </PlatformPressable>
-                )
+                );
             })}
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
+        paddingHorizontal: 16,
     },
     buttonBar: {
-        flex: 1
+        flex: 1,
+        paddingVertical: 4,
     },
-})
+});

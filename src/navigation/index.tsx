@@ -1,5 +1,5 @@
-import { NavigationContainerRef } from "@react-navigation/native";
-import { createRef } from "react";
+import { NavigationContainerRef } from '@react-navigation/native';
+import { createRef } from 'react';
 
 
 export const ROUTES = {
@@ -9,7 +9,7 @@ export const ROUTES = {
 
     // Stack Native Routes
     NATIVE_STACK: 'NativeStackRoute',
-};
+} as const;
 
 export type PARAMS = {
     [ROUTES.HOME_TAB]: undefined,

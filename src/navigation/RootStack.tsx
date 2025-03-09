@@ -8,21 +8,23 @@ import HomeTab from '../screens/HomeTab';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+const options = {headerShown: false};
+
 const RootBottomTab = () => {
     return (
-        <Tab.Navigator tabBar={MainTab}>
+        <Tab.Navigator tabBar={MainTab} screenOptions={options}>
             <Tab.Screen name={ROUTES.HOME_TAB} component={HomeTab} />
         </Tab.Navigator>
-    )
-}
+    );
+};
 
 
 const RootNativeStack = () => {
     return (
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={options}>
             <Stack.Screen name={ROUTES.MAIN_BOTTOM_TAB} component={RootBottomTab}/>
         </Stack.Navigator>
-    )
+    );
 };
 
 export default () => {
@@ -30,5 +32,5 @@ export default () => {
         <NavigationContainer ref={navRef}>
             <RootNativeStack/>
         </NavigationContainer>
-    )
-}
+    );
+};
