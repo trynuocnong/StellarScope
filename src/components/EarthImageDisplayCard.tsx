@@ -1,11 +1,11 @@
 import React from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View} from 'react-native';
 import {EarthImageRes} from '../utils/DTO/EarthImageDTO.ts';
 import {getImage} from '../utils/APIUtils.ts';
+import FastImage from 'react-native-fast-image';
 
 const EarthImageDisplayCard = ({image, date}: EarthImageRes) => {
   const path = getImage(date, image);
-  console.log(path);
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
@@ -13,7 +13,7 @@ const EarthImageDisplayCard = ({image, date}: EarthImageRes) => {
         <Text style={styles.textDate}>{date}</Text>
       </View>
 
-      <Image
+      <FastImage
         style={styles.imageStyle}
         resizeMode={'cover'}
         source={{

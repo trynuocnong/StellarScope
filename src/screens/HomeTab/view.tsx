@@ -1,5 +1,12 @@
 import React from 'react';
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  FlatList,
+  ListRenderItemInfo as FlatListRenderItemInfo,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import UserHeader from '../../components/UserHeader.tsx';
 import {FlashList, ListRenderItemInfo} from '@shopify/flash-list';
 import FeatureDisplayItem from '../../components/FeatureDisplayItem.tsx';
@@ -11,6 +18,7 @@ import {
 import MSRPRowItem from '../../components/MSRPRowItem.tsx';
 import EarthImageDisplayCard from '../../components/EarthImageDisplayCard.tsx';
 import {EarthImageRes} from '../../utils/DTO/EarthImageDTO.ts';
+import FastImage from 'react-native-fast-image';
 
 export interface HomeTabProps {
   apod: APODRes;
@@ -37,17 +45,14 @@ const renderMarsRoverPhoto = ({item}: ListRenderItemInfo<MarsPhoto>) => {
   return <MSRPRowItem {...item} />;
 };
 
-const renderEarthImage = ({item}: ListRenderItemInfo<EarthImageRes>) => {
+const renderEarthImage = ({item}: FlatListRenderItemInfo<EarthImageRes>) => {
   return <EarthImageDisplayCard {...item} />;
 };
 
 const renderSeparator = () => <View style={styles.separator} />;
-const renderSeparator2 = () => (
-  <View style={styles.separator2} />
-);
+const renderSeparator2 = () => <View style={styles.separator2} />;
 
 const renderSeparator3 = () => <View style={styles.separator3} />;
-
 
 const HomeTabView = ({apod, msrp, earthImage}: HomeTabProps) => {
   return (
@@ -70,7 +75,7 @@ const HomeTabView = ({apod, msrp, earthImage}: HomeTabProps) => {
 
         <View style={styles.sectionItemContainer}>
           <View style={styles.sectionItem}>
-            <Image
+            <FastImage
               style={styles.sectionItemImage}
               resizeMode={'stretch'}
               source={{uri: apod?.url}}
@@ -88,6 +93,19 @@ const HomeTabView = ({apod, msrp, earthImage}: HomeTabProps) => {
       </View>
 
       <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>
+          Earth Polychromatic Imaging Camera
+        </Text>
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={earthImage}
+          renderItem={renderEarthImage}
+          ItemSeparatorComponent={renderSeparator3}
+        />
+      </View>
+
+      <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Mars Rover Collection</Text>
 
         <FlashList
@@ -97,20 +115,6 @@ const HomeTabView = ({apod, msrp, earthImage}: HomeTabProps) => {
           renderItem={renderMarsRoverPhoto}
           ListEmptyComponent={renderSeparator2}
           showsHorizontalScrollIndicator={false}
-        />
-      </View>
-
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>
-          Earth Polychromatic Imaging Camera
-        </Text>
-        <FlashList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={earthImage}
-            estimatedItemSize={260}
-            renderItem={renderEarthImage}
-            ItemSeparatorComponent={renderSeparator3}
         />
       </View>
     </ScrollView>

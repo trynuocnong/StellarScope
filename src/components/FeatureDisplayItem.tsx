@@ -1,6 +1,7 @@
 import React from 'react';
-import {Image, Pressable, StyleSheet} from 'react-native';
+import {Pressable, StyleSheet} from 'react-native';
 import {Text} from '@react-navigation/elements';
+import FastImage from 'react-native-fast-image';
 
 export interface FeaturesDisplayItemProps {
   name: string;
@@ -10,7 +11,7 @@ export interface FeaturesDisplayItemProps {
 const FeatureDisplayItem = ({name, onPress}: FeaturesDisplayItemProps) => {
   return (
     <Pressable onPress={onPress} style={styles.container}>
-      <Image style={styles.iconContainer} />
+      <FastImage style={styles.iconContainer} />
       <Text style={styles.featureName}>{name}</Text>
     </Pressable>
   );

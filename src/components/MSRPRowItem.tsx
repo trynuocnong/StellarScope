@@ -1,11 +1,12 @@
 import React from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {MarsPhoto} from '../utils/DTO/marsRoverPhotoDTO.ts';
+import FastImage from 'react-native-fast-image';
 
 const MSRPRowItem = ({id, img_src, earth_date, rover, camera}: MarsPhoto) => {
   return (
     <View key={id} style={styles.container}>
-      <Image style={styles.imageStyle} source={{uri: img_src}} />
+      <FastImage style={styles.imageStyle} source={{uri: img_src}} />
       <View style={styles.flex1}>
         <Text numberOfLines={1} style={styles.itemTile}>
           Rover: {rover.name}

@@ -1,24 +1,31 @@
 import React from 'react';
-import {Image, Pressable, StyleSheet, View} from 'react-native';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {Text} from '@react-navigation/elements';
-
-export interface UserHeaderProps {
-  name?: string;
-  image?: any;
-}
+import FastImage from 'react-native-fast-image';
+import {useSelector} from 'react-redux';
+import {selectAvatar, selectName} from '../redux/selectors/globalSelector.ts';
 
 export default function () {
   const onImagePress = () => {
     console.log('onImagePress');
   };
+  const avatar = useSelector(selectAvatar);
+  const name = useSelector(selectName);
 
   return (
     <View style={styles.container}>
       <Pressable onPress={onImagePress}>
-        <Image  style={styles.imageStyle} />
+        <FastImage
+          source={
+            avatar !== ''
+              ? {uri: avatar}
+              : require('./../assets/img/astronaut.webp')
+          }
+          style={styles.imageStyle}
+        />
       </Pressable>
       <View>
-        <Text style={styles.userName}>Heello</Text>
+        <Text style={styles.userName}>{name || 'Hello there'}</Text>
         <Text style={styles.subLine}>Welcome to Stellar Scope</Text>
       </View>
     </View>
