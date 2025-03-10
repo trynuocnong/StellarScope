@@ -1,8 +1,6 @@
-import {APODRes} from '../../utils/DTO';
-import {MarsRoverPhotoRes} from '../../utils/DTO/marsRoverPhotoDTO.ts';
+import {APODRes, MarsRoverPhotoRes, EarthImageRes} from '../../utils/DTO';
 import {ActionProps} from './index.ts';
 import {SAGA_ACTION} from '../actions';
-import {EarthImageRes} from '../../utils/DTO/EarthImageDTO.ts';
 
 export type HomeStateProps = {
     apod: APODRes,

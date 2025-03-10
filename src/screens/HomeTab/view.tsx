@@ -10,15 +10,16 @@ import {
 import UserHeader from '../../components/UserHeader.tsx';
 import {FlashList, ListRenderItemInfo} from '@shopify/flash-list';
 import FeatureDisplayItem from '../../components/FeatureDisplayItem.tsx';
-import {APODRes} from '../../utils/DTO';
 import {
+  APODRes,
+  EarthImageRes,
   MarsPhoto,
   MarsRoverPhotoRes,
-} from '../../utils/DTO/marsRoverPhotoDTO.ts';
+} from '../../utils/DTO';
 import MSRPRowItem from '../../components/MSRPRowItem.tsx';
 import EarthImageDisplayCard from '../../components/EarthImageDisplayCard.tsx';
-import {EarthImageRes} from '../../utils/DTO/EarthImageDTO.ts';
 import FastImage from 'react-native-fast-image';
+import TechTransferColItem from "../../components/TechTransferColItem.tsx";
 
 export interface HomeTabProps {
   apod: APODRes;
@@ -69,6 +70,11 @@ const HomeTabView = ({apod, msrp, earthImage}: HomeTabProps) => {
         data={featureList}
         renderItem={renderFeatureItem}
       />
+
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>TechTransfer</Text>
+        <TechTransferColItem/>
+      </View>
 
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Astronomy Picture of the Day</Text>

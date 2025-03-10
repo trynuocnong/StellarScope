@@ -1,14 +1,12 @@
 import {call, put, takeLatest} from 'redux-saga/effects';
 import {SAGA_ACTION} from '../actions';
 import AxiosInstance, {ResponseAPI} from '../../helper/AxiosInstance.ts';
-import {MarsRoverPhotoRes} from '../../utils/DTO/marsRoverPhotoDTO.ts';
+import {MarsRoverPhotoRes, EarthImageRes, APODRes} from '../../utils/DTO';
 import {
   updateAPODAction, updateEarthImagesAction,
   updateMarsRoverPhotosAction,
 } from '../actions/HomeAction.ts';
-import {APODRes} from '../../utils/DTO';
 import {convertAPI} from '../../utils/APIUtils.ts';
-import {EarthImageRes} from "../../utils/DTO/EarthImageDTO.ts";
 
 function* fetchMarsRoverPhotosSaga(action: any) {
   try {

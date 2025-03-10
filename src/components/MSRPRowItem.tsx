@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {MarsPhoto} from '../utils/DTO/marsRoverPhotoDTO.ts';
+import {MarsPhoto} from '../utils/DTO';
 import FastImage from 'react-native-fast-image';
 
 const MSRPRowItem = ({id, img_src, earth_date, rover, camera}: MarsPhoto) => {

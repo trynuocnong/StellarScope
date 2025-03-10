@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View} from 'react-native';
-import {EarthImageRes} from '../utils/DTO/EarthImageDTO.ts';
+import {EarthImageRes} from '../utils/DTO';
 import {getImage} from '../utils/APIUtils.ts';
 import FastImage from 'react-native-fast-image';
 

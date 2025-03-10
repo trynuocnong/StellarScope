@@ -11,6 +11,7 @@ import {
   fetchMarsRoverPhotosAction,
 } from '../../redux/actions/HomeAction.ts';
 import {API_KEY} from '@env';
+import {API_ENDPOINT} from '../../utils/APIUtils.ts';
 
 const params = {
   api_key: API_KEY,
@@ -24,7 +25,7 @@ export default () => {
 
   useEffect(() => {
     if (apod.title === '') {
-      dispatch(fetchAPOD('planetary/apod', params));
+      dispatch(fetchAPOD(API_ENDPOINT.APOD, params));
     }
   }, [apod, dispatch]);
 
@@ -32,7 +33,7 @@ export default () => {
     if (msrp.photos.length === 0) {
       dispatch(
           fetchMarsRoverPhotosAction(
-              'mars-photos/api/v1/rovers/curiosity/photos',
+              API_ENDPOINT.MSRP,
               {...params, sol: 1},
           ),
       );
@@ -43,7 +44,7 @@ export default () => {
     if (earthImage.length === 0) {
       dispatch(
           fetchEarthImagesAction(
-              'EPIC/api/natural/images',
+              API_ENDPOINT.EARTH_IMAGE,
               params,
           ),
       );
