@@ -1,12 +1,21 @@
 import React from 'react';
-import {Image, ScrollView, StyleSheet, View, Text} from 'react-native';
+import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
 import UserHeader from '../../components/UserHeader.tsx';
 import {FlashList, ListRenderItemInfo} from '@shopify/flash-list';
 import FeatureDisplayItem from '../../components/FeatureDisplayItem.tsx';
 import {APODRes} from '../../utils/DTO';
+import {
+  MarsPhoto,
+  MarsRoverPhotoRes,
+} from '../../utils/DTO/marsRoverPhotoDTO.ts';
+import MSRPRowItem from '../../components/MSRPRowItem.tsx';
+import EarthImageDisplayCard from '../../components/EarthImageDisplayCard.tsx';
+import {EarthImageRes} from '../../utils/DTO/EarthImageDTO.ts';
 
 export interface HomeTabProps {
-  data: APODRes | null;
+  apod: APODRes;
+  msrp: MarsRoverPhotoRes;
+  earthImage: EarthImageRes[];
 }
 
 export const featureList = [
@@ -24,9 +33,23 @@ const renderFeatureItem = ({item, index}: ListRenderItemInfo<string>) => {
   return <FeatureDisplayItem onPress={onPress} name={item} />;
 };
 
-const renderSeparator = () => <View style={styles.separator} />;
+const renderMarsRoverPhoto = ({item}: ListRenderItemInfo<MarsPhoto>) => {
+  return <MSRPRowItem {...item} />;
+};
 
-const HomeTabView = ({data}: HomeTabProps) => {
+const renderEarthImage = ({item}: ListRenderItemInfo<EarthImageRes>) => {
+  return <EarthImageDisplayCard {...item} />;
+};
+
+const renderSeparator = () => <View style={styles.separator} />;
+const renderSeparator2 = () => (
+  <View style={styles.separator2} />
+);
+
+const renderSeparator3 = () => <View style={styles.separator3} />;
+
+
+const HomeTabView = ({apod, msrp, earthImage}: HomeTabProps) => {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -45,23 +68,50 @@ const HomeTabView = ({data}: HomeTabProps) => {
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Astronomy Picture of the Day</Text>
 
-        <View style={styles.sectionItem}>
-          <Image
-            style={{width: '100%', height: 336}}
-            resizeMode={'stretch'}
-            source={{uri: data?.url}}
-          />
-          <Text style={styles.sectionDateItem}>{data?.date}</Text>
-        </View>
+        <View style={styles.sectionItemContainer}>
+          <View style={styles.sectionItem}>
+            <Image
+              style={styles.sectionItemImage}
+              resizeMode={'stretch'}
+              source={{uri: apod?.url}}
+            />
+            <Text style={styles.sectionDateItem}>{apod?.date}</Text>
+          </View>
 
-        <Text style={styles.sectionItemTitle}>{data?.title}</Text>
-        <Text numberOfLines={3} style={styles.sectionItemSubTitle}>
-          {data?.explanation}
-        </Text>
+          <View style={styles.sectionItemTextContainer}>
+            <Text style={styles.sectionItemTitle}>{apod?.title}</Text>
+            <Text numberOfLines={3} style={styles.sectionItemSubTitle}>
+              {apod?.explanation}
+            </Text>
+          </View>
+        </View>
       </View>
 
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Mars Rover Collection</Text>
+
+        <FlashList
+          data={msrp.photos.slice(0, 4)}
+          scrollEnabled={false}
+          estimatedItemSize={60}
+          renderItem={renderMarsRoverPhoto}
+          ListEmptyComponent={renderSeparator2}
+          showsHorizontalScrollIndicator={false}
+        />
+      </View>
+
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>
+          Earth Polychromatic Imaging Camera
+        </Text>
+        <FlashList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={earthImage}
+            estimatedItemSize={260}
+            renderItem={renderEarthImage}
+            ItemSeparatorComponent={renderSeparator3}
+        />
       </View>
     </ScrollView>
   );
@@ -79,6 +129,11 @@ const styles = StyleSheet.create({
     width: 12,
     height: 88,
   },
+  separator2: {borderBottomWidth: 1, borderColor: 'rgba(0,0,0,0.05)'},
+  separator3: {
+    width: 12,
+    height: 160,
+  },
   flatListContentStyle: {
     paddingHorizontal: 12,
   },
@@ -95,12 +150,18 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     justifyContent: 'space-between',
   },
-  sectionItem: {
+  sectionItemContainer: {
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#000',
+    borderColor: 'rgba(0,0,0,0.1)',
+    gap: 8,
+  },
+  sectionItem: {
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
     overflow: 'hidden',
   },
+  sectionItemImage: {width: '100%', height: 336},
   sectionDateItem: {
     position: 'absolute',
     top: 0,
@@ -114,6 +175,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 6,
     backgroundColor: 'rgba(0,0,0,0.2)',
   },
+  sectionItemTextContainer: {gap: 4, padding: 12},
   sectionItemTitle: {
     fontSize: 16,
     lineHeight: 24,

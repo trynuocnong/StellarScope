@@ -1,11 +1,13 @@
-import {APODRes} from "../../utils/DTO";
-import {MarsRoverPhotoRes} from "../../utils/DTO/marsRoverPhotoDTO.ts";
-import {ActionProps} from "./index.ts";
-import {SAGA_ACTION} from "../actions";
+import {APODRes} from '../../utils/DTO';
+import {MarsRoverPhotoRes} from '../../utils/DTO/marsRoverPhotoDTO.ts';
+import {ActionProps} from './index.ts';
+import {SAGA_ACTION} from '../actions';
+import {EarthImageRes} from '../../utils/DTO/EarthImageDTO.ts';
 
 export type HomeStateProps = {
     apod: APODRes,
     marsRP: MarsRoverPhotoRes,
+    earthPhotos: EarthImageRes[],
 };
 
 const initialState: HomeStateProps = {
@@ -21,6 +23,7 @@ const initialState: HomeStateProps = {
     marsRP: {
         photos: [],
     },
+    earthPhotos: [],
 };
 
 const HomeReducer = (state: HomeStateProps = initialState, action: ActionProps) => {
@@ -30,6 +33,9 @@ const HomeReducer = (state: HomeStateProps = initialState, action: ActionProps) 
         }
         case SAGA_ACTION.HOME_ACTION.UPDATE_MARS_ROVER_PHOTOS: {
             return {...state, marsRP: action.payload};
+        }
+        case SAGA_ACTION.HOME_ACTION.UPDATE_EARTH_IMAGE: {
+            return {...state, earthPhotos: action.payload};
         }
         default:
             return state;

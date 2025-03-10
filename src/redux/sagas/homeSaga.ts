@@ -3,11 +3,12 @@ import {SAGA_ACTION} from '../actions';
 import AxiosInstance, {ResponseAPI} from '../../helper/AxiosInstance.ts';
 import {MarsRoverPhotoRes} from '../../utils/DTO/marsRoverPhotoDTO.ts';
 import {
-  updateAPODAction,
+  updateAPODAction, updateEarthImagesAction,
   updateMarsRoverPhotosAction,
 } from '../actions/HomeAction.ts';
 import {APODRes} from '../../utils/DTO';
-import {convertAPI} from './index.ts';
+import {convertAPI} from '../../utils/APIUtils.ts';
+import {EarthImageRes} from "../../utils/DTO/EarthImageDTO.ts";
 
 function* fetchMarsRoverPhotosSaga(action: any) {
   try {
@@ -33,10 +34,24 @@ function* fetchAPODSaga(action: any) {
   }
 }
 
+function* fetchEarthImageSaga(action: any) {
+  try {
+    const {path, params} = action.payload;
+    const response: ResponseAPI<EarthImageRes> = yield call(() =>
+        AxiosInstance.get(convertAPI(path), {params: params}),
+    );
+    yield put(updateEarthImagesAction(response.data));
+  } catch (error) {
+    console.error('Error fetching APOD:', error);
+  }
+}
+
+
 export function* watchHomeSaga() {
   yield takeLatest(
     SAGA_ACTION.HOME_ACTION.FETCH_MARS_ROVER_PHOTOS,
     fetchMarsRoverPhotosSaga,
   );
   yield takeLatest(SAGA_ACTION.HOME_ACTION.FETCH_APOD_REQUEST, fetchAPODSaga);
+  yield takeLatest(SAGA_ACTION.HOME_ACTION.FETCH_EARTH_IMAGE, fetchEarthImageSaga);
 }
