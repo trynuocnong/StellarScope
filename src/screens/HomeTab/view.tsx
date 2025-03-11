@@ -19,12 +19,13 @@ import {
 import MSRPRowItem from '../../components/MSRPRowItem.tsx';
 import EarthImageDisplayCard from '../../components/EarthImageDisplayCard.tsx';
 import FastImage from 'react-native-fast-image';
-import TechTransferColItem from "../../components/TechTransferColItem.tsx";
+import TechTransferColItem from '../../components/TechTransferColItem.tsx';
 
 export interface HomeTabProps {
   apod: APODRes;
   msrp: MarsRoverPhotoRes;
   earthImage: EarthImageRes[];
+  tech: string[][];
 }
 
 export const featureList = [
@@ -35,12 +36,16 @@ export const featureList = [
   'Exoplanet Explorer',
 ];
 
-const renderFeatureItem = ({item, index}: ListRenderItemInfo<string>) => {
+const renderFeatureItem = ({item, index}: FlatListRenderItemInfo<string>) => {
   const onPress = () => {
     console.log('onPress');
   };
   return <FeatureDisplayItem onPress={onPress} name={item} />;
 };
+
+const renderTech = ({item}: FlatListRenderItemInfo<string[]>) => (
+  <TechTransferColItem data={item} />
+);
 
 const renderMarsRoverPhoto = ({item}: ListRenderItemInfo<MarsPhoto>) => {
   return <MSRPRowItem {...item} />;
@@ -54,17 +59,17 @@ const renderSeparator = () => <View style={styles.separator} />;
 const renderSeparator2 = () => <View style={styles.separator2} />;
 
 const renderSeparator3 = () => <View style={styles.separator3} />;
+const renderSeparator4 = () => <View style={styles.separator4} />;
 
-const HomeTabView = ({apod, msrp, earthImage}: HomeTabProps) => {
+const HomeTabView = ({apod, msrp, earthImage, tech}: HomeTabProps) => {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.container}>
       <UserHeader />
-      <FlashList
+      <FlatList
         horizontal
-        contentContainerStyle={styles.flatListContentStyle}
-        estimatedItemSize={78}
+        contentContainerStyle={[styles.flatListContentStyle, styles.spaceTop]}
         ItemSeparatorComponent={renderSeparator}
         showsHorizontalScrollIndicator={false}
         data={featureList}
@@ -73,7 +78,24 @@ const HomeTabView = ({apod, msrp, earthImage}: HomeTabProps) => {
 
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>TechTransfer</Text>
-        <TechTransferColItem/>
+
+        {/*<ScrollView*/}
+        {/*  horizontal*/}
+        {/*  contentContainerStyle={[styles.sectionContainer, styles.flatListContentStyle]}*/}
+        {/*  showsHorizontalScrollIndicator={false}>*/}
+        {/*  {tech.map(item => (*/}
+        {/*    <TechTransferColItem key={item[0]} data={item} />*/}
+        {/*  ))}*/}
+        {/*</ScrollView>*/}
+
+        <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            ItemSeparatorComponent={renderSeparator4}
+            contentContainerStyle={styles.flatListContentStyle}
+            renderItem={renderTech}
+            data={tech.slice(0,15)}
+        />
       </View>
 
       <View style={styles.sectionContainer}>
@@ -105,6 +127,7 @@ const HomeTabView = ({apod, msrp, earthImage}: HomeTabProps) => {
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.flatListContentStyle}
           data={earthImage}
           renderItem={renderEarthImage}
           ItemSeparatorComponent={renderSeparator3}
@@ -144,12 +167,18 @@ const styles = StyleSheet.create({
     width: 12,
     height: 160,
   },
+  separator4: {
+    width: 8,
+    height: 210,
+  },
+  spaceTop: {
+    marginTop: 16,
+  },
   flatListContentStyle: {
     paddingHorizontal: 12,
   },
   sectionContainer: {
     gap: 8,
-    paddingHorizontal: 12,
   },
   sectionTitle: {
     fontSize: 18,
@@ -159,11 +188,13 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     textAlign: 'left',
     justifyContent: 'space-between',
+    marginHorizontal: 12,
   },
   sectionItemContainer: {
     borderRadius: 6,
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.1)',
+    marginHorizontal: 12,
     gap: 8,
   },
   sectionItem: {

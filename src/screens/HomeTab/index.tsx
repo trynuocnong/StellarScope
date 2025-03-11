@@ -4,11 +4,11 @@ import HomeTabView from './view';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   selectAPOD, selectEarthPhotos,
-  selectMarsRoverPhotos,
+  selectMarsRoverPhotos, selectTech,
 } from '../../redux/selectors/homeSelector.ts';
 import {
   fetchAPOD, fetchEarthImagesAction,
-  fetchMarsRoverPhotosAction,
+  fetchMarsRoverPhotosAction, fetchTechTransfer,
 } from '../../redux/actions/HomeAction.ts';
 import {API_KEY} from '@env';
 import {API_ENDPOINT} from '../../utils/APIUtils.ts';
@@ -21,6 +21,7 @@ export default () => {
   const apod = useSelector(selectAPOD);
   const msrp = useSelector(selectMarsRoverPhotos);
   const earthImage = useSelector(selectEarthPhotos);
+  const tech = useSelector(selectTech);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -28,6 +29,17 @@ export default () => {
       dispatch(fetchAPOD(API_ENDPOINT.APOD, params));
     }
   }, [apod, dispatch]);
+
+  useEffect(() => {
+    if (tech.length === 0) {
+      dispatch(
+          fetchTechTransfer(
+              API_ENDPOINT.TECHTRANSFER.PATENT,
+              {...params, space: ''},
+          ),
+      );
+    }
+  }, [dispatch, tech.length]);
 
   useEffect(() => {
     if (msrp.photos.length === 0) {
@@ -51,5 +63,5 @@ export default () => {
     }
   }, [dispatch, earthImage.length]);
 
-  return <HomeTabView apod={apod} msrp={msrp} earthImage={earthImage} />;
+  return <HomeTabView apod={apod} tech={tech} msrp={msrp} earthImage={earthImage} />;
 };

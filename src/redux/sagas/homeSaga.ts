@@ -1,12 +1,16 @@
 import {call, put, takeLatest} from 'redux-saga/effects';
 import {SAGA_ACTION} from '../actions';
 import AxiosInstance, {ResponseAPI} from '../../helper/AxiosInstance.ts';
-import {MarsRoverPhotoRes, EarthImageRes, APODRes} from '../../utils/DTO';
+import {APODRes, EarthImageRes, MarsRoverPhotoRes} from '../../utils/DTO';
 import {
-  updateAPODAction, updateEarthImagesAction,
+  updateAPODAction,
+  updateEarthImagesAction,
   updateMarsRoverPhotosAction,
+  updateTechTransfer,
 } from '../actions/HomeAction.ts';
 import {convertAPI} from '../../utils/APIUtils.ts';
+import {TechTransferRes} from '../../utils/DTO/TechTransferDTO.ts';
+import {shuffleArray} from '../../utils/FuncUtils.ts';
 
 function* fetchMarsRoverPhotosSaga(action: any) {
   try {
@@ -36,7 +40,7 @@ function* fetchEarthImageSaga(action: any) {
   try {
     const {path, params} = action.payload;
     const response: ResponseAPI<EarthImageRes> = yield call(() =>
-        AxiosInstance.get(convertAPI(path), {params: params}),
+      AxiosInstance.get(convertAPI(path), {params: params}),
     );
     yield put(updateEarthImagesAction(response.data));
   } catch (error) {
@@ -44,6 +48,19 @@ function* fetchEarthImageSaga(action: any) {
   }
 }
 
+function* fetchTechSaga(action: any) {
+  try {
+    const {path, params} = action.payload;
+    const response: ResponseAPI<TechTransferRes> = yield call(() =>
+      AxiosInstance.get(convertAPI(path), {params: params}),
+    );
+    yield put(
+      updateTechTransfer(shuffleArray(response.data.results).slice(0, 15)),
+    );
+  } catch (error) {
+    console.error('Error fetching Tech Transfer:', error);
+  }
+}
 
 export function* watchHomeSaga() {
   yield takeLatest(
@@ -51,5 +68,9 @@ export function* watchHomeSaga() {
     fetchMarsRoverPhotosSaga,
   );
   yield takeLatest(SAGA_ACTION.HOME_ACTION.FETCH_APOD_REQUEST, fetchAPODSaga);
-  yield takeLatest(SAGA_ACTION.HOME_ACTION.FETCH_EARTH_IMAGE, fetchEarthImageSaga);
+  yield takeLatest(
+    SAGA_ACTION.HOME_ACTION.FETCH_EARTH_IMAGE,
+    fetchEarthImageSaga,
+  );
+  yield takeLatest(SAGA_ACTION.HOME_ACTION.FETCH_TECHTRANSFER, fetchTechSaga);
 }

@@ -15,5 +15,11 @@ export const API_ENDPOINT = {
     NEO_BROWSE: 'neo/rest/v1/neo/browse/',
     NEO_LOOKUP: 'neo/rest/v1/neo/',
   },
+  TECHTRANSFER: {
+    PATENT: 'techtransfer/patent/',
+    PATENT_ISSUE: 'techtransfer/patent_issued/',
+    SOFWARE: 'techtransfer/software/',
+    SPIN_OFF: 'techtransfer/Spinoff/',
+  },
   ASSET: 'asset/',
 };

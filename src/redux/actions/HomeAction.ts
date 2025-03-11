@@ -1,5 +1,6 @@
 import {APODRes, EarthImageRes, MarsRoverPhotoRes} from '../../utils/DTO';
 import {SAGA_ACTION} from './index.ts';
+import {TechTransferRes} from "../../utils/DTO/TechTransferDTO.ts";
 
 export const updateAPODAction = (data: APODRes) =>({
     type: SAGA_ACTION.HOME_ACTION.APOD_UPDATE_DATA,
@@ -28,5 +29,15 @@ export const fetchEarthImagesAction = (path: string, params?: any) => ({
 
 export const updateEarthImagesAction = (data: EarthImageRes) => ({
     type: SAGA_ACTION.HOME_ACTION.UPDATE_EARTH_IMAGE,
+    payload: data,
+});
+
+export const fetchTechTransfer = (path: string, params?: any) => ({
+    type: SAGA_ACTION.HOME_ACTION.FETCH_TECHTRANSFER,
+    payload: {path, params},
+});
+
+export const updateTechTransfer = (data: Array<string[]>) => ({
+    type: SAGA_ACTION.HOME_ACTION.UPDATE_TECHTRANSFER,
     payload: data,
 });

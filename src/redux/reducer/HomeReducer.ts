@@ -6,6 +6,7 @@ export type HomeStateProps = {
     apod: APODRes,
     marsRP: MarsRoverPhotoRes,
     earthPhotos: EarthImageRes[],
+    tech: Array<string[]>,
 };
 
 const initialState: HomeStateProps = {
@@ -22,6 +23,7 @@ const initialState: HomeStateProps = {
         photos: [],
     },
     earthPhotos: [],
+    tech: [],
 };
 
 const HomeReducer = (state: HomeStateProps = initialState, action: ActionProps) => {
@@ -34,6 +36,9 @@ const HomeReducer = (state: HomeStateProps = initialState, action: ActionProps) 
         }
         case SAGA_ACTION.HOME_ACTION.UPDATE_EARTH_IMAGE: {
             return {...state, earthPhotos: action.payload};
+        }
+        case SAGA_ACTION.HOME_ACTION.UPDATE_TECHTRANSFER: {
+            return {...state, tech: action.payload};
         }
         default:
             return state;
