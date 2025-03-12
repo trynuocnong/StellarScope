@@ -1,8 +1,8 @@
 import {SAGA_ACTION} from './index.ts';
 
-export const updateNetWork = (state: boolean) => ({
-    type: SAGA_ACTION.GLOBAL_ACTION.NETWORK_CHANGE,
-    payload: state,
+export const updateNetWork = (state: null | boolean) => ({
+  type: SAGA_ACTION.GLOBAL_ACTION.NETWORK_CHANGE,
+  payload: state,
 });
 
 export const updateUserName = (s: string) => ({

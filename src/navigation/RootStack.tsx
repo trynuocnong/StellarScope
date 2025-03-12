@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { navRef, ROUTES } from '.';
 import MainTab from './components/MainTab';
 import HomeTab from '../screens/HomeTab';
+import SearchTab from "../screens/SearchTab";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -14,6 +15,7 @@ const RootBottomTab = () => {
     return (
         <Tab.Navigator tabBar={MainTab} screenOptions={options}>
             <Tab.Screen name={ROUTES.HOME_TAB} component={HomeTab} />
+            <Tab.Screen name={ROUTES.SEARCH_TAB} component={SearchTab} />
         </Tab.Navigator>
     );
 };

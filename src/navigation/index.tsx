@@ -6,6 +6,7 @@ export const ROUTES = {
     // Bottom Tab Routes
     MAIN_BOTTOM_TAB: 'MainBottomTab',
     HOME_TAB: 'HomeTab',
+    SEARCH_TAB: 'SearchTab',
 
     // Stack Native Routes
     NATIVE_STACK: 'NativeStackRoute',

@@ -79,15 +79,6 @@ const HomeTabView = ({apod, msrp, earthImage, tech}: HomeTabProps) => {
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>TechTransfer</Text>
 
-        {/*<ScrollView*/}
-        {/*  horizontal*/}
-        {/*  contentContainerStyle={[styles.sectionContainer, styles.flatListContentStyle]}*/}
-        {/*  showsHorizontalScrollIndicator={false}>*/}
-        {/*  {tech.map(item => (*/}
-        {/*    <TechTransferColItem key={item[0]} data={item} />*/}
-        {/*  ))}*/}
-        {/*</ScrollView>*/}
-
         <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
