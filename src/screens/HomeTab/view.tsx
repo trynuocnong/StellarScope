@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   FlatList,
-  ListRenderItemInfo as FlatListRenderItemInfo,
+  ListRenderItemInfo as FlatListRenderItemInfo, Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -20,6 +20,9 @@ import MSRPRowItem from '../../components/MSRPRowItem.tsx';
 import EarthImageDisplayCard from '../../components/EarthImageDisplayCard.tsx';
 import FastImage from 'react-native-fast-image';
 import TechTransferColItem from '../../components/TechTransferColItem.tsx';
+import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
+import {Portal} from 'react-native-portalize';
+import {CrossSVG} from "../../assets/svg";
 
 export interface HomeTabProps {
   apod: APODRes;
@@ -27,6 +30,9 @@ export interface HomeTabProps {
   earthImage: EarthImageRes[];
   tech: string[][];
 }
+
+type HomeStateType = HomeTabProps[keyof HomeTabProps];
+
 
 export const featureList = [
   'APOD',
@@ -36,7 +42,7 @@ export const featureList = [
   'Exoplanet Explorer',
 ];
 
-const renderFeatureItem = ({item, index}: FlatListRenderItemInfo<string>) => {
+const renderFeatureItem = ({item}: FlatListRenderItemInfo<string>) => {
   const onPress = () => {
     console.log('onPress');
   };
@@ -62,6 +68,8 @@ const renderSeparator3 = () => <View style={styles.separator3} />;
 const renderSeparator4 = () => <View style={styles.separator4} />;
 
 const HomeTabView = ({apod, msrp, earthImage, tech}: HomeTabProps) => {
+  const [ucd, setUCD] = useState<HomeStateType | null>(null);
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -92,7 +100,7 @@ const HomeTabView = ({apod, msrp, earthImage, tech}: HomeTabProps) => {
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Astronomy Picture of the Day</Text>
 
-        <View style={styles.sectionItemContainer}>
+        <Pressable onPress={() => setUCD(apod)} style={styles.sectionItemContainer}>
           <View style={styles.sectionItem}>
             <FastImage
               style={styles.sectionItemImage}
@@ -108,7 +116,7 @@ const HomeTabView = ({apod, msrp, earthImage, tech}: HomeTabProps) => {
               {apod?.explanation}
             </Text>
           </View>
-        </View>
+        </Pressable>
       </View>
 
       <View style={styles.sectionContainer}>
@@ -137,6 +145,20 @@ const HomeTabView = ({apod, msrp, earthImage, tech}: HomeTabProps) => {
           showsHorizontalScrollIndicator={false}
         />
       </View>
+
+      <Portal>
+
+      { ucd && (
+          <Animated.View style={styles.portalContainer} entering={FadeIn} exiting={FadeOut} >
+            <View style={{alignItems: 'flex-end', paddingTop: 12}}>
+              <Pressable onPress={()=>setUCD(null)} style={styles.portalExistButton}>
+                <CrossSVG/>
+              </Pressable>
+            </View>
+          </Animated.View>
+      )}
+      </Portal>
+
     </ScrollView>
   );
 };
@@ -148,6 +170,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     gap: 12,
     paddingBottom: 30,
+    paddingTop: 20,
   },
   separator: {
     width: 12,
@@ -220,5 +243,13 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: '#000',
     fontWeight: 600,
+  },
+  portalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+  },
+  portalExistButton: {
+    padding: 5,
+    margin: 10,
   },
 });

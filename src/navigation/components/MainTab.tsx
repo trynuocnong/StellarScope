@@ -1,16 +1,28 @@
-import * as React from 'react';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {StyleSheet, View} from 'react-native';
-import {PlatformPressable, Text} from '@react-navigation/elements';
+import {PlatformPressable} from '@react-navigation/elements';
+import React from 'react';
+import {ROUTES} from '../index.tsx';
+import {HomeFillSVG, HomeLinearSVG, SearchFillSVG, SearchLinearSVG, SvgProps2} from '../../assets/svg';
+import {SvgProps} from 'react-native-svg';
+
+const ICON: Record<
+  string,
+  {active: React.FC<SvgProps|SvgProps2>; inactive: React.FC<SvgProps|SvgProps2>}
+> = {
+  [ROUTES.HOME_TAB]: {active: HomeFillSVG, inactive: HomeLinearSVG},
+  [ROUTES.SEARCH_TAB]: {active: SearchFillSVG, inactive: SearchLinearSVG},
+};
 
 export default ({state, navigation, descriptors}: BottomTabBarProps) => {
   return (
     <View style={styles.container}>
       {state.routes.map((route, index) => {
         const {options} = descriptors[route.key];
-        const label = route.name;
-
+        // const label = route.name;
+        const iconSet = ICON[route.name];
         const isFocused = state.index === index;
+        const IconTab = isFocused ? iconSet.active : iconSet.inactive;
         const onPress = () => {
           const event = navigation.emit({
             type: 'tabPress',
@@ -38,13 +50,7 @@ export default ({state, navigation, descriptors}: BottomTabBarProps) => {
             onPress={onPress}
             onLongPress={onLongPress}
             style={styles.buttonBar}>
-            <Text
-              style={{
-                color: isFocused ? '#000' : '0e0e0e',
-                textAlign: 'center',
-              }}>
-              {label}
-            </Text>
+            <IconTab/>
           </PlatformPressable>
         );
       })}
@@ -59,6 +65,8 @@ const styles = StyleSheet.create({
   },
   buttonBar: {
     flex: 1,
-    paddingVertical: 4,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

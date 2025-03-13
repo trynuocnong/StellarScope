@@ -34,11 +34,11 @@ export default function () {
   return (
     <Animated.View style={styles.container}>
       <Host>
-        <StatusBar backgroundColor={'white'} barStyle={'dark-content'} />
+        <StatusBar translucent={true} backgroundColor={'transparent'} barStyle={'dark-content'} />
         <RootStack />
-        <Animated.View>
-          <Animated.Text></Animated.Text>
-        </Animated.View>
+        {/*<Animated.View>*/}
+        {/*  <Animated.Text></Animated.Text>*/}
+        {/*</Animated.View>*/}
       </Host>
     </Animated.View>
   );
