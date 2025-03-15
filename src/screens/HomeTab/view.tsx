@@ -22,6 +22,7 @@ import {Portal} from 'react-native-portalize';
 import {CrossSVG} from '../../assets/svg';
 import {HomeStateProps} from '../../redux/reducer/HomeReducer.ts';
 import {getImage} from '../../utils/APIUtils.ts';
+import {navRef, ROUTES} from '../../navigation';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -74,8 +75,7 @@ const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
   const renderMarsRoverPhoto = useCallback(
     ({item, index}: ListRenderItemInfo<MarsPhoto>) => {
       const _onPress = () => {
-        setUCD({marsRP});
-        setPosition(index);
+        navRef.current?.navigate(ROUTES.TEST, {data: {marsRP, position: index}});
       };
       return (
         <Pressable onPress={_onPress}>
@@ -206,7 +206,7 @@ const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
 
 export default HomeTabView;
 
-const PortalDetail = ({data, index = 0}: TPortalDetailProps) => {
+export const PortalDetail = ({data, index = 0}: TPortalDetailProps) => {
   if (data) {
     switch (true) {
       case !!data.apod: {
@@ -238,20 +238,19 @@ const PortalDetail = ({data, index = 0}: TPortalDetailProps) => {
         return (
           <FlatList
             horizontal
-            showsHorizontalScrollIndicator={false}
-            pagingEnabled={true}
+            pagingEnabled
+            snapToAlignment={'start'}
+            showsVerticalScrollIndicator={false}
             data={data.earthPhotos}
             renderItem={({item}) => {
               const name = item.image;
               const date = item.date;
               return (
-                <View>
                   <FastImage
                     style={styles.portalImageDisplay}
                     resizeMode="contain"
                     source={{uri: getImage(date, name)}}
                   />
-                </View>
               );
             }}
           />
@@ -259,10 +258,11 @@ const PortalDetail = ({data, index = 0}: TPortalDetailProps) => {
       }
       case !!data.marsRP: {
         return (
-          <FlatList
+          <FlashList
             horizontal
             showsHorizontalScrollIndicator={false}
             pagingEnabled={true}
+            decelerationRate={'normal'}
             data={data.marsRP}
             renderItem={({item}) => {
               const {img_src, earth_date, rover, camera, id, sol} = item;

@@ -7,6 +7,7 @@ import MainTab from './components/MainTab';
 import HomeTab from '../screens/HomeTab';
 import SearchTab from "../screens/SearchTab";
 import MissionTab from '../screens/MissionTab';
+import HomeTest from '../screens/HomeTest.tsx';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -17,7 +18,7 @@ const RootBottomTab = () => {
         <Tab.Navigator tabBar={MainTab} screenOptions={options}>
             <Tab.Screen name={ROUTES.HOME_TAB} component={HomeTab} />
             <Tab.Screen name={ROUTES.SEARCH_TAB} component={SearchTab} />
-          <Tab.Screen name={ROUTES.MISSION_TAB} component={MissionTab} />
+          <Tab.Screen name={ROUTES.MISSION_TAB} component={MissionTab}  />
         </Tab.Navigator>
     );
 };
@@ -27,6 +28,10 @@ const RootNativeStack = () => {
     return (
         <Stack.Navigator screenOptions={options}>
             <Stack.Screen name={ROUTES.MAIN_BOTTOM_TAB} component={RootBottomTab}/>
+          <Stack.Screen name={ROUTES.TEST} component={HomeTest} options={{
+            presentation: 'transparentModal',
+            animation: 'slide_from_bottom',
+          }}/>
         </Stack.Navigator>
     );
 };
