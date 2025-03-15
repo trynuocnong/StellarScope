@@ -42,7 +42,7 @@ export default () => {
   }, [dispatch, tech.length]);
 
   useEffect(() => {
-    if (msrp.photos.length === 0) {
+    if (msrp.length === 0) {
       dispatch(
           fetchMarsRoverPhotosAction(
               API_ENDPOINT.MSRP,
@@ -50,7 +50,7 @@ export default () => {
           ),
       );
     }
-  }, [dispatch, msrp.photos.length]);
+  }, [dispatch, msrp.length]);
 
   useEffect(() => {
     if (earthImage.length === 0) {
@@ -63,5 +63,5 @@ export default () => {
     }
   }, [dispatch, earthImage.length]);
 
-  return <HomeTabView apod={apod} tech={tech} msrp={msrp} earthImage={earthImage} />;
+  return <HomeTabView apod={apod} tech={tech} marsRP={msrp} earthPhotos={earthImage} />;
 };

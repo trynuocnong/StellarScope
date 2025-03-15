@@ -18,7 +18,7 @@ function* fetchMarsRoverPhotosSaga(action: any) {
     const response: ResponseAPI<MarsRoverPhotoRes> = yield call(() =>
       AxiosInstance.get(convertAPI(path), {params: params}),
     );
-    yield put(updateMarsRoverPhotosAction(response.data));
+    yield put(updateMarsRoverPhotosAction(response.data.photos));
   } catch (error) {
     console.error('Error fetching Mars Rover photos:', error);
   }

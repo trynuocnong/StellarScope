@@ -1,12 +1,12 @@
-import {APODRes, MarsRoverPhotoRes, EarthImageRes} from '../../utils/DTO';
+import {APODRes, EarthImageRes, MarsPhoto} from '../../utils/DTO';
 import {ActionProps} from './index.ts';
 import {SAGA_ACTION} from '../actions';
 
 export type HomeStateProps = {
-    apod: APODRes,
-    marsRP: MarsRoverPhotoRes,
-    earthPhotos: EarthImageRes[],
-    tech: Array<string[]>,
+  apod: APODRes;
+  marsRP: MarsPhoto[];
+  earthPhotos: EarthImageRes[];
+  tech: Array<string[]>;
 };
 
 const initialState: HomeStateProps = {
@@ -19,9 +19,7 @@ const initialState: HomeStateProps = {
         media_type: '',
         service_version: '',
     },
-    marsRP: {
-        photos: [],
-    },
+    marsRP: [],
     earthPhotos: [],
     tech: [],
 };

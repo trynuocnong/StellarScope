@@ -1,4 +1,4 @@
-import {APODRes, EarthImageRes, MarsRoverPhotoRes} from '../../utils/DTO';
+import {APODRes, EarthImageRes, MarsPhoto, MarsRoverPhotoRes} from '../../utils/DTO';
 import {SAGA_ACTION} from './index.ts';
 import {TechTransferRes} from "../../utils/DTO/TechTransferDTO.ts";
 
@@ -7,7 +7,7 @@ export const updateAPODAction = (data: APODRes) =>({
     payload: data,
 });
 
-export const updateMarsRoverPhotosAction = (data: MarsRoverPhotoRes) => ({
+export const updateMarsRoverPhotosAction = (data: MarsPhoto[]) => ({
     type: SAGA_ACTION.HOME_ACTION.UPDATE_MARS_ROVER_PHOTOS,
     payload: data,
 });

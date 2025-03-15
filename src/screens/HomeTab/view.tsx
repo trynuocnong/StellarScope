@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import {
   FlatList,
-  ListRenderItemInfo as FlatListRenderItemInfo, Pressable,
+  ListRenderItemInfo as FlatListRenderItemInfo,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,29 +11,20 @@ import {
 import UserHeader from '../../components/UserHeader.tsx';
 import {FlashList, ListRenderItemInfo} from '@shopify/flash-list';
 import FeatureDisplayItem from '../../components/FeatureDisplayItem.tsx';
-import {
-  APODRes,
-  EarthImageRes,
-  MarsPhoto,
-  MarsRoverPhotoRes,
-} from '../../utils/DTO';
+import {EarthImageRes, MarsPhoto} from '../../utils/DTO';
 import MSRPRowItem from '../../components/MSRPRowItem.tsx';
 import EarthImageDisplayCard from '../../components/EarthImageDisplayCard.tsx';
 import FastImage from 'react-native-fast-image';
 import TechTransferColItem from '../../components/TechTransferColItem.tsx';
 import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
 import {Portal} from 'react-native-portalize';
-import {CrossSVG} from "../../assets/svg";
+import {CrossSVG} from '../../assets/svg';
+import {HomeStateProps} from '../../redux/reducer/HomeReducer.ts';
 
-export interface HomeTabProps {
-  apod: APODRes;
-  msrp: MarsRoverPhotoRes;
-  earthImage: EarthImageRes[];
-  tech: string[][];
+export interface TPortalDetailProps {
+  data: Partial<HomeStateProps>;
+  index?: number;
 }
-
-type HomeStateType = HomeTabProps[keyof HomeTabProps];
-
 
 export const featureList = [
   'APOD',
@@ -67,8 +59,8 @@ const renderSeparator2 = () => <View style={styles.separator2} />;
 const renderSeparator3 = () => <View style={styles.separator3} />;
 const renderSeparator4 = () => <View style={styles.separator4} />;
 
-const HomeTabView = ({apod, msrp, earthImage, tech}: HomeTabProps) => {
-  const [ucd, setUCD] = useState<HomeStateType | null>(null);
+const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
+  const [ucd, setUCD] = useState<Partial<HomeStateProps> | null>(null);
 
   return (
     <ScrollView
@@ -88,19 +80,21 @@ const HomeTabView = ({apod, msrp, earthImage, tech}: HomeTabProps) => {
         <Text style={styles.sectionTitle}>TechTransfer</Text>
 
         <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            ItemSeparatorComponent={renderSeparator4}
-            contentContainerStyle={styles.flatListContentStyle}
-            renderItem={renderTech}
-            data={tech.slice(0,15)}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          ItemSeparatorComponent={renderSeparator4}
+          contentContainerStyle={styles.flatListContentStyle}
+          renderItem={renderTech}
+          data={tech.slice(0, 15)}
         />
       </View>
 
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Astronomy Picture of the Day</Text>
 
-        <Pressable onPress={() => setUCD(apod)} style={styles.sectionItemContainer}>
+        <Pressable
+          onPress={() => setUCD({apod})}
+          style={styles.sectionItemContainer}>
           <View style={styles.sectionItem}>
             <FastImage
               style={styles.sectionItemImage}
@@ -127,7 +121,7 @@ const HomeTabView = ({apod, msrp, earthImage, tech}: HomeTabProps) => {
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.flatListContentStyle}
-          data={earthImage}
+          data={earthPhotos}
           renderItem={renderEarthImage}
           ItemSeparatorComponent={renderSeparator3}
         />
@@ -137,7 +131,7 @@ const HomeTabView = ({apod, msrp, earthImage, tech}: HomeTabProps) => {
         <Text style={styles.sectionTitle}>Mars Rover Collection</Text>
 
         <FlashList
-          data={msrp.photos.slice(0, 4)}
+          data={marsRP.slice(0, 4)}
           scrollEnabled={false}
           estimatedItemSize={60}
           renderItem={renderMarsRoverPhoto}
@@ -147,24 +141,68 @@ const HomeTabView = ({apod, msrp, earthImage, tech}: HomeTabProps) => {
       </View>
 
       <Portal>
-
-      { ucd && (
-          <Animated.View style={styles.portalContainer} entering={FadeIn} exiting={FadeOut} >
+        {ucd && (
+          <Animated.View
+            style={styles.portalContainer}
+            entering={FadeIn}
+            exiting={FadeOut}>
             <View style={{alignItems: 'flex-end', paddingTop: 12}}>
-              <Pressable onPress={()=>setUCD(null)} style={styles.portalExistButton}>
-                <CrossSVG/>
+              <Pressable
+                onPress={() => setUCD(null)}
+                style={styles.portalExistButton}>
+                <CrossSVG />
               </Pressable>
             </View>
+            <PortalDetail data={ucd} />
           </Animated.View>
-      )}
+        )}
       </Portal>
-
     </ScrollView>
   );
 };
 
 export default HomeTabView;
 
+const PortalDetail = ({data, index = 0}: TPortalDetailProps) => {
+  switch (true) {
+    // data is EarthImageRes[] | string[][]
+    case !!data.apod: {
+      const url = data.apod!.url;
+      return (
+        <View style={styles.portalSubContainer}>
+          <FastImage
+            style={styles.portalAPODImageDisplay}
+            resizeMode="contain"
+            source={{uri: url}}
+          />
+          <View style={styles.portalAPODTextContainer}>
+            <View style={[StyleSheet.absoluteFill, styles.portalBackground]} />
+            <Text style={styles.portalAPODTitleDisplay}>
+              {data.apod!.title}
+            </Text>
+
+            <Text style={styles.portalAPODDateDisplay}>{data.apod!.date}</Text>
+
+            <Text style={styles.portalAPODDescriptionDisplay}>
+              {data.apod!.explanation}
+            </Text>
+          </View>
+        </View>
+      );
+    }
+    case !!data.earthPhotos: {
+      return <View />;
+    }
+    case !!data.marsRP: {
+      return <View />;
+    }
+    case !!data.tech: {
+      return <View />;
+    }
+    default:
+      return <View />;
+  }
+};
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#ffffff',
@@ -248,8 +286,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.8)',
   },
+  portalSubContainer: {flex: 1, paddingHorizontal: 5},
   portalExistButton: {
     padding: 5,
     margin: 10,
+  },
+  portalAPODImageDisplay: {
+    width: '100%',
+    height: 'auto',
+    aspectRatio: 1024 / 683,
+  },
+  portalAPODTextContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 45,
+  },
+  portalBackground: {backgroundColor: 'rgba(0,0,0,0.1)'},
+  portalAPODTitleDisplay: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginTop: 10,
+    color: 'white',
+    paddingHorizontal: 6,
+  },
+  portalAPODDateDisplay: {
+    fontSize: 14,
+    color: 'gray',
+    marginBottom: 10,
+    paddingHorizontal: 6,
+  },
+  portalAPODDescriptionDisplay: {
+    fontSize: 16,
+    textAlign: 'justify',
+    color: 'white',
+    paddingHorizontal: 6,
   },
 });

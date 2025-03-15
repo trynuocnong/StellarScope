@@ -3,15 +3,26 @@ import {StyleSheet, View} from 'react-native';
 import {PlatformPressable} from '@react-navigation/elements';
 import React from 'react';
 import {ROUTES} from '../index.tsx';
-import {HomeFillSVG, HomeLinearSVG, SearchFillSVG, SearchLinearSVG, SvgProps2} from '../../assets/svg';
+import {
+  HomeFillSVG,
+  HomeLinearSVG,
+  MissionTrackerSVG,
+  SearchFillSVG,
+  SearchLinearSVG,
+  SvgProps2,
+} from '../../assets/svg';
 import {SvgProps} from 'react-native-svg';
 
 const ICON: Record<
   string,
-  {active: React.FC<SvgProps|SvgProps2>; inactive: React.FC<SvgProps|SvgProps2>}
+  { active: React.FC<SvgProps | SvgProps2>; inactive: React.FC<SvgProps | SvgProps2> }
 > = {
-  [ROUTES.HOME_TAB]: {active: HomeFillSVG, inactive: HomeLinearSVG},
-  [ROUTES.SEARCH_TAB]: {active: SearchFillSVG, inactive: SearchLinearSVG},
+  [ROUTES.HOME_TAB]: { active: HomeFillSVG, inactive: HomeLinearSVG },
+  [ROUTES.SEARCH_TAB]: { active: SearchFillSVG, inactive: SearchLinearSVG },
+  [ROUTES.MISSION_TAB]: {
+    active: (props) => <MissionTrackerSVG {...props} fill={'#0D2A80'} />,
+    inactive: MissionTrackerSVG,
+  },
 };
 
 export default ({state, navigation, descriptors}: BottomTabBarProps) => {
