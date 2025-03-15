@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {
+  Dimensions,
   FlatList,
   ListRenderItemInfo as FlatListRenderItemInfo,
   Pressable,
@@ -20,9 +21,12 @@ import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
 import {Portal} from 'react-native-portalize';
 import {CrossSVG} from '../../assets/svg';
 import {HomeStateProps} from '../../redux/reducer/HomeReducer.ts';
+import {getImage} from '../../utils/APIUtils.ts';
+
+const screenWidth = Dimensions.get('window').width;
 
 export interface TPortalDetailProps {
-  data: Partial<HomeStateProps>;
+  data: Partial<HomeStateProps> | null;
   index?: number;
 }
 
@@ -41,18 +45,6 @@ const renderFeatureItem = ({item}: FlatListRenderItemInfo<string>) => {
   return <FeatureDisplayItem onPress={onPress} name={item} />;
 };
 
-const renderTech = ({item}: FlatListRenderItemInfo<string[]>) => (
-  <TechTransferColItem data={item} />
-);
-
-const renderMarsRoverPhoto = ({item}: ListRenderItemInfo<MarsPhoto>) => {
-  return <MSRPRowItem {...item} />;
-};
-
-const renderEarthImage = ({item}: FlatListRenderItemInfo<EarthImageRes>) => {
-  return <EarthImageDisplayCard {...item} />;
-};
-
 const renderSeparator = () => <View style={styles.separator} />;
 const renderSeparator2 = () => <View style={styles.separator2} />;
 
@@ -61,6 +53,53 @@ const renderSeparator4 = () => <View style={styles.separator4} />;
 
 const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
   const [ucd, setUCD] = useState<Partial<HomeStateProps> | null>(null);
+  const [position, setPosition] = useState<number>(0);
+  const onExistUCD = () => setUCD(null);
+  const memoizedUCD = useMemo(() => ucd, [ucd]);
+  const renderEarthImage = useCallback(
+    ({item, index}: FlatListRenderItemInfo<EarthImageRes>) => {
+      const _onPress = () => {
+        setUCD({earthPhotos});
+        setPosition(index);
+      };
+      return (
+        <Pressable onPress={_onPress}>
+          <EarthImageDisplayCard {...item} />
+        </Pressable>
+      );
+    },
+    [earthPhotos],
+  );
+
+  const renderMarsRoverPhoto = useCallback(
+    ({item, index}: ListRenderItemInfo<MarsPhoto>) => {
+      const _onPress = () => {
+        setUCD({marsRP});
+        setPosition(index);
+      };
+      return (
+        <Pressable onPress={_onPress}>
+          <MSRPRowItem {...item} />
+        </Pressable>
+      );
+    },
+    [marsRP],
+  );
+
+  const renderTech = useCallback(
+    ({item, index}: FlatListRenderItemInfo<string[]>) => {
+      const _onPress = () => {
+        setUCD({tech});
+        setPosition(index);
+      };
+      return (
+        <Pressable onPress={_onPress}>
+          <TechTransferColItem data={item} />
+        </Pressable>
+      );
+    },
+    [tech],
+  );
 
   return (
     <ScrollView
@@ -146,14 +185,18 @@ const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
             style={styles.portalContainer}
             entering={FadeIn}
             exiting={FadeOut}>
-            <View style={{alignItems: 'flex-end', paddingTop: 12}}>
-              <Pressable
-                onPress={() => setUCD(null)}
-                style={styles.portalExistButton}>
+            <View style={styles.portalHeader}>
+              <Pressable onPress={onExistUCD} style={styles.portalExistButton}>
                 <CrossSVG />
               </Pressable>
             </View>
-            <PortalDetail data={ucd} />
+            <View style={styles.portalSubContainer}>
+              <Pressable
+                onPress={onExistUCD}
+                style={[StyleSheet.absoluteFill, styles.portalBackground]}
+              />
+              <PortalDetail index={position} data={memoizedUCD} />
+            </View>
           </Animated.View>
         )}
       </Portal>
@@ -164,46 +207,86 @@ const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
 export default HomeTabView;
 
 const PortalDetail = ({data, index = 0}: TPortalDetailProps) => {
-  switch (true) {
-    // data is EarthImageRes[] | string[][]
-    case !!data.apod: {
-      const url = data.apod!.url;
-      return (
-        <View style={styles.portalSubContainer}>
-          <FastImage
-            style={styles.portalAPODImageDisplay}
-            resizeMode="contain"
-            source={{uri: url}}
-          />
-          <View style={styles.portalAPODTextContainer}>
-            <View style={[StyleSheet.absoluteFill, styles.portalBackground]} />
-            <Text style={styles.portalAPODTitleDisplay}>
-              {data.apod!.title}
-            </Text>
+  if (data) {
+    switch (true) {
+      case !!data.apod: {
+        const url = data.apod!.url;
+        return (
+          <View style={styles.flex1}>
+            <FastImage
+              style={styles.portalAPODImageDisplay}
+              resizeMode="contain"
+              source={{uri: url}}
+            />
+            <View style={styles.portalAPODTextContainer}>
+              <Text style={styles.portalAPODTitleDisplay}>
+                {data.apod!.title}
+              </Text>
 
-            <Text style={styles.portalAPODDateDisplay}>{data.apod!.date}</Text>
+              <Text style={styles.portalAPODDateDisplay}>
+                {data.apod!.date}
+              </Text>
 
-            <Text style={styles.portalAPODDescriptionDisplay}>
-              {data.apod!.explanation}
-            </Text>
+              <Text style={styles.portalAPODDescriptionDisplay}>
+                {data.apod!.explanation}
+              </Text>
+            </View>
           </View>
-        </View>
-      );
+        );
+      }
+      case !!data.earthPhotos: {
+        return (
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            pagingEnabled={true}
+            data={data.earthPhotos}
+            renderItem={({item}) => {
+              const name = item.image;
+              const date = item.date;
+              return (
+                <View>
+                  <FastImage
+                    style={styles.portalImageDisplay}
+                    resizeMode="contain"
+                    source={{uri: getImage(date, name)}}
+                  />
+                </View>
+              );
+            }}
+          />
+        );
+      }
+      case !!data.marsRP: {
+        return (
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            pagingEnabled={true}
+            data={data.marsRP}
+            renderItem={({item}) => {
+              const {img_src, earth_date, rover, camera, id, sol} = item;
+              return (
+                <View key={id} >
+                  <FastImage style={styles.portalImageDisplay} source={{uri: img_src}} />
+                </View>
+              );
+            }}
+          />
+        );
+      }
+      case !!data.tech: {
+        return <View />;
+      }
+      default:
+        return <View />;
     }
-    case !!data.earthPhotos: {
-      return <View />;
-    }
-    case !!data.marsRP: {
-      return <View />;
-    }
-    case !!data.tech: {
-      return <View />;
-    }
-    default:
-      return <View />;
+  } else {
+    return <></>;
   }
 };
 const styles = StyleSheet.create({
+  flex1: {flex: 1},
   container: {
     backgroundColor: '#ffffff',
     gap: 12,
@@ -286,10 +369,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.8)',
   },
+  portalHeader: {alignItems: 'flex-end', paddingTop: 12},
   portalSubContainer: {flex: 1, paddingHorizontal: 5},
   portalExistButton: {
     padding: 5,
     margin: 10,
+  },
+  portalImageDisplay: {
+    width: screenWidth,
+    height: 'auto',
+    aspectRatio: 1,
   },
   portalAPODImageDisplay: {
     width: '100%',
