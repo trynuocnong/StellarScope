@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   FlatList,
   ListRenderItemInfo as FlatListRenderItemInfo,
@@ -20,6 +20,7 @@ import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
 import {Portal} from 'react-native-portalize';
 import {CrossSVG} from '../../assets/svg';
 import {HomeStateProps} from '../../redux/reducer/HomeReducer.ts';
+import {navRef, ROUTES} from '../../navigation';
 
 export interface TPortalDetailProps {
   data: Partial<HomeStateProps>;
@@ -41,10 +42,6 @@ const renderFeatureItem = ({item}: FlatListRenderItemInfo<string>) => {
   return <FeatureDisplayItem onPress={onPress} name={item} />;
 };
 
-const renderTech = ({item}: FlatListRenderItemInfo<string[]>) => (
-  <TechTransferColItem data={item} />
-);
-
 const renderMarsRoverPhoto = ({item}: ListRenderItemInfo<MarsPhoto>) => {
   return <MSRPRowItem {...item} />;
 };
@@ -61,6 +58,17 @@ const renderSeparator4 = () => <View style={styles.separator4} />;
 
 const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
   const [ucd, setUCD] = useState<Partial<HomeStateProps> | null>(null);
+
+  const renderTech =  useCallback(({item}: FlatListRenderItemInfo<string[]>) => {
+    const _onPress = () => {
+      navRef.current?.navigate(ROUTES.DETAIL_TECH_SCREEN, {data: item});
+    };
+    return (
+      <Pressable onPress={_onPress}>
+      <TechTransferColItem data={item} />
+      </Pressable>
+    );
+  }, []);
 
   return (
     <ScrollView

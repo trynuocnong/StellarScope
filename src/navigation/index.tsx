@@ -9,6 +9,9 @@ export const ROUTES = {
     SEARCH_TAB: 'SearchTab',
     MISSION_TAB: 'MissionTab',
 
+    // Stack Routes
+    DETAIL_TECH_SCREEN: 'DetailedTech',
+
     // Stack Native Routes
     NATIVE_STACK: 'NativeStackRoute',
 } as const;
@@ -17,6 +20,7 @@ export type PARAMS = {
     [ROUTES.HOME_TAB]: undefined,
     [ROUTES.MAIN_BOTTOM_TAB]: undefined,
     [ROUTES.NATIVE_STACK]: undefined,
+    [ROUTES.DETAIL_TECH_SCREEN]: { data: string[]},
 };
 
 export const navRef = createRef<NavigationContainerRef<PARAMS>>();
