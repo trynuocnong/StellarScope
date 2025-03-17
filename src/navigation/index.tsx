@@ -1,6 +1,10 @@
 import { NavigationContainerRef } from '@react-navigation/native';
 import { createRef } from 'react';
 
+export type KeyValue = {
+    label: string;
+    value: string | number | boolean;
+}
 
 export const ROUTES = {
     // Bottom Tab Routes
