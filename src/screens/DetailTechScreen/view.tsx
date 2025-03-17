@@ -4,7 +4,6 @@ import ArticleHeader from '../../components/ArticleHeader.tsx';
 import FastImage from 'react-native-fast-image';
 
 const DetailTechView = ({data}: {data: string[]}) => {
-  console.log(data);
   return (
     <View  style={styles.container}>
       <ArticleHeader name={data[1]}  />
