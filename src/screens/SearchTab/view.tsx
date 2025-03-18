@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {
   FlatList,
   ListRenderItemInfo,
@@ -11,20 +11,24 @@ import {
 import {QuestionSVG} from '../../assets/svg';
 import Toast from 'react-native-toast-message';
 import {KeyValue} from '../../navigation';
-
-const options: KeyValue[] = [
-  {label: 'Tech & Innovations', value: 0},
-  {label: 'Exoplanets', value: 1},
-  {label: 'Asteroids & Comets', value: 2},
-  {label: 'Space Missions', value: 3},
-];
+import {dropDownEndPoint, options} from './utils.ts';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const SearchTabView = () => {
+  // for search keyword
   const [values, setValues] = useState<string>('');
   const [inInput, setInInput] = useState<boolean>(false);
   const isIn = () => setInInput(true);
   const isOut = () => setInInput(false);
   const [tag, setTag] = useState<KeyValue>(options[0]);
+
+  // for dropdown
+  const [open, setOpen] = useState<boolean>(false);
+  const [selected, setSelected] = useState(null);
+  const items = useMemo(() => {
+    setSelected(null);
+    return dropDownEndPoint[tag.label];
+  }, [tag.label]);
 
   const renderTag = useCallback(
     ({item}: ListRenderItemInfo<KeyValue>) => {
@@ -34,17 +38,37 @@ const SearchTabView = () => {
         setTag(item);
       };
       return (
-        <Pressable onPress={_onPress}
-          style={[styles.tagItemContainer, isSelected && styles.tagItemSelectContainer]}>
-          <View
-            style={[styles.tagMark, isSelected && styles.tagSelectMark]}
-          />
-          <Text>{label}</Text>
+        <Pressable
+          onPress={_onPress}
+          style={[
+            styles.tagItemContainer,
+            isSelected && styles.tagItemSelectContainer,
+          ]}>
+          <View style={[styles.tagMark, styles.tagSelectMark]} />
+          <Text style={[styles.tagText, isSelected && styles.tagTextSelected]}>
+            {label}
+          </Text>
         </Pressable>
       );
     },
     [tag.value],
   );
+
+  const _onDate = () => {
+    Toast.show({
+      type: 'success',
+      text1: 'Show buttonsheet to choose date query',
+      position: 'bottom',
+    });
+  };
+
+  const _onHelp = () => {
+    Toast.show({
+      type: 'success',
+      text1: 'Show buttonsheet to explain endpoint',
+      position: 'bottom',
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -52,6 +76,7 @@ const SearchTabView = () => {
         style={[styles.searchContainer, inInput && styles.searchInputActive]}>
         <TextInput
           style={[styles.searchInput]}
+          numberOfLines={1}
           placeholder={'Enter searching word'}
           placeholderTextColor={'#787878'}
           value={values}
@@ -59,20 +84,32 @@ const SearchTabView = () => {
           onFocus={isIn}
           onBlur={isOut}
         />
-        <Text style={styles.textDrop}>Search endpoint</Text>
+        <View>
+          <DropDownPicker
+            placeholder="Select endpoint"
+            placeholderStyle={styles.dropdownPlaceholder}
+            labelStyle={styles.dropdownLabel}
+            style={styles.dropdown}
+            setValue={setSelected}
+            value={selected}
+            items={items}
+            open={open}
+            setOpen={setOpen}
+          />
+        </View>
       </View>
-      <Pressable
-        onPress={() => {
-          Toast.show({
-            type: 'warning',
-            text1: 'Enter searching word',
-          });
-        }}
-        hitSlop={20}
-        style={styles.hintContainer}>
-        <QuestionSVG height={15} width={15} fill={'#000'} />
-        <Text style={styles.hintText}>What is search endpoint ?</Text>
-      </Pressable>
+      <View style={styles.hintContainer}>
+        <Text onPress={_onDate} style={styles.hintText}>
+          Date: {0}
+        </Text>
+        <Pressable
+          style={styles.row}
+          onPress={_onHelp}
+          hitSlop={20}>
+          <QuestionSVG height={15} width={15} fill={'#000'} />
+          <Text style={styles.hintText}>What is search endpoint ?</Text>
+        </Pressable>
+      </View>
 
       <View>
         <FlatList
@@ -101,29 +138,50 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     gap: 8,
     marginHorizontal: 12,
-    paddingHorizontal: 12,
+    paddingStart: 12,
     borderRadius: 6,
     borderWidth: 2,
     borderColor: 'rgba(0,0,0,0.1)',
     color: '#000',
   },
+  row: {
+    flexDirection: 'row',
+    gap: 4,
+  },
   searchInput: {
     flex: 1,
   },
   searchInputActive: {
-    borderColor: 'rgb(2,70,195)',
+    borderColor: '#0246C3FF',
   },
-  textDrop: {
-    fontSize: 10,
-    textAlignVertical: 'center',
+  titleDrop: {
+    flex: 1,
+    fontSize: 7,
+    marginTop: 3,
+    textAlign: 'right',
     fontWeight: 700,
-    textTransform: 'capitalize',
+    textTransform: 'uppercase',
+  },
+  dropdown: {
+    borderWidth: 0,
+    width: 140,
+    backgroundColor: '#fff',
+  },
+  dropdownPlaceholder: {
+    fontSize: 12,
+    textAlign: 'right',
+    color: '#666',
+  },
+  dropdownLabel: {
+    fontSize: 12,
+    color: '#0246C3',
+    textAlign: 'right',
   },
   hintContainer: {
-    alignSelf: 'flex-end',
+    justifyContent: 'space-between',
     paddingVertical: 3,
     marginHorizontal: 22,
-    marginTop: 5,
+    marginTop: 8,
     flexDirection: 'row',
     gap: 4,
   },
@@ -140,6 +198,7 @@ const styles = StyleSheet.create({
   tagItemContainer: {
     backgroundColor: 'rgba(220,220,220,0.8)',
     alignSelf: 'center',
+    alignItems: 'center',
     gap: 4,
     flexDirection: 'row',
     paddingVertical: 4,
@@ -154,12 +213,21 @@ const styles = StyleSheet.create({
     borderColor: '#515ece',
   },
   tagMark: {
-    width: 20,
-    height: 20,
+    width: 14,
+    height: 14,
     borderRadius: 10,
     backgroundColor: '#b2d8ef',
   },
   tagSelectMark: {
     backgroundColor: '#515ece',
+  },
+  tagText: {
+    fontSize: 14,
+    fontWeight: 700,
+    textTransform: 'capitalize',
+    color: '#838383',
+  },
+  tagTextSelected: {
+    color: '#000000',
   },
 });

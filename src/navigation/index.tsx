@@ -6,6 +6,10 @@ export type KeyValue = {
     value: string | number | boolean;
 }
 
+export type KeyName<T> = {
+    [key: string]: T;
+};
+
 export const ROUTES = {
     // Bottom Tab Routes
     MAIN_BOTTOM_TAB: 'MainBottomTab',
