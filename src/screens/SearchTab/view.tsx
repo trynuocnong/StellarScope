@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {
   FlatList,
   ListRenderItemInfo,
@@ -30,12 +30,17 @@ const SearchTabView = () => {
     return dropDownEndPoint[tag.label];
   }, [tag.label]);
 
+  // for flatList
+  const flatListRef = useRef<FlatList>(null);
   const renderTag = useCallback(
     ({item}: ListRenderItemInfo<KeyValue>) => {
       const {label, value} = item;
       const isSelected: boolean = tag.value === value;
       const _onPress = () => {
         setTag(item);
+        if (flatListRef.current) {
+          flatListRef.current.scrollToItem({animated: true, item, viewOffset: 16});
+        }
       };
       return (
         <Pressable
@@ -92,6 +97,7 @@ const SearchTabView = () => {
             style={styles.dropdown}
             setValue={setSelected}
             value={selected}
+            dropDownContainerStyle={styles.dropDownContainer}
             items={items}
             open={open}
             setOpen={setOpen}
@@ -102,10 +108,7 @@ const SearchTabView = () => {
         <Text onPress={_onDate} style={styles.hintText}>
           Date: {0}
         </Text>
-        <Pressable
-          style={styles.row}
-          onPress={_onHelp}
-          hitSlop={20}>
+        <Pressable style={styles.row} onPress={_onHelp} hitSlop={20}>
           <QuestionSVG height={15} width={15} fill={'#000'} />
           <Text style={styles.hintText}>What is search endpoint ?</Text>
         </Pressable>
@@ -113,7 +116,9 @@ const SearchTabView = () => {
 
       <View>
         <FlatList
+          ref={flatListRef}
           contentContainerStyle={styles.tagContent}
+          showsHorizontalScrollIndicator={false}
           style={styles.tagContainer}
           keyExtractor={item => item.value.toString()}
           horizontal
@@ -121,6 +126,7 @@ const SearchTabView = () => {
           renderItem={renderTag}
         />
       </View>
+
     </View>
   );
 };
@@ -141,7 +147,7 @@ const styles = StyleSheet.create({
     paddingStart: 12,
     borderRadius: 6,
     borderWidth: 2,
-    borderColor: 'rgba(0,0,0,0.1)',
+    borderColor: '#00000019',
     color: '#000',
   },
   row: {
@@ -229,5 +235,10 @@ const styles = StyleSheet.create({
   },
   tagTextSelected: {
     color: '#000000',
+  },
+  dropDownContainer: {
+    marginTop: 5,
+    borderWidth: 1,
+    borderColor: '#00000019',
   },
 });
