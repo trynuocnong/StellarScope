@@ -1,6 +1,5 @@
-import {APODRes, EarthImageRes, MarsPhoto, MarsRoverPhotoRes} from '../../utils/DTO';
+import {APODRes, EarthImageRes, MarsPhoto} from '../../utils/DTO';
 import {SAGA_ACTION} from './index.ts';
-import {TechTransferRes} from "../../utils/DTO/TechTransferDTO.ts";
 
 export const updateAPODAction = (data: APODRes) =>({
     type: SAGA_ACTION.HOME_ACTION.APOD_UPDATE_DATA,

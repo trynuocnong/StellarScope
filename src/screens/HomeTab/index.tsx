@@ -34,7 +34,7 @@ export default () => {
     if (tech.length === 0) {
       dispatch(
           fetchTechTransfer(
-              API_ENDPOINT.TECHTRANSFER.PATENT,
+              API_ENDPOINT.TECH_TRANSFER.PATENT,
               {...params, space: ''},
           ),
       );
