@@ -9,6 +9,7 @@ import {selectConnection} from '../redux/selectors/globalSelector.ts';
 import {updateNetWork} from '../redux/actions/GlobalAction.ts';
 import Toast from 'react-native-toast-message';
 import {ToastConfig} from 'react-native-toast-message/lib/src/types';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const toastConfig: ToastConfig = {
   success: props => (
@@ -81,7 +82,7 @@ export default function () {
   );
 
   return (
-    <Animated.View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <Host>
         <StatusBar
           translucent={true}
@@ -94,7 +95,7 @@ export default function () {
         {/*</Animated.View>*/}
       </Host>
       <Toast config={toastConfig} />
-    </Animated.View>
+    </GestureHandlerRootView>
   );
 }
 

@@ -1,11 +1,13 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
+import {ReImage} from '../../App.tsx';
 
 const TechTransferColItem = ({data}: {data: string[] }) => {
   return (
     <View style={styles.container}>
-      <FastImage
+      <ReImage
+        sharedTransitionTag={data[10]}
         style={styles.imageStyle}
         source={{
           uri: data[10],

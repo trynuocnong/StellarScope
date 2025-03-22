@@ -72,7 +72,7 @@ export default ({state, navigation, descriptors}: BottomTabBarProps) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
+    paddingHorizontal: 80,
   },
   buttonBar: {
     flex: 1,

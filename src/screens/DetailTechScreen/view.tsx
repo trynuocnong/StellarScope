@@ -2,13 +2,15 @@ import React from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import ArticleHeader from '../../components/ArticleHeader.tsx';
 import FastImage from 'react-native-fast-image';
+import {ReImage} from '../../../App.tsx';
 
 const DetailTechView = ({data}: {data: string[]}) => {
   return (
     <View  style={styles.container}>
       <ArticleHeader name={data[1]}  />
       <ScrollView contentContainerStyle={styles.contentStyle} showsVerticalScrollIndicator={false}>
-        <FastImage
+        <ReImage
+          sharedTransitionTag={data[10]}
           style={styles.imageStyle}
           source={{uri: data[10]}}
           resizeMode={FastImage.resizeMode.contain}

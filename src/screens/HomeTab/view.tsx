@@ -21,6 +21,7 @@ import {Portal} from 'react-native-portalize';
 import {CrossSVG} from '../../assets/svg';
 import {HomeStateProps} from '../../redux/reducer/HomeReducer.ts';
 import {navRef, ROUTES} from '../../navigation';
+import EmptyRowV1 from '../../components/EmptyList/EmptyRowV1.tsx';
 
 export const featureList = [
   'APOD',
@@ -87,6 +88,7 @@ const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
           showsHorizontalScrollIndicator={false}
           ItemSeparatorComponent={renderSeparator4}
           contentContainerStyle={styles.flatListContentStyle}
+          ListEmptyComponent={<EmptyRowV1/>}
           renderItem={renderTech}
           data={tech.slice(0, 15)}
         />
