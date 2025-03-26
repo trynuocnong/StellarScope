@@ -5,7 +5,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
+  Text, TouchableOpacity,
   View,
 } from 'react-native';
 import UserHeader from '../../components/UserHeader.tsx';
@@ -22,6 +22,7 @@ import {CrossSVG} from '../../assets/svg';
 import {HomeStateProps} from '../../redux/reducer/HomeReducer.ts';
 import {navRef, ROUTES} from '../../navigation';
 import EmptyRowV1 from '../../components/EmptyList/EmptyRowV1.tsx';
+import {savePicture} from '../../utils/FuncUtils.ts';
 
 export const featureList = [
   'APOD',
@@ -55,13 +56,13 @@ const renderSeparator4 = () => <View style={styles.separator4} />;
 const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
   const [ucd, setUCD] = useState<boolean>(false);
 
-  const renderTech =  useCallback(({item}: FlatListRenderItemInfo<string[]>) => {
+  const renderTech = useCallback(({item}: FlatListRenderItemInfo<string[]>) => {
     const _onPress = () => {
       navRef.current?.navigate(ROUTES.DETAIL_TECH_SCREEN, {data: item});
     };
     return (
       <Pressable onPress={_onPress}>
-      <TechTransferColItem data={item} />
+        <TechTransferColItem data={item} />
       </Pressable>
     );
   }, []);
@@ -88,9 +89,9 @@ const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
           showsHorizontalScrollIndicator={false}
           ItemSeparatorComponent={renderSeparator4}
           contentContainerStyle={styles.flatListContentStyle}
-          ListEmptyComponent={<EmptyRowV1/>}
+          ListEmptyComponent={<EmptyRowV1 />}
           renderItem={renderTech}
-          data={[]}
+          data={tech.slice(0, 15)}
         />
       </View>
 
@@ -169,28 +170,44 @@ const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
 export default HomeTabView;
 
 const PortalDetail = ({data}: {data: APODRes}) => {
-      const url = data!.url;
-      return (
-        <View style={styles.portalSubContainer}>
-          <FastImage
-            style={styles.portalAPODImageDisplay}
-            resizeMode="contain"
-            source={{uri: url}}
-          />
-          <View style={styles.portalAPODTextContainer}>
-            <View style={[StyleSheet.absoluteFill, styles.portalBackground]} />
-            <Text style={styles.portalAPODTitleDisplay}>
-              {data!.title}
-            </Text>
+  const url = data!.url;
+  const _onPressDownload = async () => {
+    console.log('start download');
+    await savePicture(url);
+    console.log('finish');
+  };
+  return (
+    <View style={styles.portalSubContainer}>
+      <FastImage
+        style={styles.portalAPODImageDisplay}
+        resizeMode="contain"
+        source={{uri: url}}
+      />
+      <View style={styles.portalAPODTextContainer}>
+        <View style={[StyleSheet.absoluteFill, styles.portalBackground]} />
+        <Text style={styles.portalAPODTitleDisplay}>{data!.title}</Text>
 
-            <Text style={styles.portalAPODDateDisplay}>{data!.date}</Text>
+        <Text style={styles.portalAPODDateDisplay}>{data!.date}</Text>
 
-            <Text style={styles.portalAPODDescriptionDisplay}>
-              {data!.explanation}
-            </Text>
-          </View>
-        </View>
-      );
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={styles.portalScrollStyle}
+          contentContainerStyle={styles.portalContent}>
+          <Text style={styles.portalAPODDescriptionDisplay}>
+            {data!.explanation}
+          </Text>
+        </ScrollView>
+
+        <TouchableOpacity
+          onPress={_onPressDownload}
+          style={styles.portalDownloadButton}>
+          <Text style={styles.portalDownloadButtonText}>
+            Download Image
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 };
 const styles = StyleSheet.create({
   container: {
@@ -306,9 +323,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   portalAPODDescriptionDisplay: {
+    flex: 1,
     fontSize: 16,
     textAlign: 'justify',
     color: 'white',
     paddingHorizontal: 6,
   },
+  portalContent: {paddingBottom: 24},
+  portalScrollStyle: {marginBottom: 29},
+  portalDownloadButton: {
+    marginHorizontal: 8,
+    paddingVertical: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+    backgroundColor: '#5a6bff',
+  },
+  portalDownloadButtonText: {fontSize: 18, fontWeight: 700, color: '#ffffff'},
 });

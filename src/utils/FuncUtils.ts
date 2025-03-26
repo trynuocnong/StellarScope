@@ -1,5 +1,6 @@
-import RNBlobUtil from 'react-native-blob-util';
-import {PermissionsAndroid, Platform, StyleSheet} from 'react-native';
+import {PermissionsAndroid, Platform} from 'react-native';
+import { CameraRoll } from '@react-native-camera-roll/camera-roll';
+import BlobUtil from 'react-native-blob-util';
 
 export function shuffleArray(array: any[]) {
     for (let i = array.length - 1; i >= 0; i--) {
@@ -11,33 +12,57 @@ export function shuffleArray(array: any[]) {
     return array;
 }
 
-export const downloadFile = async (url: string, name: string) => {
+async function hasAndroidPermission() {
+    if (Platform.OS !== 'android') {return true;}
+
+    if (Platform.Version >= 33) {
+        const hasPermission = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+        );
+        if (hasPermission) {return true;}
+
+        const status = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+        );
+        return status === PermissionsAndroid.RESULTS.GRANTED;
+    } else {
+        const hasPermission = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+        );
+        if (hasPermission) {return true;}
+
+        const status = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+        );
+        return status === PermissionsAndroid.RESULTS.GRANTED;
+    }
+}
+
+export async function savePicture(url: string) {
+    if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
+        console.log('Permission denied');
+        return;
+    }
+
     try {
-        // Request storage permission for Android 13 and below
-        if (Platform.OS === 'android' && Platform.Version < 33) {
-            const granted = await PermissionsAndroid.request(
-              PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-            );
-            if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-                console.log('Storage permission denied');
-                return;
-            }
-        }
+        const { fs } = BlobUtil;
+        const downloadDir = fs.dirs.PictureDir;  // Save to Pictures folder
+        const filePath = `${downloadDir}/downloaded_image.jpg`;
 
-        const filePath = `${RNBlobUtil.fs.dirs.PictureDir}/${name}`; // Save to Pictures folder
-        console.log('Saving to:', filePath);
+        console.log('Downloading image...');
 
-        const res = await RNBlobUtil.config({
+        const res = await BlobUtil.config({
             fileCache: true,
+            appendExt: 'jpg',
             path: filePath,
         }).fetch('GET', url);
 
-        console.log('File downloaded to:', res.path());
+        console.log('Image downloaded to:', res.path());
 
-        // Scan file so it appears in Gallery
-        await RNBlobUtil.fs.scanFile([{ path: filePath, mime: 'image/jpeg' }]);
-        console.log('File saved and added to gallery!');
+        // Save to Gallery
+        await CameraRoll.saveAsset(res.path(), { type: 'photo', album: 'StellarScope' });
+        console.log('Image saved to gallery!');
     } catch (error) {
-        console.error('Download error:', error);
+        console.error('Error saving image:', error);
     }
-};
+}
