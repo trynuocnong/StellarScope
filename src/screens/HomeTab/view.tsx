@@ -90,7 +90,7 @@ const HomeTabView = ({apod, marsRP, earthPhotos, tech}: HomeStateProps) => {
           contentContainerStyle={styles.flatListContentStyle}
           ListEmptyComponent={<EmptyRowV1/>}
           renderItem={renderTech}
-          data={tech.slice(0, 15)}
+          data={[]}
         />
       </View>
 

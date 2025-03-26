@@ -127,7 +127,7 @@ const SearchTabView = () => {
             styles.tagItemContainer,
             isSelected && styles.tagItemSelectContainer,
           ]}>
-          <View style={[styles.tagMark, styles.tagSelectMark]} />
+          <View style={[styles.tagMark, isSelected && styles.tagSelectMark]} />
           <Text style={[styles.tagText, isSelected && styles.tagTextSelected]}>
             {label}
           </Text>
@@ -490,7 +490,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(220,220,220,0.8)',
     alignSelf: 'center',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
     flexDirection: 'row',
     paddingVertical: 4,
     paddingStart: 10,
@@ -504,8 +504,8 @@ const styles = StyleSheet.create({
     borderColor: '#515ece',
   },
   tagMark: {
-    width: 14,
-    height: 14,
+    width: 10,
+    height: 10,
     borderRadius: 10,
     backgroundColor: '#b2d8ef',
   },
