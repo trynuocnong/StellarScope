@@ -1,6 +1,6 @@
 import React from 'react';
-import MissionTabView from './view.tsx';
+import {View} from 'react-native';
 
 export default function () {
-  return <MissionTabView />;
+  return <View/>;
 }

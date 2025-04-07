@@ -2,6 +2,11 @@ import {PermissionsAndroid, Platform} from 'react-native';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import BlobUtil from 'react-native-blob-util';
 
+export type DownloadsState = {
+    havePermission: boolean;
+    success: boolean;
+}
+
 export function shuffleArray(array: any[]) {
     for (let i = array.length - 1; i >= 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
@@ -12,7 +17,7 @@ export function shuffleArray(array: any[]) {
     return array;
 }
 
-async function hasAndroidPermission() {
+export async function hasAndroidPermission() {
     if (Platform.OS !== 'android') {return true;}
 
     if (Platform.Version >= 33) {
@@ -38,10 +43,9 @@ async function hasAndroidPermission() {
     }
 }
 
-export async function savePicture(url: string) {
+export async function savePicture(url: string): Promise<DownloadsState> {
     if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
-        console.log('Permission denied');
-        return;
+        return {havePermission: false, success: false};
     }
 
     try {
@@ -49,20 +53,17 @@ export async function savePicture(url: string) {
         const downloadDir = fs.dirs.PictureDir;  // Save to Pictures folder
         const filePath = `${downloadDir}/downloaded_image.jpg`;
 
-        console.log('Downloading image...');
-
         const res = await BlobUtil.config({
             fileCache: true,
             appendExt: 'jpg',
             path: filePath,
         }).fetch('GET', url);
 
-        console.log('Image downloaded to:', res.path());
-
         // Save to Gallery
         await CameraRoll.saveAsset(res.path(), { type: 'photo', album: 'StellarScope' });
-        console.log('Image saved to gallery!');
+        return {havePermission: true, success: true};
     } catch (error) {
         console.error('Error saving image:', error);
+        return {havePermission: true, success: false};
     }
 }

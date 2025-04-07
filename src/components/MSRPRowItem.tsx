@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {MarsPhoto} from '../utils/DTO';
 import FastImage from 'react-native-fast-image';
+import {COLORS} from '../utils/resources/colors.ts';
 
 const MSRPRowItem = ({id, img_src, earth_date, rover, camera}: MarsPhoto) => {
   return (
@@ -30,6 +31,7 @@ const styles = StyleSheet.create({
     padding: 12,
     alignItems: 'center',
     gap: 8,
+    borderBottomColor: COLORS.neutral['400'],
     borderBottomWidth: 1,
   },
   flex1: {flex: 1},
@@ -37,21 +39,21 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: COLORS.neutral['500'],
   },
   itemTile: {
     flex: 1,
     fontSize: 14,
     lineHeight: 20,
     fontWeight: 600,
-    color: '#000',
+    color: COLORS.neutral['100'],
   },
   subTitle: {
     flex: 1,
     fontSize: 12,
     lineHeight: 16,
     fontWeight: 600,
-    color: 'rgba(0,0,0,0.5)',
+    color: COLORS.neutral['500'],
   },
-  dateStyle: {fontSize: 14, lineHeight: 20, fontWeight: 700, color: '#000'},
+  dateStyle: {fontSize: 14, lineHeight: 20, fontWeight: 700, color: COLORS.neutral['100']},
 });

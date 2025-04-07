@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {EarthImageRes} from '../utils/DTO';
 import {getImage} from '../utils/APIUtils.ts';
 import FastImage from 'react-native-fast-image';
+import {COLORS} from '../utils/resources/colors.ts';
 
 const EarthImageDisplayCard = ({image, date}: EarthImageRes) => {
   const path = getImage(date, image);
@@ -33,8 +34,17 @@ const styles = StyleSheet.create({
     padding: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#000000',
+    backgroundColor: COLORS.neutral['0'],
     borderRadius: 6,
+    shadowColor: COLORS.neutral['100'],
+    elevation: 8,
+    marginBottom: 10,
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
   },
   textContainer: {flex: 1, paddingTop: 15, justifyContent: 'space-between'},
   textIdentify: {

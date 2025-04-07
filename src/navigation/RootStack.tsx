@@ -8,6 +8,7 @@ import HomeTab from '../screens/HomeTab';
 import SearchTab from '../screens/SearchTab';
 import MissionTab from '../screens/MissionTab';
 import DetailTechScreen from '../screens/DetailTechScreen';
+import DetailAPODScreen from '../screens/DetailAPODScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,6 +32,14 @@ const RootNativeStack = () => {
       <Stack.Screen
         name={ROUTES.DETAIL_TECH_SCREEN}
         component={DetailTechScreen}
+      />
+      <Stack.Screen
+        name={ROUTES.DETAIL_APOD_SCREEN}
+        options={{
+          presentation: 'transparentModal',
+          animation: 'fade',
+        }}
+        component={DetailAPODScreen}
       />
     </Stack.Navigator>
   );

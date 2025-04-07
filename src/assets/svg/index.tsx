@@ -114,7 +114,7 @@ export const CrossSVG = ({
   height = 24,
   width = 24,
 }: SvgProps) => (
-  <Svg width={width} height={height} fill="none">
+  <Svg width={width} height={height} viewBox={'0 0 24 24'} fill="none">
     <Path
       fill={fill}
       d="M4.88 21c-.477 0-.955-.176-1.333-.553a1.897 1.897 0 0 1 0-2.666l14.24-14.234c.729-.73 1.936-.73 2.666 0s.73 1.936 0 2.666L6.213 20.447c-.351.377-.855.553-1.333.553Z"
@@ -204,7 +204,12 @@ export const QuestionSVG = ({
   height = 24,
   ...props
 }: SvgProps) => (
-  <Svg width={width} height={height} fill="none" {...props} viewBox={`0 0 24 24`}>
+  <Svg
+    width={width}
+    height={height}
+    fill="none"
+    {...props}
+    viewBox={`0 0 24 24`}>
     <Path
       fill={fill}
       d="M17 18.43h-4l-4.45 2.96A.997.997 0 0 1 7 20.56v-2.13c-3 0-5-2-5-5v-6c0-3 2-5 5-5h10c3 0 5 2 5 5v6c0 3-2 5-5 5Z"
@@ -217,13 +222,13 @@ export const QuestionSVG = ({
   </Svg>
 );
 
-export const CalendarSVG = ({width = 24, height = 24, fill = '#fff', ...props}: SvgProps) => (
-  <Svg
-    width={width}
-    height={height}
-    fill="none"
-    {...props}
-  >
+export const CalendarSVG = ({
+  width = 24,
+  height = 24,
+  fill = '#fff',
+  ...props
+}: SvgProps) => (
+  <Svg width={width} height={height} fill="none" {...props}>
     <Path
       stroke={fill}
       strokeLinecap="round"
@@ -242,13 +247,13 @@ export const CalendarSVG = ({width = 24, height = 24, fill = '#fff', ...props}: 
   </Svg>
 );
 
-export const ArrowLoadSVG = ({width = 24, height = 24, fill = '#fff', ...props}: SvgProps) => (
-  <Svg
-    width={width}
-    height={height}
-    fill="none"
-    {...props}
-  >
+export const ArrowLoadSVG = ({
+  width = 24,
+  height = 24,
+  fill = '#fff',
+  ...props
+}: SvgProps) => (
+  <Svg width={width} height={height} fill="none" {...props}>
     <Path
       stroke={fill}
       strokeLinecap="round"
