@@ -1,10 +1,13 @@
 import {FeaturesDisplayItemProps} from '../../components/FeatureDisplayItem.tsx';
+import {navRef, ROUTES} from '../../navigation';
 
 export const featureList: FeaturesDisplayItemProps[] = [
   {
     name: 'APOD',
     icon: '💫',
-    onPress: () => {},
+    onPress: () => {
+      navRef.current?.navigate(ROUTES.LIST_STACK.LIST_APOD_SCREEN);
+    },
   },
   {
     name: 'Mars Rover Photos',

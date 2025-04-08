@@ -24,6 +24,9 @@ export const ROUTES = {
 
     // Stack Native Routes
     NATIVE_STACK: 'NativeStackRoute',
+    LIST_STACK: {
+      LIST_APOD_SCREEN: 'APODListScreen',
+    },
 } as const;
 
 export type PARAMS = {
@@ -32,6 +35,7 @@ export type PARAMS = {
     [ROUTES.NATIVE_STACK]: undefined,
     [ROUTES.DETAIL_TECH_SCREEN]: { data: string[]},
     [ROUTES.DETAIL_APOD_SCREEN]: { data: APODRes},
+    [ROUTES.LIST_STACK.LIST_APOD_SCREEN]: undefined,
 };
 
 export const navRef = createRef<NavigationContainerRef<PARAMS>>();

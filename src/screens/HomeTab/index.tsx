@@ -81,7 +81,7 @@ export default () => {
   });
 
   const {data: earthImage} = useQuery<EarthImageRes[]>({
-    queryKey: ['tech'],
+    queryKey: ['earthImage'],
     queryFn: fetchEarthImage,
   });
 

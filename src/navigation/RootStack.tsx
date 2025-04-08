@@ -9,6 +9,7 @@ import SearchTab from '../screens/SearchTab';
 import MissionTab from '../screens/MissionTab';
 import DetailTechScreen from '../screens/DetailTechScreen';
 import DetailAPODScreen from '../screens/DetailAPODScreen';
+import APODList from '../screens/ListScreens/APODList';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -40,6 +41,14 @@ const RootNativeStack = () => {
           animation: 'fade',
         }}
         component={DetailAPODScreen}
+      />
+      <Stack.Screen
+        name={ROUTES.LIST_STACK.LIST_APOD_SCREEN}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_right',
+        }}
+        component={APODList}
       />
     </Stack.Navigator>
   );
