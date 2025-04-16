@@ -1,0 +1,73 @@
+import React, { forwardRef, useImperativeHandle, useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import Animated, {
+  LinearTransition,
+  useAnimatedStyle,
+  withTiming,
+  useSharedValue,
+} from 'react-native-reanimated';
+import { RePressable } from '../../App.tsx';
+import { COLORS } from '../utils/resources/colors.ts';
+
+export interface SwitchRefProps {
+  checked: boolean;
+  updateChecked(): void;
+}
+
+const AppSwitchFunc = forwardRef<SwitchRefProps>((_, ref) => {
+  const [checked, setChecked] = useState<boolean>(false);
+  const translateX = useSharedValue(2); // initial position
+
+  const updateChecked = () => {
+    setChecked(prev => !prev);
+  };
+
+  useImperativeHandle(ref, () => ({
+    updateChecked,
+    checked,
+  }));
+
+  useEffect(() => {
+    translateX.value = withTiming(checked ? 30 : 3);
+  }, [checked, translateX]);
+
+  const thumbAnimated = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+    backgroundColor: withTiming(
+      checked ? COLORS.accent['300'] : COLORS.neutral['300']
+    ),
+  }));
+
+  const containerAnimated = useAnimatedStyle(() => ({
+    backgroundColor: withTiming(
+      checked ? COLORS.primary['300'] : COLORS.neutral['700']
+    ),
+  }));
+
+  return (
+    <RePressable onPress={updateChecked} style={[styles.container, containerAnimated]}>
+      <Animated.View
+        layout={LinearTransition.springify().damping(15)}
+        style={[styles.thumb, thumbAnimated]}
+      />
+    </RePressable>
+  );
+});
+
+export default React.memo(AppSwitchFunc);
+
+const styles = StyleSheet.create({
+  thumb: {
+    width: 20,
+    height: 20,
+    top: 3,
+    borderRadius: 15,
+    position: 'absolute',
+  },
+  container: {
+    width: 50,
+    height: 26,
+    borderRadius: 30,
+    padding: 3,
+  },
+});

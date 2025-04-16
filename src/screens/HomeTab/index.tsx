@@ -12,6 +12,7 @@ import {
 import {navRef, ROUTES} from '../../navigation';
 import Animated, {
   LinearTransition,
+  useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -69,10 +70,32 @@ const renderMarsRoverPhoto = ({item}: any) => {
 
 export const ReFlatList = Animated.createAnimatedComponent(FlatList<any>);
 export default () => {
-  const padTop = useSharedValue(80);
+  const padTop = useSharedValue(45);
+  const scrollY = useSharedValue(0);
+  const onScroll = useAnimatedScrollHandler(event => {
+    scrollY.value = Math.abs(event.contentOffset.y);
+  });
+
+  const imageAnimatedStyle = useAnimatedStyle(() => {
+    let scale = 1;
+    let opacity = 1;
+    if (scrollY.value > 25) {
+      scale = 1 + (scrollY.value - 25) / (padTop.value + 5);
+      opacity = 1 - scrollY.value / (padTop.value + 5);
+    }
+
+    return {
+      transform: [{scale}],
+      opacity,
+    };
+  });
+
   const updatePadTop = (num: number) => {
-    console.log('height', num);
-    padTop.value = withTiming(num - 30);
+    if (num < 590) {
+      padTop.value = withTiming(num - 150);
+    } else {
+      padTop.value = withTiming(590 - 150);
+    }
   };
 
   const {data: apod} = useQuery<APODRes>({
@@ -101,9 +124,15 @@ export default () => {
     }
   };
 
-  const flatListAnimatedStyle = useAnimatedStyle(() => ({
-    top: padTop.value,
-  }));
+  const flatListAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      top: padTop.value === 45 ? 0 : 80,
+      paddingTop:
+        scrollY.value === 0
+          ? padTop.value
+          : Math.max(padTop.value - scrollY.value / 3, 0),
+    };
+  });
 
   const renderHeader = useCallback(() => {
     return (
@@ -124,9 +153,7 @@ export default () => {
             ))}
           </View>
         </View>
-        <View
-          style={styles.headerLayer}
-        />
+        <View style={styles.headerLayer} />
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>
             Earth Polychromatic Imaging Camera
@@ -134,7 +161,7 @@ export default () => {
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.flatListContentStyle}
+            contentContainerStyle={[styles.flatListContentStyle]}
             data={earthImage}
             renderItem={renderEarthImage}
           />
@@ -150,10 +177,12 @@ export default () => {
       <UserHeader />
       <RePressable
         onPress={displayAPODDetails}
-        style={styles.imageHeaderContainer}>
+        style={[styles.imageHeaderContainer, imageAnimatedStyle]}>
         <DynamicImage uri={apod?.url ?? ''} onHeightChange={updatePadTop} />
       </RePressable>
       <ReFlatList
+        onScroll={onScroll}
+        scrollEventThrottle={16}
         layout={LinearTransition.springify().damping(15)}
         ListHeaderComponent={renderHeader}
         style={[styles.mainContent, flatListAnimatedStyle]}
@@ -180,7 +209,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   headerContainer: {
-    paddingTop: 45,
+    paddingTop: 60,
     paddingBottom: 28,
     flexDirection: 'column',
     overflow: 'visible',
@@ -209,6 +238,7 @@ const styles = StyleSheet.create({
   imageHeaderContainer: {
     borderBottomRightRadius: 20,
     borderBottomLeftRadius: 20,
+    maxHeight: 590,
     overflow: 'hidden',
   },
   actionHolderContain: {

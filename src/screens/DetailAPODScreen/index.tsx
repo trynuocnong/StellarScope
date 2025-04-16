@@ -15,7 +15,7 @@ import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import DynamicImage from '../../components/DynamicImage.tsx';
 import Animated, {
   FadeIn,
-  FadeOut,
+  FadeOut, LinearTransition,
   SlideInDown,
   SlideInUp,
   SlideOutDown,
@@ -127,7 +127,7 @@ const DetailAPODScreen = () => {
   }));
 
   return (
-    <View style={styles.container}>
+    <Animated.View layout={LinearTransition.springify().damping(15)} style={styles.container}>
       <RePressable onPress={goBack} style={styles.backgroundLayer} />
 
       <RePressable
@@ -138,11 +138,11 @@ const DetailAPODScreen = () => {
       </RePressable>
       <DynamicImage uri={data.url} />
 
-      <Animated.View style={styles.titleContain}>
+      <Animated.View layout={LinearTransition.springify().damping(15)} style={styles.titleContain}>
         <Text style={styles.title}>{data.title}</Text>
       </Animated.View>
 
-      <Animated.View style={styles.tagRow}>
+      <Animated.View layout={LinearTransition.springify().damping(15)} style={styles.tagRow}>
         <View style={styles.tagContain}>
           <Text style={styles.tagText}>{data.date}</Text>
         </View>
@@ -156,7 +156,7 @@ const DetailAPODScreen = () => {
         </View>
       </Animated.View>
 
-      <Animated.ScrollView style={styles.scrollContent}>
+      <Animated.ScrollView layout={LinearTransition.springify().damping(15)} style={styles.scrollContent}>
         <Text style={styles.textExplain}>{data.explanation}</Text>
       </Animated.ScrollView>
 
@@ -205,7 +205,7 @@ const DetailAPODScreen = () => {
       ) : (
         <></>
       )}
-    </View>
+    </Animated.View>
   );
 };
 

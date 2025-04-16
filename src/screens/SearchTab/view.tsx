@@ -35,6 +35,7 @@ import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import {FlashList} from '@shopify/flash-list';
 import {EPdescript} from './mock.ts';
+import {COLORS} from '../../utils/resources/colors.ts';
 
 const SearchTabView = () => {
   // for search keyword
@@ -578,7 +579,7 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     textTransform: 'capitalize',
   },
-  dateError: {color: '#ff4747', marginTop: 5, fontSize: 10, marginStart: 5},
+  dateError: {color: COLORS.error['100'], marginTop: 5, fontSize: 10, marginStart: 5},
   contentDescriptionContainer: {
     paddingStart: 18,
     paddingEnd: 8,

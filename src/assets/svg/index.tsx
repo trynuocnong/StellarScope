@@ -7,6 +7,8 @@ export type SvgProps2 = SvgProps & {
   fill4?: string;
 };
 
+export * from './campfire.tsx';
+
 export const HomeLinearSVG = ({
   width = 24,
   height = 24,
