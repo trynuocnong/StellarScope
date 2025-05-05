@@ -2,6 +2,11 @@ import {PermissionsAndroid, Platform} from 'react-native';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import BlobUtil from 'react-native-blob-util';
 
+export const extractImageUrlFromHTML = (markup: string): string => {
+    const match = markup.match(/<img[^>]+src="([^"]+)"[^>]*>/);
+    return match ? match[1] : '';
+};
+
 export type DownloadsState = {
     havePermission: boolean;
     success: boolean;
@@ -15,6 +20,14 @@ export function shuffleArray(array: any[]) {
         array[j] = temp;
     }
     return array;
+}
+
+export function randomArray(arr: any[], limit: number = 15) {
+    const final = [];
+    while (final.length < limit) {
+        final.push(arr[Math.floor(Math.random() * arr.length)]);
+    }
+    return final;
 }
 
 export async function hasAndroidPermission() {

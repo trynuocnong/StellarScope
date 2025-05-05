@@ -21,8 +21,7 @@ export const ROUTES = {
     // Stack Routes
     DETAIL_TECH_SCREEN: 'DetailedTech',
     DETAIL_APOD_SCREEN: 'DetailedAPODScreen',
-
-    // Stack Native Routes
+    WEBVIEW_SCREEN: 'WebviewScreen',
     NATIVE_STACK: 'NativeStackRoute',
     LIST_STACK: {
       LIST_APOD_SCREEN: 'APODListScreen',
@@ -36,6 +35,7 @@ export type PARAMS = {
     [ROUTES.DETAIL_TECH_SCREEN]: { data: string[]},
     [ROUTES.DETAIL_APOD_SCREEN]: { data: APODRes},
     [ROUTES.LIST_STACK.LIST_APOD_SCREEN]: undefined,
+    [ROUTES.WEBVIEW_SCREEN]: { url: string},
 };
 
 export const navRef = createRef<NavigationContainerRef<PARAMS>>();

@@ -2,7 +2,7 @@ import React from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {Text} from '@react-navigation/elements';
 import FastImage from 'react-native-fast-image';
-import {COLORS} from '../utils/resources/colors.ts';
+import {COLORS, THEME_COLORS} from '../utils/resources/colors.ts';
 
 export interface FeaturesDisplayItemProps {
   icon: string;
@@ -29,10 +29,9 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
     borderWidth: 1,
     alignItems: 'center',
-    backgroundColor:  COLORS.secondary['500'],
-    borderColor: COLORS.secondary['50'],
+    backgroundColor:  THEME_COLORS.button.primary.background,
+    borderColor: THEME_COLORS.button.primary.border,
     elevation: 15,
-    shadowColor: COLORS.secondary['10'],
     borderRadius: 6,
   },
   iconContainer: {
@@ -41,7 +40,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 24,
-    backgroundColor: COLORS.neutral['50'],
+    backgroundColor: THEME_COLORS.primaryDark,
     overflow: 'hidden',
   },
   iconText: {
@@ -55,7 +54,7 @@ const styles = StyleSheet.create({
     lineHeight: 14,
     paddingHorizontal: 2,
     fontWeight: 600,
-    color: COLORS.neutral['100'],
+    color: THEME_COLORS.text,
     textAlign: 'center',
     textAlignVertical: 'center',
   },

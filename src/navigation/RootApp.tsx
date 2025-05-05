@@ -11,6 +11,7 @@ import {MMKV} from 'react-native-mmkv';
 import {toastConfig} from './components/ToastConfig.tsx';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {API_KEY} from '@env';
+import {THEME_COLORS} from '../utils/resources/colors.ts';
 
 const mmkvStorage = new MMKV();
 const queryClient = new QueryClient({
@@ -84,5 +85,6 @@ export default function () {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: THEME_COLORS.background,
   },
 });

@@ -1,11 +1,12 @@
 import {FeaturesDisplayItemProps} from '../../components/FeatureDisplayItem.tsx';
-import {navRef, ROUTES} from '../../navigation';
+import {KeyValue, navRef, ROUTES} from '../../navigation';
 
 export const featureList: FeaturesDisplayItemProps[] = [
   {
     name: 'APOD',
     icon: '💫',
     onPress: () => {
+      console.log(navRef.current);
       navRef.current?.navigate(ROUTES.LIST_STACK.LIST_APOD_SCREEN);
     },
   },
@@ -45,3 +46,25 @@ export const featureList: FeaturesDisplayItemProps[] = [
     onPress: () => {},
   },
 ];
+
+export const SECTION_HEADER = {
+  APOD: 'APOD',
+  MARS: 'Mars Rover Photos',
+  EARTH: 'Earth Polychromatic Imaging Camera',
+  TECH: 'NASA Technology',
+};
+
+export const TECHTRANSFER_FILTER: KeyValue[] = [
+  {
+    label: 'Patents',
+    value: 'patents',
+  },
+  {
+    label: 'Software',
+    value: 'software',
+  },
+  {
+    label: 'Spinoffs',
+    value: 'spinoffs',
+  },
+]

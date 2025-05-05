@@ -1,6 +1,6 @@
-import React, {forwardRef, useImperativeHandle, useState} from 'react';
+import React, {forwardRef, useImperativeHandle} from 'react';
 import {Dimensions, StyleSheet} from 'react-native';
-import FastImage from 'react-native-fast-image';
+import FastImage, {OnLoadEvent} from 'react-native-fast-image';
 import {ReImage} from '../../App.tsx';
 import {LinearTransition, useSharedValue} from 'react-native-reanimated';
 
@@ -11,30 +11,25 @@ export interface IDynamicImage {
   onHeightChange?: (height: number) => void;
 }
 
-export interface IDynamicImageProps {
-  height: number;
-}
 const DynamicImage = forwardRef(
   ({uri = '', onHeightChange}: IDynamicImage, ref) => {
     const heights = useSharedValue(0);
     useImperativeHandle(ref, () => ({height: heights}));
 
+    const calculate = (event: OnLoadEvent) => {
+      const cal =
+        (width * event.nativeEvent.height) / event.nativeEvent.width;
+      heights.value = cal;
+      onHeightChange?.(cal);
+    };
+
     return (
       <ReImage
         layout={LinearTransition.springify().damping(15)}
-        onLoad={event => {
-          const cal =
-            (width * event.nativeEvent.height) / event.nativeEvent.width;
-          heights.value = cal;
-          onHeightChange?.(cal);
-        }}
+        onLoad={calculate}
         resizeMode={'contain'}
         style={[styles.imageHeader, {height: heights}]}
-        source={{
-          uri,
-          priority: FastImage.priority.normal,
-          cache: FastImage.cacheControl.immutable,
-        }}
+        source={{uri}}
       />
     );
   },

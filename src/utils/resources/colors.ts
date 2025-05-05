@@ -74,4 +74,80 @@ export const COLORS = {
     ['10']: '#33333319',
     ['50']: '#3333337F',
   },
-}
+};
+
+export const THEME_COLORS = {
+  background: '#0f0f1e', // Dark space-themed background
+  card: '#1a1a2e', // Card backgrounds
+  text: COLORS.neutral['100'], // Primary text color
+  textSecondary: COLORS.neutral['500'], // Secondary text color
+  textTertiary: COLORS.neutral['700'], // Tertiary text color
+  border: 'transparent',
+  black: COLORS.neutral['0'],
+
+  // Brand colors
+  primary: COLORS.primary['400'], // Primary brand color
+  primaryLight: COLORS.primary['200'],
+  primaryDark: COLORS.primary['500'],
+  secondary: COLORS.secondary['300'], // Secondary brand color
+  secondaryLight: COLORS.secondary['100'],
+  secondaryDark: COLORS.secondary['500'],
+  accent: COLORS.accent['400'], // Accent color for highlights
+  accentLight: COLORS.accent['200'],
+  accentDark: COLORS.accent['600'],
+
+  // Status colors
+  error: COLORS.error['400'],
+  warning: COLORS.warning['400'],
+  success: COLORS.success['400'],
+  info: COLORS.primary['300'],
+
+  // Component-specific colors
+  button: {
+    primary: {
+      background: COLORS.primary['500'],
+      text: COLORS.neutral['100'],
+      border: 'transparent',
+      shadow: COLORS.neutral['0'],
+    },
+    secondary: {
+      background: COLORS.secondary['10'],
+      text: COLORS.secondary['400'],
+      border: COLORS.secondary['400'],
+      shadow: COLORS.neutral['300'],
+    },
+    accent: {
+      background: COLORS.accent['400'],
+      text: COLORS.neutral['0'],
+      border: 'transparent',
+      shadow: COLORS.neutral['100'],
+    },
+    disabled: {
+      background: COLORS.neutral['300'],
+      text: COLORS.neutral['600'],
+      border: 'transparent',
+      shadow: COLORS.neutral['500'],
+    },
+  },
+
+  // Status colors for launches
+  launchStatus: {
+    success: COLORS.success['400'],
+    upcoming: COLORS.accent['400'],
+    delayed: COLORS.warning['400'],
+    failed: COLORS.error['400'],
+    scrubbed: COLORS.error['400'],
+  },
+
+  // Card colors
+  cardBackground: COLORS.primary['10'],
+  cardBorder: COLORS.primary['50'],
+
+  // Input colors
+  input: {
+    background: COLORS.neutral['10'],
+    text: COLORS.neutral['100'],
+    placeholder: COLORS.neutral['600'],
+    border: COLORS.neutral['800'],
+  },
+};

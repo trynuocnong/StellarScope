@@ -12,15 +12,19 @@ import {
   SvgProps2,
 } from '../../assets/svg';
 import {SvgProps} from 'react-native-svg';
+import {THEME_COLORS} from '../../utils/resources/colors.ts';
 
 const ICON: Record<
   string,
-  { active: React.FC<SvgProps | SvgProps2>; inactive: React.FC<SvgProps | SvgProps2> }
+  {
+    active: React.FC<SvgProps | SvgProps2>;
+    inactive: React.FC<SvgProps | SvgProps2>;
+  }
 > = {
-  [ROUTES.HOME_TAB]: { active: HomeFillSVG, inactive: HomeLinearSVG },
-  [ROUTES.SEARCH_TAB]: { active: SearchFillSVG, inactive: SearchLinearSVG },
+  [ROUTES.HOME_TAB]: {active: HomeFillSVG, inactive: HomeLinearSVG},
+  [ROUTES.SEARCH_TAB]: {active: SearchFillSVG, inactive: SearchLinearSVG},
   [ROUTES.MISSION_TAB]: {
-    active: (props) => <MissionTrackerSVG {...props} fill={'#0D2A80'} />,
+    active: props => <MissionTrackerSVG {...props} fill={'#0D2A80'} />,
     inactive: MissionTrackerSVG,
   },
 };
@@ -61,7 +65,7 @@ export default ({state, navigation, descriptors}: BottomTabBarProps) => {
             onPress={onPress}
             onLongPress={onLongPress}
             style={styles.buttonBar}>
-            <IconTab/>
+            <IconTab />
           </PlatformPressable>
         );
       })}
@@ -72,12 +76,18 @@ export default ({state, navigation, descriptors}: BottomTabBarProps) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    paddingHorizontal: 80,
+    backgroundColor: THEME_COLORS.card,
+    height: 60,
+    paddingBottom: 8,
+    borderTopWidth: 0,
+    elevation: 0,
+    shadowOpacity: 0,
   },
   buttonBar: {
     flex: 1,
     paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: THEME_COLORS.card,
   },
 });

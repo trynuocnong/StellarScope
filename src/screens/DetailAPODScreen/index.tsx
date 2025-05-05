@@ -15,7 +15,8 @@ import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import DynamicImage from '../../components/DynamicImage.tsx';
 import Animated, {
   FadeIn,
-  FadeOut, LinearTransition,
+  FadeOut,
+  LinearTransition,
   SlideInDown,
   SlideInUp,
   SlideOutDown,
@@ -127,7 +128,9 @@ const DetailAPODScreen = () => {
   }));
 
   return (
-    <Animated.View layout={LinearTransition.springify().damping(15)} style={styles.container}>
+    <Animated.View
+      layout={LinearTransition.springify().damping(15)}
+      style={styles.container}>
       <RePressable onPress={goBack} style={styles.backgroundLayer} />
 
       <RePressable
@@ -136,27 +139,34 @@ const DetailAPODScreen = () => {
         style={styles.backButton}>
         <CrossSVG height={16} width={16} fill={COLORS.neutral['100']} />
       </RePressable>
-      <DynamicImage uri={data.url} />
 
-      <Animated.View layout={LinearTransition.springify().damping(15)} style={styles.titleContain}>
-        <Text style={styles.title}>{data.title}</Text>
-      </Animated.View>
+      <Animated.ScrollView
+        layout={LinearTransition.springify().damping(15)}
+        style={styles.scrollContent}>
+        <DynamicImage uri={data.url} />
 
-      <Animated.View layout={LinearTransition.springify().damping(15)} style={styles.tagRow}>
-        <View style={styles.tagContain}>
-          <Text style={styles.tagText}>{data.date}</Text>
-        </View>
+        <Animated.View
+          layout={LinearTransition.springify().damping(15)}
+          style={styles.titleContain}>
+          <Text style={styles.title}>{data.title}</Text>
+        </Animated.View>
 
-        <View style={styles.tagContain}>
-          <Text style={styles.tagText}>{data.media_type}</Text>
-        </View>
+        <Animated.View
+          layout={LinearTransition.springify().damping(15)}
+          style={styles.tagRow}>
+          <View style={styles.tagContain}>
+            <Text style={styles.tagText}>{data.date}</Text>
+          </View>
 
-        <View style={styles.tagContain}>
-          <Text style={styles.tagText}>{data.service_version}</Text>
-        </View>
-      </Animated.View>
+          <View style={styles.tagContain}>
+            <Text style={styles.tagText}>{data.media_type}</Text>
+          </View>
 
-      <Animated.ScrollView layout={LinearTransition.springify().damping(15)} style={styles.scrollContent}>
+          <View style={styles.tagContain}>
+            <Text style={styles.tagText}>{data.service_version}</Text>
+          </View>
+        </Animated.View>
+
         <Text style={styles.textExplain}>{data.explanation}</Text>
       </Animated.ScrollView>
 
@@ -240,7 +250,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral['50'],
     padding: 8,
     position: 'absolute',
-    top: 35,
+    top: 50,
     right: 18,
     zIndex: 1,
     alignItems: 'center',

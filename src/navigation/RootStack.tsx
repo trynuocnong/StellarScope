@@ -10,6 +10,7 @@ import MissionTab from '../screens/MissionTab';
 import DetailTechScreen from '../screens/DetailTechScreen';
 import DetailAPODScreen from '../screens/DetailAPODScreen';
 import APODList from '../screens/ListScreens/APODList';
+import WebViewScreen from '../screens/WebViewScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -49,6 +50,14 @@ const RootNativeStack = () => {
           animation: 'slide_from_right',
         }}
         component={APODList}
+      />
+      <Stack.Screen
+        name={ROUTES.WEBVIEW_SCREEN}
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+        component={WebViewScreen}
       />
     </Stack.Navigator>
   );

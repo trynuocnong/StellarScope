@@ -1,4 +1,6 @@
 import {BASE_URL, URL_VARIANT} from '@env';
+import {MissionTrackerRes} from './DTO/MissionDTO.ts';
+import AxiosInstance from '../helper/AxiosInstance.ts';
 
 export const convertAPI = (path: string) => BASE_URL.concat(`/${path}`);
 export const getImage = (date: string, image: string) => {
@@ -25,4 +27,14 @@ export const API_ENDPOINT = {
     DEFAULT: 'default',
   },
   ASSET: 'asset/',
+};
+
+export const fetchMission = async (page: number, filter: string) => {
+  try {
+    return await AxiosInstance.get(
+      `https://www.nasa.gov/wp-json/nasa-hds/v1/faceted-filter-query?search=&terms%5B%5D=${filter}&taxonomy=mission-terms&post_type=mission&page=${page}`,
+    );
+  } catch (e) {
+    return undefined;
+  }
 };

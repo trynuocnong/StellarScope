@@ -1,5 +1,5 @@
-import React, { ReactNode, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, {ReactNode, useEffect} from 'react';
+import {StyleSheet, View, ViewProps} from 'react-native';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -7,13 +7,14 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import {COLORS} from '../utils/resources/colors.ts';
 
-export default function ({ children }: { children: ReactNode }) {
+export default function ({ children, style }: { children?: ReactNode, style?: ViewProps['style'] }) {
   const onGoingValue = useSharedValue(0);
 
   // Start the animation when the component mounts
   useEffect(() => {
-    onGoingValue.value = withRepeat(withTiming(1, { duration: 2000 }), -1, false);
+    onGoingValue.value = withRepeat(withTiming(1, { duration: 3000 }), -1, false);
     //eslint-disable-next-line
   }, []);
 
@@ -21,12 +22,13 @@ export default function ({ children }: { children: ReactNode }) {
     backgroundColor: interpolateColor(
       onGoingValue.value, // Use the animated shared value here
       [0, 0.25, 0.5, 0.75, 1],
-      ['#fff', '#e6e6e6', '#d8d8d8', '#e1dfdf', '#fff'],
+      // ['#fff', '#d8d8d8', '#cacaca', '#e1dfdf', '#fff'],
+      [COLORS.primary['100'], COLORS.primary['300'], COLORS.primary['500'], COLORS.primary['200'], COLORS.primary['100']],
     ),
   }));
 
   return (
-    <Animated.View style={[styles.container, skeletonStyles]}>
+    <Animated.View style={[styles.container, style, skeletonStyles]}>
       <View style={styles.hidden}>{children}</View>
     </Animated.View>
   );

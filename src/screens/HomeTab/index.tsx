@@ -1,15 +1,16 @@
 import * as React from 'react';
-import {useCallback} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import FeatureDisplayItem from '../../components/FeatureDisplayItem.tsx';
 import {APODRes, EarthImageRes, MarsPhoto} from '../../utils/DTO';
 import {
+  Dimensions,
   FlatList,
   ListRenderItemInfo,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import {navRef, ROUTES} from '../../navigation';
 import Animated, {
   LinearTransition,
   useAnimatedScrollHandler,
@@ -18,16 +19,21 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import DynamicImage from '../../components/DynamicImage.tsx';
-import {COLORS} from '../../utils/resources/colors.ts';
-import {featureList} from './mock.ts';
-import UserHeader from '../../components/UserHeader.tsx';
+import {COLORS, THEME_COLORS} from '../../utils/resources/colors.ts';
+import {featureList, SECTION_HEADER, TECHTRANSFER_FILTER} from './mock.ts';
 import AxiosInstance from '../../helper/AxiosInstance.ts';
-import {API_ENDPOINT, convertAPI} from '../../utils/APIUtils.ts';
+import {API_ENDPOINT, convertAPI, getImage} from '../../utils/APIUtils.ts';
 import {baseAPIParams} from '../../navigation/RootApp.tsx';
-import {useQuery} from '@tanstack/react-query';
-import {RePressable} from '../../../App.tsx';
-import EarthImageDisplayCard from '../../components/EarthImageDisplayCard.tsx';
-import MSRPRowItem from '../../components/MSRPRowItem.tsx';
+import {useQueries, useQuery} from '@tanstack/react-query';
+import {RePressable, ReSectionList} from '../../../App.tsx';
+import {randomArray} from '../../utils/FuncUtils.ts';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import FastImage from 'react-native-fast-image';
+import {KeyValue, navRef, ROUTES} from '../../navigation';
+
+const WIDTH = Dimensions.get('screen').width;
+const EARTH_IMAGE_HEIGHT = WIDTH * 0.6;
+const EARTH_IMAGE_WIDTH = WIDTH - 24 - 32;
 
 const fetchAPOD = async (): Promise<APODRes> => {
   const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.APOD), {
@@ -43,7 +49,12 @@ const fetchTech = async (): Promise<string[][]> => {
       params: {...baseAPIParams, space: ''},
     },
   );
-  return data.results;
+  // const mapData: string[][][] = [];
+  // while (data.results.length > 0) {
+  //   mapData.push(data.results.slice(0, 5));
+  // }
+  // console.log(mapData);
+  return data.results.slice(0, 8);
 };
 
 const fetchEarthImage = async (): Promise<EarthImageRes[]> => {
@@ -53,28 +64,84 @@ const fetchEarthImage = async (): Promise<EarthImageRes[]> => {
   return data;
 };
 
-const fetchMarRover = async (): Promise<MarsPhoto[]> => {
+const fetchMarRover = async (): Promise<MarsPhoto[][]> => {
   const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.MSRP), {
     params: {...baseAPIParams, sol: 1},
   });
-  return data.photos;
+  const dataPhotos = randomArray(data.photos, 24);
+  const result = [];
+  while (dataPhotos.length > 0) {
+    result.push(dataPhotos.slice(0, 4));
+  }
+  return result;
 };
 
 const renderEarthImage = ({item}: ListRenderItemInfo<EarthImageRes>) => {
-  return <EarthImageDisplayCard {...item} />;
+  const path = getImage(item.date, item.image);
+  return (
+    <FastImage
+      style={styles.sectionEarthImage}
+      resizeMode={'contain'}
+      source={{uri: path}}
+    />
+  );
 };
 
 const renderMarsRoverPhoto = ({item}: any) => {
-  return <MSRPRowItem {...item} />;
+  return <View />;
 };
 
-export const ReFlatList = Animated.createAnimatedComponent(FlatList<any>);
+const renderTitle = ({section: {title}}: any) => (
+  <Text style={styles.sectionTitle}>{title}</Text>
+);
+
 export default () => {
   const padTop = useSharedValue(45);
   const scrollY = useSharedValue(0);
+  const [specialAPOD, setSpecialAPOD] = useState<APODRes | undefined>(
+    undefined,
+  );
+  const [techFilter, setTechFilter] = useState<KeyValue>(
+    TECHTRANSFER_FILTER[0],
+  );
   const onScroll = useAnimatedScrollHandler(event => {
     scrollY.value = Math.abs(event.contentOffset.y);
   });
+
+  const {data: apod} = useQuery<APODRes>({
+    queryKey: ['apod'],
+    queryFn: fetchAPOD,
+  });
+
+  const result = useQueries({
+    queries: [
+      // { queryKey: ['apod', 1], queryFn: fetchAPOD },
+      {queryKey: ['earthImage', 2], queryFn: fetchEarthImage},
+      {queryKey: ['tech', 3], queryFn: fetchTech},
+    ],
+  });
+
+  const listData = useMemo(() => {
+    const isComplete = result.every(it => it.isSuccess);
+    if (!isComplete) {
+      return [];
+    }
+    return result.map((item, index) => {
+      let title;
+      switch (index) {
+        case 0:
+          title = SECTION_HEADER.EARTH;
+          break;
+        case 1:
+          title = SECTION_HEADER.TECH;
+          break;
+        default:
+          title = 'Unknown';
+      }
+
+      return {title, data: [item.data]};
+    });
+  }, [result]);
 
   const imageAnimatedStyle = useAnimatedStyle(() => {
     let scale = 1;
@@ -90,107 +157,173 @@ export default () => {
     };
   });
 
-  const updatePadTop = (num: number) => {
-    if (num < 590) {
-      padTop.value = withTiming(num - 150);
-    } else {
-      padTop.value = withTiming(590 - 150);
-    }
-  };
-
-  const {data: apod} = useQuery<APODRes>({
-    queryKey: ['apod'],
-    queryFn: fetchAPOD,
-  });
-
-  const {data: earthImage} = useQuery<EarthImageRes[]>({
-    queryKey: ['earthImage'],
-    queryFn: fetchEarthImage,
-  });
-
-  const {data: marRover = []} = useQuery<MarsPhoto[]>({
-    queryKey: ['marRover'],
-    queryFn: fetchMarRover,
-  });
-
-  const {data: tech} = useQuery<string[][]>({
-    queryKey: ['tech'],
-    queryFn: fetchTech,
-  });
-
-  const displayAPODDetails = () => {
-    if (apod) {
-      navRef.current?.navigate(ROUTES.DETAIL_APOD_SCREEN, {data: apod});
-    }
-  };
-
-  const flatListAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      top: padTop.value === 45 ? 0 : 80,
-      paddingTop:
-        scrollY.value === 0
-          ? padTop.value
-          : Math.max(padTop.value - scrollY.value / 3, 0),
-    };
-  });
-
   const renderHeader = useCallback(() => {
+    const updatePadTop = (num: number) => {
+      if (num < 590) {
+        padTop.value = withTiming(num - 120);
+      } else {
+        padTop.value = withTiming(590 - 120);
+      }
+    };
+    const goToAPODDetails = () => {
+      navRef.current?.navigate(ROUTES.DETAIL_APOD_SCREEN, {data: apod!});
+    };
     return (
       <View style={styles.headerContainer}>
-        <View style={styles.actionContainer}>
-          <View style={styles.logoActionHighlight}>
-            <Text style={styles.logoTextHighlight}>🚀</Text>
-          </View>
+        <RePressable
+          onPress={goToAPODDetails}
+          style={[styles.imageHeaderContainer, imageAnimatedStyle]}>
+          <DynamicImage uri={apod?.url || ''} onHeightChange={updatePadTop} />
+        </RePressable>
+        <View style={{height: padTop.value !== 45 ? 178 : 240}}>
+          <View style={[styles.actionContainer]}>
+            <View style={styles.logoActionHighlight}>
+              <Text style={styles.logoTextHighlight}>🚀</Text>
+            </View>
 
-          <View style={styles.actionHolderContain}>
-            {featureList.map(item => (
-              <FeatureDisplayItem
-                key={item.name}
-                name={item.name}
-                icon={item.icon}
-                onPress={item.onPress}
-              />
-            ))}
+            <View style={styles.actionHolderContain}>
+              {featureList.map(item => (
+                <FeatureDisplayItem
+                  key={item.name}
+                  name={item.name}
+                  icon={item.icon}
+                  onPress={item.onPress}
+                />
+              ))}
+            </View>
           </View>
         </View>
+
         <View style={styles.headerLayer} />
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>
-            Earth Polychromatic Imaging Camera
-          </Text>
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[styles.flatListContentStyle]}
-            data={earthImage}
-            renderItem={renderEarthImage}
-          />
-        </View>
       </View>
     );
-  }, [earthImage]);
+  }, [apod, imageAnimatedStyle, padTop]);
+
+  const TechFilter = useCallback(() => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginBottom: 10,
+        }}>
+        {TECHTRANSFER_FILTER.map(item => {
+          const isSelected = item.value === techFilter.value;
+          const onPress = () => {
+            if (!isSelected) {
+              setTechFilter(item);
+            }
+          };
+          return (
+            <TouchableOpacity
+              style={[
+                styles.techFilterButton,
+                isSelected && styles.selectedTechFilterButton,
+              ]}
+              key={item.value.toString()}
+              onPress={onPress}>
+              <Text
+                style={[
+                  styles.techFilterButtonText,
+                  isSelected && styles.selectedTechFilterButtonText,
+                ]}>
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    );
+  }, [techFilter.value]);
+
+  const renderTechItem = ({item}: {item: any}) => {
+    const goToTechDetail = () => {
+      navRef.current?.navigate(ROUTES.DETAIL_TECH_SCREEN, {data: item});
+    };
+    return (
+      <TouchableOpacity
+        onPress={goToTechDetail}
+        style={styles.techItemContainer}>
+        <View style={styles.techItemContent}>
+          <Text style={styles.techItemTitle} numberOfLines={2}>
+            {item[2]}
+          </Text>
+          <Text style={styles.techItemDescription} numberOfLines={3}>
+            {item[3]}
+          </Text>
+          <View style={styles.techItemFooter}>
+            <Text style={styles.learnMoreText}>Learn more</Text>
+          </View>
+        </View>
+        <FastImage
+          source={{uri: item[10]}}
+          style={styles.techItemImage}
+          resizeMode="cover"
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  const renderItem = useCallback(
+    ({item, section}: any) => {
+      const {title} = section;
+      if (title === SECTION_HEADER.EARTH) {
+        return (
+          <View style={styles.baseSectionContain}>
+            <View style={styles.sectionEarthImageContainer}>
+              <FlatList
+                horizontal
+                data={item as EarthImageRes[]}
+                pagingEnabled={true}
+                renderItem={renderEarthImage}
+              />
+            </View>
+          </View>
+        );
+      }
+
+      if (title === SECTION_HEADER.MARS) {
+        return <View style={styles.baseSectionContain}></View>;
+      }
+
+      if (title === SECTION_HEADER.TECH) {
+        return (
+          <View style={styles.baseSectionContain}>
+            <TechFilter />
+            <FlatList
+              scrollEnabled={false}
+              data={item}
+              renderItem={renderTechItem}
+              style={styles.lisTechContainer}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+        );
+      }
+
+      return <></>;
+    },
+    [TechFilter],
+  );
 
   return (
     <Animated.View
       layout={LinearTransition.springify().damping(10)}
       style={styles.container}>
-      <UserHeader />
-      <RePressable
-        onPress={displayAPODDetails}
-        style={[styles.imageHeaderContainer, imageAnimatedStyle]}>
-        <DynamicImage uri={apod?.url ?? ''} onHeightChange={updatePadTop} />
-      </RePressable>
-      <ReFlatList
-        onScroll={onScroll}
-        scrollEventThrottle={16}
-        layout={LinearTransition.springify().damping(15)}
-        ListHeaderComponent={renderHeader}
-        style={[styles.mainContent, flatListAnimatedStyle]}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: 32}}
-        data={marRover}
-        renderItem={renderMarsRoverPhoto}
-      />
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <ReSectionList
+          onScroll={onScroll}
+          scrollEventThrottle={16}
+          ListHeaderComponent={renderHeader}
+          layout={LinearTransition.springify().damping(15)}
+          style={[styles.mainContent]}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.sectionListContent}
+          sections={listData}
+          renderItem={renderItem}
+          renderSectionHeader={renderTitle}
+        />
+      </SafeAreaView>
     </Animated.View>
   );
 };
@@ -198,39 +331,36 @@ export default () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.primary['600'],
+    backgroundColor: THEME_COLORS.background,
   },
   mainContent: {
     gap: 16,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 10,
+  },
+  sectionListContent: {
+    paddingBottom: 32,
   },
   headerContainer: {
-    paddingTop: 60,
-    paddingBottom: 28,
     flexDirection: 'column',
     overflow: 'visible',
   },
   actionContainer: {
     left: 0,
     right: 0,
+    bottom: 16,
     marginHorizontal: 16,
-    backgroundColor: COLORS.primary['500'],
+    backgroundColor: THEME_COLORS.card,
     borderRadius: 16,
     paddingBottom: 20,
     elevation: 15,
-    shadowColor: COLORS.neutral['50'],
     shadowOpacity: 0.5,
     shadowRadius: 16,
+    position: 'absolute',
   },
   logoActionHighlight: {
     alignSelf: 'center',
     position: 'absolute',
     top: -20,
-    backgroundColor: COLORS.primary['500'],
+    backgroundColor: THEME_COLORS.card,
     padding: 15,
     borderRadius: 45,
   },
@@ -261,29 +391,53 @@ const styles = StyleSheet.create({
     right: 0,
     left: 0,
     zIndex: -1,
-    backgroundColor: COLORS.primary['600'],
-  },
-  sectionContainer: {
-    paddingVertical: 16,
-    gap: 8,
-    backgroundColor: COLORS.primary['600'],
+    backgroundColor: THEME_COLORS.background,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 700,
     lineHeight: 24,
+    marginTop: 16,
     color: COLORS.neutral['100'],
-    paddingTop: 16,
+    paddingBottom: 8,
     textAlign: 'left',
     justifyContent: 'space-between',
     marginHorizontal: 12,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    backgroundColor: '#1a1a2e',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    padding: 16,
   },
-  sectionItemContainer: {
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.1)',
+  baseSectionContain: {
+    borderBottomRightRadius: 16,
+    borderBottomLeftRadius: 16,
+    backgroundColor: '#1a1a2e',
+    paddingTop: 12,
+    overflow: 'hidden',
     marginHorizontal: 12,
-    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    padding: 16,
+  },
+  sectionEarthImageContainer: {
+    height: EARTH_IMAGE_HEIGHT,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  sectionEarthImage: {
+    width: EARTH_IMAGE_WIDTH,
+    height: EARTH_IMAGE_HEIGHT,
+    backgroundColor: THEME_COLORS.black,
   },
   sectionItem: {
     borderTopLeftRadius: 6,
@@ -315,55 +469,74 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: 600,
   },
-  portalContainer: {
+  lisTechContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+  },
+  techFilterButton: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.8)',
-  },
-  crossPlacement: {alignItems: 'flex-end', paddingTop: 30},
-  portalSubContainer: {flex: 1, paddingHorizontal: 5},
-  portalExistButton: {
-    padding: 5,
-    margin: 10,
-  },
-  portalAPODImageDisplay: {
-    width: '100%',
-    height: 'auto',
-    aspectRatio: 1024 / 683,
-  },
-  portalAPODTextContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingBottom: 45,
-  },
-  portalBackground: {backgroundColor: 'rgba(0,0,0,0.1)'},
-  portalAPODTitleDisplay: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginTop: 10,
-    color: 'white',
-    paddingHorizontal: 6,
-  },
-  portalAPODDateDisplay: {
-    fontSize: 14,
-    color: 'gray',
-    marginBottom: 10,
-    paddingHorizontal: 6,
-  },
-  portalAPODDescriptionDisplay: {
-    flex: 1,
-    fontSize: 16,
-    textAlign: 'justify',
-    color: 'white',
-    paddingHorizontal: 6,
-  },
-  portalContent: {paddingBottom: 24},
-  portalScrollStyle: {marginBottom: 29},
-  portalDownloadButton: {
-    marginHorizontal: 8,
-    paddingVertical: 12,
-    borderRadius: 6,
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#5a6bff',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    marginHorizontal: 4,
+    borderRadius: 8,
   },
-  portalDownloadButtonText: {fontSize: 18, fontWeight: 700, color: '#ffffff'},
+  selectedTechFilterButton: {
+    backgroundColor: '#4e5ff8',
+  },
+  techFilterButtonText: {
+    color: '#a0a0b9',
+    fontWeight: '600',
+    marginLeft: 6,
+    fontSize: 13,
+  },
+  selectedTechFilterButtonText: {
+    color: 'white',
+  },
+  techItemContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    marginBottom: 12,
+    overflow: 'hidden',
+  },
+  techItemContent: {
+    flex: 1,
+    padding: 12,
+  },
+  techItemTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: 'white',
+    marginBottom: 4,
+  },
+  techItemDate: {
+    fontSize: 12,
+    color: '#a0a0b9',
+    marginBottom: 8,
+  },
+  techItemDescription: {
+    fontSize: 14,
+    color: '#d1d1e0',
+    lineHeight: 20,
+  },
+  techItemFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  learnMoreText: {
+    color: '#4e5ff8',
+    fontWeight: '600',
+    fontSize: 13,
+    marginRight: 4,
+  },
+  techItemImage: {
+    width: 100,
+    height: '100%',
+  },
 });

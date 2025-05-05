@@ -37,14 +37,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral['0'],
     borderRadius: 6,
     shadowColor: COLORS.neutral['100'],
-    elevation: 8,
+    elevation: 3,
     marginBottom: 10,
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
   },
   textContainer: {flex: 1, paddingTop: 15, justifyContent: 'space-between'},
   textIdentify: {
