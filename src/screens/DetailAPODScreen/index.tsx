@@ -32,6 +32,7 @@ import {
 import {useZustandLocalStore} from '../../navigation/RootApp.tsx';
 import {Portal} from 'react-native-portalize';
 import Toast from 'react-native-toast-message';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const DetailAPODScreen = () => {
   const canPress = useRef(true);
@@ -145,29 +146,31 @@ const DetailAPODScreen = () => {
         style={styles.scrollContent}>
         <DynamicImage uri={data.url} />
 
-        <Animated.View
-          layout={LinearTransition.springify().damping(15)}
-          style={styles.titleContain}>
-          <Text style={styles.title}>{data.title}</Text>
-        </Animated.View>
+        <SafeAreaView style={styles.container} edges={['top']}>
+          <Animated.View
+            layout={LinearTransition.springify().damping(15)}
+            style={styles.titleContain}>
+            <Text style={styles.title}>{data.title}</Text>
+          </Animated.View>
 
-        <Animated.View
-          layout={LinearTransition.springify().damping(15)}
-          style={styles.tagRow}>
-          <View style={styles.tagContain}>
-            <Text style={styles.tagText}>{data.date}</Text>
-          </View>
+          <Animated.View
+            layout={LinearTransition.springify().damping(15)}
+            style={styles.tagRow}>
+            <View style={styles.tagContain}>
+              <Text style={styles.tagText}>{data.date}</Text>
+            </View>
 
-          <View style={styles.tagContain}>
-            <Text style={styles.tagText}>{data.media_type}</Text>
-          </View>
+            <View style={styles.tagContain}>
+              <Text style={styles.tagText}>{data.media_type}</Text>
+            </View>
 
-          <View style={styles.tagContain}>
-            <Text style={styles.tagText}>{data.service_version}</Text>
-          </View>
-        </Animated.View>
+            <View style={styles.tagContain}>
+              <Text style={styles.tagText}>{data.service_version}</Text>
+            </View>
+          </Animated.View>
 
-        <Text style={styles.textExplain}>{data.explanation}</Text>
+          <Text style={styles.textExplain}>{data.explanation}</Text>
+        </SafeAreaView>
       </Animated.ScrollView>
 
       <RePressable

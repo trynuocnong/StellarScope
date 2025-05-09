@@ -175,7 +175,7 @@ export default () => {
           style={[styles.imageHeaderContainer, imageAnimatedStyle]}>
           <DynamicImage uri={apod?.url || ''} onHeightChange={updatePadTop} />
         </RePressable>
-        <View style={{height: padTop.value !== 45 ? 178 : 240}}>
+        <View style={{height: padTop.value !== 45 ? 194 : 220}}>
           <View style={[styles.actionContainer]}>
             <View style={styles.logoActionHighlight}>
               <Text style={styles.logoTextHighlight}>🚀</Text>

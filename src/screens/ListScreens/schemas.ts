@@ -3,7 +3,6 @@ import { z } from 'zod';
 export const apodSchema = z.object({
   startDate: z.number(),
   endDate: z.number(),
-  useCount: z.boolean(),
   count: z.number(),
 })
   .refine((data) => data.endDate >= data.startDate, {

@@ -1,78 +1,79 @@
 import React, {useRef, useState} from 'react';
-import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
-import {COLORS} from '../../../utils/resources/colors.ts';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {COLORS, THEME_COLORS} from '../../../utils/resources/colors.ts';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import DatePicker from 'react-native-date-picker';
-import {Controller, useForm} from 'react-hook-form';
+import {Control, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {apodSchema} from '../schemas.ts';
 import moment from 'moment/moment';
-import AppSwitchExt from '../../../components/AppSwitchExt.tsx';
-import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
-import {useQuery} from '@tanstack/react-query';
 import {APODFormParams} from '../type.ts';
 import {APODRes} from '../../../utils/DTO';
 import AxiosInstance from '../../../helper/AxiosInstance.ts';
 import {API_ENDPOINT, convertAPI} from '../../../utils/APIUtils.ts';
 import {baseAPIParams} from '../../../navigation/RootApp.tsx';
-import {FlashList, ListRenderItemInfo} from '@shopify/flash-list';
-import APODItem from '../../../components/APODItem.tsx';
 import CampfireSVG from '../../../assets/svg/campfire.tsx';
-import {navRef, ROUTES} from '../../../navigation';
+import FormInput from '../../../components/FormInput.tsx';
 
-const callApi = async ({
-  queryKey,
-}: {
-  queryKey: [string, APODFormParams];
-}): Promise<APODRes[]> => {
-  console.log('call api');
-  const [, params] = queryKey;
-
-  if (params.useCount) {
+const callApi = async (
+  startDate: number,
+  endDate: number,
+  count: number = 0,
+): Promise<APODRes[]> => {
+  if (count) {
     const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.APOD), {
       params: {
         ...baseAPIParams,
-        count: params.count,
-      },
-    });
-    return data;
-  } else {
-    const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.APOD), {
-      params: {
-        ...baseAPIParams,
-        start_date: moment(params.startDate).format('YYYY-MM-DD'),
-        end_date: moment(params.endDate).format('YYYY-MM-DD'),
+        count,
       },
     });
     return data;
   }
+  const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.APOD), {
+    params: {
+      ...baseAPIParams,
+      start_date: moment(startDate).format('YYYY-MM-DD'),
+      end_date: moment(endDate).format('YYYY-MM-DD'),
+    },
+  });
+  return data;
 };
 
-const emptyArr: APODRes[] = [];
-
-const renderItem = (data: ListRenderItemInfo<APODRes>) => {
-  const _onPress = () => {
-    navRef.current?.navigate(ROUTES.DETAIL_APOD_SCREEN, {data: data.item});
-  };
-
+const RenderHeader = ({control}: {control: Control<APODFormParams>}) => {
   return (
-    <Pressable
-      onPress={_onPress}
-      style={styles.itemContainer}>
-      <APODItem {...data.item} />
-    </Pressable>
+    <View style={styles.searchForm}>
+      <FormInput
+        control={control}
+        name="startDate"
+        title="Start Date"
+        placeholder={`e.g ${moment().subtract(1, 'days').format('YYYY-MM-DD')}`}
+      />
+      <FormInput
+        control={control}
+        name="endDate"
+        title="End Date"
+        placeholder={`e.g ${moment().format('YYYY-MM-DD')}`}
+      />
+      <FormInput
+        control={control}
+        name="count"
+        title="Count (optional)"
+        titleType="inside"
+        keyboardType="numeric"
+      />
+
+      <TouchableOpacity style={styles.searchButton}>
+        <Text style={styles.searchButtonText}>Search</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const renderEmpty = () => {
   return (
-    <View
-      style={styles.emptyItemContainer}>
+    <View style={styles.emptyItemContainer}>
       <CampfireSVG width={336} height={336} />
-      <Text
-        style={styles.emptyItemText}>
-        The sky look clear today
-      </Text>
+      <Text style={styles.emptyItemText}>The sky look clear today</Text>
     </View>
   );
 };
@@ -89,18 +90,10 @@ export default function () {
     setDisplay(true);
   };
 
-  const {control, setValue, watch, getValues} = useForm({
+  const {control, setValue, watch, getValues} = useForm<APODFormParams>({
     resolver: zodResolver(apodSchema),
-    defaultValues: {startDate: 0, endDate: 0, useCount: false, count: 0},
+    defaultValues: {startDate: 0, endDate: 0, count: 0},
   });
-  const count = watch('count');
-  const useCount = watch('useCount');
-  const startDate = watch('startDate');
-  const endDate = watch('endDate');
-  const updateChecked = (): void => {
-    setValue('useCount', !getValues().useCount);
-  };
-  const queryEnabled = useCount ? count > 0 : startDate !== 0 && endDate !== 0;
 
   const onConfirmPick = (date: Date) => {
     setValue(dateType.current, date.getTime());
@@ -108,93 +101,15 @@ export default function () {
   };
   const _onHidePick = () => setDisplay(false);
 
-  const {data, isLoading, error} = useQuery({
-    queryKey: [
-      'apodData',
-      {
-        useCount,
-        count,
-        startDate,
-        endDate,
-      },
-    ],
-    queryFn: callApi,
-    enabled: queryEnabled,
-  });
-
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={[styles.container, styles.content]}>
-        <View style={styles.switchContainer}>
-          <Text onPress={updateChecked} style={styles.switchText}>
-            Time leap
-          </Text>
-          <AppSwitchExt checked={useCount} updateChecked={updateChecked} />
-        </View>
-
-        {useCount ? (
-          <Animated.View
-            entering={FadeIn.duration(500)}
-            exiting={FadeOut.duration(300)}
-            style={styles.searchBarContainer}>
-            <TextInput
-              style={styles.textCountInput}
-              keyboardType={'numeric'}
-              autoFocus={true}
-              placeholder={'Total Search Date'}
-            />
-          </Animated.View>
-        ) : (
-          <Animated.View
-            entering={FadeIn.duration(500)}
-            exiting={FadeOut.duration(300)}
-            style={styles.searchBarContainer}>
-            <Controller
-              control={control}
-              name={'startDate'}
-              render={({field: {value}}) => {
-                return (
-                  <Pressable onPress={startType}>
-                    <Text style={styles.dateStyle}>
-                      {value
-                        ? moment(value).format('DD/MM/YYYY')
-                        : 'Start date'}
-                    </Text>
-                  </Pressable>
-                );
-              }}
-            />
-
-            <Text style={styles.textCount}>
-              {getValues().startDate !== 0 && getValues().endDate !== 0
-                ? moment(getValues().endDate).diff(
-                    getValues().startDate,
-                    'days',
-                  ) + 1
-                : 0}
-            </Text>
-            <Controller
-              control={control}
-              name={'endDate'}
-              render={({field: {value}}) => {
-                return (
-                  <Pressable onPress={endType}>
-                    <Text style={styles.dateStyle}>
-                      {value ? moment(value).format('DD/MM/YYYY') : 'End date'}
-                    </Text>
-                  </Pressable>
-                );
-              }}
-            />
-          </Animated.View>
-        )}
-
-        <FlashList
-          ListEmptyComponent={renderEmpty}
-          contentContainerStyle={styles.flashListContent}
-          estimatedItemSize={448}
-          data={data || emptyArr}
-          renderItem={renderItem}
+        <FlatList
+          data={[]}
+          ListHeaderComponent={<RenderHeader control={control} />}
+          renderItem={() => {
+            return <View />;
+          }}
         />
 
         <DatePicker
@@ -228,10 +143,11 @@ export default function () {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.primary['600'],
+    backgroundColor: THEME_COLORS.background,
   },
   content: {
     paddingTop: 8,
+    paddingHorizontal: 16,
   },
   switchContainer: {
     flexDirection: 'row',
@@ -311,5 +227,37 @@ const styles = StyleSheet.create({
   flashListContent: {
     paddingTop: 18,
     paddingBottom: 32,
+  },
+  searchInput: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    color: 'white',
+    fontSize: 16,
+  },
+  searchButton: {
+    backgroundColor: THEME_COLORS.button.primary.accent,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    marginLeft: 8,
+  },
+  searchButtonText: {
+    color: COLORS.neutral['100'],
+    fontWeight: '600',
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  searchForm: {
+    backgroundColor: COLORS.primary['10'],
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: COLORS.primary['50'],
   },
 });

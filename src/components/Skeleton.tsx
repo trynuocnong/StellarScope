@@ -12,7 +12,7 @@ import {COLORS} from '../utils/resources/colors.ts';
 export default function ({ children, style }: { children?: ReactNode, style?: ViewProps['style'] }) {
   const onGoingValue = useSharedValue(0);
 
-  // Start the animation when the component mounts
+  // Start the animation when the component mountsd
   useEffect(() => {
     onGoingValue.value = withRepeat(withTiming(1, { duration: 3000 }), -1, false);
     //eslint-disable-next-line
@@ -22,8 +22,13 @@ export default function ({ children, style }: { children?: ReactNode, style?: Vi
     backgroundColor: interpolateColor(
       onGoingValue.value, // Use the animated shared value here
       [0, 0.25, 0.5, 0.75, 1],
-      // ['#fff', '#d8d8d8', '#cacaca', '#e1dfdf', '#fff'],
-      [COLORS.primary['100'], COLORS.primary['300'], COLORS.primary['500'], COLORS.primary['200'], COLORS.primary['100']],
+      [
+        COLORS.neutral['1000'], // #333333 - Darkest
+        COLORS.neutral['900'],  // #4a4a4a
+        COLORS.neutral['800'],  // #606060
+        COLORS.neutral['700'],  // #777777
+        COLORS.neutral['600'],  // #8e8e8e - Lightest
+      ],
     ),
   }));
 

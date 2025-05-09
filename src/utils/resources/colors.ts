@@ -109,6 +109,7 @@ export const THEME_COLORS = {
       text: COLORS.neutral['100'],
       border: 'transparent',
       shadow: COLORS.neutral['0'],
+      accent: '#4e5ff8',
     },
     secondary: {
       background: COLORS.secondary['10'],
