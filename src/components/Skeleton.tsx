@@ -14,7 +14,7 @@ export default function ({ children, style }: { children?: ReactNode, style?: Vi
 
   // Start the animation when the component mountsd
   useEffect(() => {
-    onGoingValue.value = withRepeat(withTiming(1, { duration: 3000 }), -1, false);
+    onGoingValue.value = withRepeat(withTiming(1, { duration: 1000 }), -1, true);
     //eslint-disable-next-line
   }, []);
 

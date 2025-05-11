@@ -27,6 +27,10 @@ const ICON: Record<
     active: props => <MissionTrackerSVG {...props} fill={'#0D2A80'} />,
     inactive: MissionTrackerSVG,
   },
+  [ROUTES.LAUNCH_PAD_TAB]: {
+    active: props => <MissionTrackerSVG {...props} fill={'#0D2A80'} />,
+    inactive: MissionTrackerSVG,
+  },
 };
 
 export default ({state, navigation, descriptors}: BottomTabBarProps) => {

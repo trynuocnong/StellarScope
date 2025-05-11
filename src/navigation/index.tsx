@@ -17,6 +17,7 @@ export const ROUTES = {
     HOME_TAB: 'HomeTab',
     SEARCH_TAB: 'SearchTab',
     MISSION_TAB: 'MissionTab',
+    LAUNCH_PAD_TAB: 'LaunchPadTab',
 
     // Stack Routes
     DETAIL_TECH_SCREEN: 'DetailedTech',

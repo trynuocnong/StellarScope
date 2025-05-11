@@ -11,6 +11,7 @@ import DetailTechScreen from '../screens/DetailTechScreen';
 import DetailAPODScreen from '../screens/DetailAPODScreen';
 import APODList from '../screens/ListScreens/APODList';
 import WebViewScreen from '../screens/WebViewScreen';
+import LaunchPadTab from '../screens/LaunchPadTab';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -23,6 +24,7 @@ const RootBottomTab = () => {
       <Tab.Screen name={ROUTES.HOME_TAB} component={HomeTab} />
       <Tab.Screen name={ROUTES.SEARCH_TAB} component={SearchTab} />
       <Tab.Screen name={ROUTES.MISSION_TAB} component={MissionTab} />
+      <Tab.Screen name={ROUTES.LAUNCH_PAD_TAB} component={LaunchPadTab} />
     </Tab.Navigator>
   );
 };

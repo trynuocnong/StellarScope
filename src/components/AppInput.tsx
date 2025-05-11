@@ -71,7 +71,7 @@ const AppInput = ({
       isFocused.value ||
         Number(value !== '' && value !== undefined && value !== null),
       [0, 1],
-      [14, -10],
+      [20, 4],
     );
     const fontSize = interpolate(
       isFocused.value ||
@@ -85,18 +85,17 @@ const AppInput = ({
       top,
       fontSize,
       color: COLORS.neutral['600'],
-      backgroundColor: COLORS.neutral['1000'],
       paddingHorizontal: 4,
     };
   });
 
   if (titleType === 'inside') {
     const _onFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
-      isFocused.value = withTiming(1);
+      isFocused.value = withTiming(Number(Boolean(value)));
       onFocus?.(e);
     };
     const _onBlur = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
-      isFocused.value = withTiming(0);
+      isFocused.value = withTiming(Number(Boolean(value)));
       onBlur?.(e);
     };
     return (

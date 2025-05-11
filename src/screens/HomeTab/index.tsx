@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useCallback, useMemo, useState} from 'react';
 import FeatureDisplayItem from '../../components/FeatureDisplayItem.tsx';
-import {APODRes, EarthImageRes, MarsPhoto} from '../../utils/DTO';
+import {APODRes, EarthImageRes} from '../../utils/DTO';
 import {
   Dimensions,
   FlatList,
@@ -26,10 +26,10 @@ import {API_ENDPOINT, convertAPI, getImage} from '../../utils/APIUtils.ts';
 import {baseAPIParams} from '../../navigation/RootApp.tsx';
 import {useQueries, useQuery} from '@tanstack/react-query';
 import {RePressable, ReSectionList} from '../../../App.tsx';
-import {randomArray} from '../../utils/FuncUtils.ts';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import FastImage from 'react-native-fast-image';
 import {KeyValue, navRef, ROUTES} from '../../navigation';
+import TechFilterRow from './components/TechFilterRow.tsx';
 
 const WIDTH = Dimensions.get('screen').width;
 const EARTH_IMAGE_HEIGHT = WIDTH * 0.6;
@@ -64,18 +64,6 @@ const fetchEarthImage = async (): Promise<EarthImageRes[]> => {
   return data;
 };
 
-const fetchMarRover = async (): Promise<MarsPhoto[][]> => {
-  const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.MSRP), {
-    params: {...baseAPIParams, sol: 1},
-  });
-  const dataPhotos = randomArray(data.photos, 24);
-  const result = [];
-  while (dataPhotos.length > 0) {
-    result.push(dataPhotos.slice(0, 4));
-  }
-  return result;
-};
-
 const renderEarthImage = ({item}: ListRenderItemInfo<EarthImageRes>) => {
   const path = getImage(item.date, item.image);
   return (
@@ -87,10 +75,6 @@ const renderEarthImage = ({item}: ListRenderItemInfo<EarthImageRes>) => {
   );
 };
 
-const renderMarsRoverPhoto = ({item}: any) => {
-  return <View />;
-};
-
 const renderTitle = ({section: {title}}: any) => (
   <Text style={styles.sectionTitle}>{title}</Text>
 );
@@ -98,9 +82,6 @@ const renderTitle = ({section: {title}}: any) => (
 export default () => {
   const padTop = useSharedValue(45);
   const scrollY = useSharedValue(0);
-  const [specialAPOD, setSpecialAPOD] = useState<APODRes | undefined>(
-    undefined,
-  );
   const [techFilter, setTechFilter] = useState<KeyValue>(
     TECHTRANSFER_FILTER[0],
   );
@@ -157,6 +138,12 @@ export default () => {
     };
   });
 
+  const actionButtonContainer = useAnimatedStyle(() => {
+    return {
+      height: withTiming(padTop.value !== 45 ? 204 : 220),
+    };
+  });
+
   const renderHeader = useCallback(() => {
     const updatePadTop = (num: number) => {
       if (num < 590) {
@@ -169,13 +156,17 @@ export default () => {
       navRef.current?.navigate(ROUTES.DETAIL_APOD_SCREEN, {data: apod!});
     };
     return (
-      <View style={styles.headerContainer}>
+      <Animated.View
+        layout={LinearTransition.springify().damping(10)}
+        style={styles.headerContainer}>
         <RePressable
           onPress={goToAPODDetails}
           style={[styles.imageHeaderContainer, imageAnimatedStyle]}>
           <DynamicImage uri={apod?.url || ''} onHeightChange={updatePadTop} />
         </RePressable>
-        <View style={{height: padTop.value !== 45 ? 194 : 220}}>
+        <Animated.View
+          layout={LinearTransition.springify().damping(10)}
+          style={actionButtonContainer}>
           <View style={[styles.actionContainer]}>
             <View style={styles.logoActionHighlight}>
               <Text style={styles.logoTextHighlight}>🚀</Text>
@@ -192,49 +183,11 @@ export default () => {
               ))}
             </View>
           </View>
-        </View>
-
+        </Animated.View>
         <View style={styles.headerLayer} />
-      </View>
+      </Animated.View>
     );
-  }, [apod, imageAnimatedStyle, padTop]);
-
-  const TechFilter = useCallback(() => {
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginBottom: 10,
-        }}>
-        {TECHTRANSFER_FILTER.map(item => {
-          const isSelected = item.value === techFilter.value;
-          const onPress = () => {
-            if (!isSelected) {
-              setTechFilter(item);
-            }
-          };
-          return (
-            <TouchableOpacity
-              style={[
-                styles.techFilterButton,
-                isSelected && styles.selectedTechFilterButton,
-              ]}
-              key={item.value.toString()}
-              onPress={onPress}>
-              <Text
-                style={[
-                  styles.techFilterButtonText,
-                  isSelected && styles.selectedTechFilterButtonText,
-                ]}>
-                {item.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    );
-  }, [techFilter.value]);
+  }, [actionButtonContainer, apod, imageAnimatedStyle, padTop]);
 
   const renderTechItem = ({item}: {item: any}) => {
     const goToTechDetail = () => {
@@ -283,13 +236,16 @@ export default () => {
       }
 
       if (title === SECTION_HEADER.MARS) {
-        return <View style={styles.baseSectionContain}></View>;
+        return <View style={styles.baseSectionContain} />;
       }
 
       if (title === SECTION_HEADER.TECH) {
         return (
           <View style={styles.baseSectionContain}>
-            <TechFilter />
+            <TechFilterRow
+              setTechFilter={setTechFilter}
+              techFilter={techFilter}
+            />
             <FlatList
               scrollEnabled={false}
               data={item}
@@ -303,7 +259,7 @@ export default () => {
 
       return <></>;
     },
-    [TechFilter],
+    [techFilter],
   );
 
   return (

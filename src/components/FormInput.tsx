@@ -6,13 +6,14 @@ export type FormInputProps<ControlType extends FieldValues> = {
   control: Control<ControlType>;
   name: Path<ControlType>;
 } & AppInputProps;
-const FormInput = <A extends FieldValues = any,>({
+const FormInput = <A extends FieldValues = any>({
   control,
   name,
   title,
   titleType = 'outside',
   placeholder,
   keyboardType = 'default',
+  ...rest
 }: FormInputProps<A>) => {
   return (
     <Controller
@@ -20,6 +21,7 @@ const FormInput = <A extends FieldValues = any,>({
       name={name}
       render={({field: {onChange, onBlur, value}}) => (
         <AppInput
+          {...rest}
           title={title}
           titleType={titleType}
           placeholder={placeholder}
