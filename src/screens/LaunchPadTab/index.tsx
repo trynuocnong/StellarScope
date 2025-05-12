@@ -2,10 +2,16 @@ import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, ActivityIndicator, Text, TouchableOpacity, ScrollView, Switch} from 'react-native';
 import {COLORS, THEME_COLORS} from '../../utils/resources/colors.ts';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {LaunchResults} from '../../utils/DTO';
+import {LaunchCountdown} from './components/LaunchCountDown.tsx';
+import {LaunchCalendar} from './components/LaunchCalendar.tsx';
+import {LaunchHistory} from './components/LaunchHistory.tsx';
+import {LAUNCH_URL} from '@env';
+
 export default () => {
- const [upcomingLaunches, setUpcomingLaunches] = useState<Launch[]>([]);
- const [pastLaunches, setPastLaunches] = useState<Launch[]>([]);
- const [selectedLaunch, setSelectedLaunch] = useState<Launch | null>(null);
+ const [upcomingLaunches, setUpcomingLaunches] = useState<LaunchResults[]>([]);
+ const [pastLaunches, setPastLaunches] = useState<LaunchResults[]>([]);
+ const [selectedLaunch, setSelectedLaunch] = useState<LaunchResults | null>(null);
  const [loading, setLoading] = useState(true);
  const [error, setError] = useState<string | null>(null);
  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -16,38 +22,33 @@ export default () => {
  }, []);
 
  // Fetch upcoming launches
- export const fetchUpcomingLaunches = async (): Promise<LaunchResponse> => {
+  const fetchUpcomingLaunches = async () => {
   const endpoint = '/launch/upcoming';
   const params = { limit: 10 };
   try {
    // Try to fetch from the actual API
    try {
     const queryString = new URLSearchParams(params).toString();
-    const response = await fetch(`${BASE_URLS.launchLibrary}${endpoint}?${queryString}`);
+    const response = await fetch(`${LAUNCH_URL}${endpoint}?${queryString}`);
     const data = await response.json();
 
     if (!response.ok) {
      throw new Error('Failed to fetch upcoming launches');
     }
 
+    console.log(data);
+
     return data;
    } catch (apiError) {
-    // If the API call fails, log it but don't throw - we'll use mock data instead
-    console.log('Using mock data for Launches due to API error:', apiError);
-
-    // Return mock data as a fallback
-    const mockData = getMockLaunchData();
-    logResponse(endpoint, 200, { source: 'mock', count: mockData.results.length });
-    return mockData;
+    console.log(apiError);
    }
   } catch (error) {
-   logError(endpoint, error);
    throw error;
   }
  };
 
 // Fetch past launches
-  const fetchPastLaunches = async (): Promise<LaunchResponse> => {
+  const fetchPastLaunches = async () => {
   const endpoint = '/launch/previous';
   const params = { limit: 10 };
 
@@ -56,8 +57,9 @@ export default () => {
    // Try to fetch from the actual API
    try {
     const queryString = new URLSearchParams(params).toString();
-    const response = await fetch(`${BASE_URLS.launchLibrary}${endpoint}?${queryString}`);
+    const response = await fetch(`${LAUNCH_URL}${endpoint}?${queryString}`);
     const data = await response.json();
+    console.log(data);
 
     if (!response.ok) {
      throw new Error('Failed to fetch past launches');
@@ -65,7 +67,7 @@ export default () => {
 
     return data;
    } catch (apiError) {
-    // If the API call fails, log it but don't throw - we'll use mock data instead
+    console.log(apiError);
    }
   } catch (error) {
    throw error;
@@ -119,7 +121,7 @@ export default () => {
      {selectedLaunch && !loading && (
        <View style={styles.section}>
         <Text style={styles.sectionTitle}>Next Launch</Text>
-        {/*<LaunchCountdown launch={selectedLaunch} />*/}
+        <LaunchCountdown launch={selectedLaunch} />
        </View>
      )}
 
@@ -175,22 +177,22 @@ export default () => {
      </View>
 
      {/* Tab Content */}
-     {/*{activeTab === 'upcoming' ? (*/}
-     {/*  <LaunchCalendar*/}
-     {/*    launches={upcomingLaunches}*/}
-     {/*    onSelectLaunch={setSelectedLaunch}*/}
-     {/*    loading={loading}*/}
-     {/*  />*/}
-     {/*) : (*/}
-     {/*  loading ? (*/}
-     {/*    <View style={styles.loadingContainer}>*/}
-     {/*     <ActivityIndicator size="large" color={COLORS.primary['400']} />*/}
-     {/*     <Text style={styles.loadingText}>Loading launch history...</Text>*/}
-     {/*    </View>*/}
-     {/*  ) : (*/}
-     {/*    <LaunchHistory launches={pastLaunches} />*/}
-     {/*  )*/}
-     {/*)}*/}
+     {activeTab === 'upcoming' ? (
+       <LaunchCalendar
+         launches={upcomingLaunches}
+         onSelectLaunch={setSelectedLaunch}
+         loading={loading}
+       />
+     ) : (
+       loading ? (
+         <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary['400']} />
+          <Text style={styles.loadingText}>Loading launch history...</Text>
+         </View>
+       ) : (
+         <LaunchHistory launches={pastLaunches} />
+       )
+     )}
 
      {error && (
        <View style={styles.errorContainer}>

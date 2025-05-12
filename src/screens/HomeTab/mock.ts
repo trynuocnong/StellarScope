@@ -21,11 +21,6 @@ export const featureList: FeaturesDisplayItemProps[] = [
     onPress: () => {},
   },
   {
-    name: 'Space Mission Tracker',
-    icon: '🧑‍🚀',
-    onPress: () => {},
-  },
-  {
     name: 'Exoplanet Explorer',
     icon: '🔭',
     onPress: () => {},

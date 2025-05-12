@@ -1,5 +1,4 @@
 import {BASE_URL, URL_VARIANT} from '@env';
-import {MissionTrackerRes} from './DTO/MissionDTO.ts';
 import AxiosInstance from '../helper/AxiosInstance.ts';
 
 export const convertAPI = (path: string) => BASE_URL.concat(`/${path}`);
