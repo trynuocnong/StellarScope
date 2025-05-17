@@ -12,7 +12,7 @@ export const LaunchCountdown: React.FC<LaunchCountdownProps> = ({ launch }) => {
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
   const [isLive, setIsLive] = useState(false);
 

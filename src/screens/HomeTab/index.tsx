@@ -16,6 +16,7 @@ import Animated, {
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
   withTiming,
 } from 'react-native-reanimated';
 import DynamicImage from '../../components/DynamicImage.tsx';
@@ -29,11 +30,13 @@ import {RePressable, ReSectionList} from '../../../App.tsx';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import FastImage from 'react-native-fast-image';
 import {KeyValue, navRef, ROUTES} from '../../navigation';
-import TechFilterRow from './components/TechFilterRow.tsx';
+import EarthCarousel from './components/EarthCarousel.tsx';
+import SegmentButtonRow from '../../components/SegmentButtonRow.tsx';
 
 const WIDTH = Dimensions.get('screen').width;
 const EARTH_IMAGE_HEIGHT = WIDTH * 0.6;
 const EARTH_IMAGE_WIDTH = WIDTH - 24 - 32;
+const ACTION_BOARD_HEIGHT = 127;
 
 const fetchAPOD = async (): Promise<APODRes> => {
   const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.APOD), {
@@ -140,7 +143,14 @@ export default () => {
 
   const actionButtonContainer = useAnimatedStyle(() => {
     return {
-      height: withTiming(padTop.value !== 45 ? 204 : 220),
+      height: withDelay(
+        200,
+        withTiming(
+          padTop.value !== 45
+            ? ACTION_BOARD_HEIGHT - 16
+            : ACTION_BOARD_HEIGHT + 45,
+        ),
+      ),
     };
   });
 
@@ -221,18 +231,7 @@ export default () => {
     ({item, section}: any) => {
       const {title} = section;
       if (title === SECTION_HEADER.EARTH) {
-        return (
-          <View style={styles.baseSectionContain}>
-            <View style={styles.sectionEarthImageContainer}>
-              <FlatList
-                horizontal
-                data={item as EarthImageRes[]}
-                pagingEnabled={true}
-                renderItem={renderEarthImage}
-              />
-            </View>
-          </View>
-        );
+        return <EarthCarousel data={item} />;
       }
 
       if (title === SECTION_HEADER.MARS) {
@@ -242,9 +241,16 @@ export default () => {
       if (title === SECTION_HEADER.TECH) {
         return (
           <View style={styles.baseSectionContain}>
-            <TechFilterRow
-              setTechFilter={setTechFilter}
-              techFilter={techFilter}
+            {/*<TechFilterRow*/}
+            {/*  setTechFilter={setTechFilter}*/}
+            {/*  techFilter={techFilter}*/}
+            {/*/>*/}
+            <SegmentButtonRow
+              incompatibleSpace={56}
+              style={styles.segmentStyle}
+              options={TECHTRANSFER_FILTER}
+              layerColor={'#4e5ff8'}
+              textColor={COLORS.neutral['100']}
             />
             <FlatList
               scrollEnabled={false}
@@ -383,6 +389,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
     padding: 16,
+  },
+  segmentStyle: {
+    marginBottom: 10,
+    backgroundColor: COLORS.neutral['900'],
+    borderRadius: 8,
+    height: 55,
   },
   sectionEarthImageContainer: {
     height: EARTH_IMAGE_HEIGHT,

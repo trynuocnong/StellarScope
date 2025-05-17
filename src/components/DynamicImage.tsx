@@ -23,10 +23,16 @@ const DynamicImage = forwardRef(
       onHeightChange?.(cal);
     };
 
+    const onError = () => {
+      heights.value = 0;
+      onHeightChange?.(0);
+    };
+
     return (
       <ReImage
         layout={LinearTransition.springify().damping(15)}
         onLoad={calculate}
+        onError={onError}
         resizeMode={'contain'}
         style={[styles.imageHeader, {height: heights}]}
         source={{uri}}

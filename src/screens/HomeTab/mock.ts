@@ -6,7 +6,6 @@ export const featureList: FeaturesDisplayItemProps[] = [
     name: 'APOD',
     icon: '💫',
     onPress: () => {
-      console.log(navRef.current);
       navRef.current?.navigate(ROUTES.LIST_STACK.LIST_APOD_SCREEN);
     },
   },
@@ -20,26 +19,26 @@ export const featureList: FeaturesDisplayItemProps[] = [
     icon: '🌍',
     onPress: () => {},
   },
-  {
-    name: 'Exoplanet Explorer',
-    icon: '🔭',
-    onPress: () => {},
-  },
+  // {
+  //   name: 'Exoplanet Explorer',
+  //   icon: '🔭',
+  //   onPress: () => {},
+  // },
   {
     name: 'Station Tracker',
     icon: '🔭',
     onPress: () => {},
   },
-  {
-    name: 'Mars Weather',
-    icon: '🔭',
-    onPress: () => {},
-  },
-  {
-    name: 'Technical Explorer',
-    icon: '🔭',
-    onPress: () => {},
-  },
+  // {
+  //   name: 'Mars Weather',
+  //   icon: '🔭',
+  //   onPress: () => {},
+  // },
+  // {
+  //   name: 'Technical Explorer',
+  //   icon: '🔭',
+  //   onPress: () => {},
+  // },
 ];
 
 export const SECTION_HEADER = {
