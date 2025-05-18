@@ -45,6 +45,7 @@ export const SECTION_HEADER = {
   APOD: 'APOD',
   MARS: 'Mars Rover Photos',
   EARTH: 'Earth Polychromatic Imaging Camera',
+  MAR_WEATHER: 'Mars\'s Weather',
   TECH: 'NASA Technology',
 };
 

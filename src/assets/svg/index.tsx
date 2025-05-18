@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Svg, {Path, Rect, SvgProps} from 'react-native-svg';
+import Svg, {Circle, Path, Rect, SvgProps} from 'react-native-svg';
 
 export type SvgProps2 = SvgProps & {
   fill2?: string;
@@ -211,7 +211,7 @@ export const QuestionSVG = ({
     height={height}
     fill="none"
     {...props}
-    viewBox={`0 0 24 24`}>
+    viewBox={'0 0 24 24'}>
     <Path
       fill={fill}
       d="M17 18.43h-4l-4.45 2.96A.997.997 0 0 1 7 20.56v-2.13c-3 0-5-2-5-5v-6c0-3 2-5 5-5h10c3 0 5 2 5 5v6c0 3-2 5-5 5Z"
@@ -265,3 +265,78 @@ export const ArrowLoadSVG = ({
     />
   </Svg>
 );
+
+export const CloudSVG = ({
+  width = 24,
+  height = 24,
+  fill = '#fff',
+  viewBox = '0 0 24 24',
+  ...props
+}: SvgProps) => (
+  <Svg width={width} height={height} viewBox={viewBox} {...props}>
+    <Path
+      stroke={fill}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M19 11a4 4 0 0 1 0 8H6a5 5 0 0 1-.331-9.99A7.002 7.002 0 0 1 18.929 11H19Z"
+    />
+  </Svg>
+);
+
+export const ThunderStormSVG = ({
+  width = 24,
+  height = 24,
+  fill = '#fff',
+  strokeWidth = 32,
+  ...props
+}: SvgProps) => (
+  <Svg
+    width={width}
+    height={height}
+    fill="none"
+    viewBox="0 0 512 512"
+    preserveAspectRatio="xMidYMid meet"
+    {...props}>
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={strokeWidth}
+      d="m120 352-24 48m40 32-16 32m280-112-24 48m40 32-16 32M208 304l-16 96h48v80l80-112h-48l16-64m116.33-151.11H392.2C384.71 84.85 326.14 32 256 32a136.39 136.39 0 0 0-128.63 90.67h-4.57c-49.94 0-90.8 40.8-90.8 90.66h0C32 263.2 72.86 304 122.8 304h281.53C446 304 480 270 480 228.44h0c0-41.55-34-75.55-75.67-75.55z"
+    />
+  </Svg>
+);
+
+export const SunnySVG = (props: SvgProps) => {
+  const {width = 24, height = 24, fill = '#fff', ...restProps} = props;
+
+  return (
+    <Svg
+      width={width}
+      height={height}
+      viewBox="0 0 512 512"
+      preserveAspectRatio="xMidYMid meet"
+      {...restProps}>
+      <Path
+        fill="none"
+        stroke={fill}
+        strokeLinecap="round"
+        strokeMiterlimit={10}
+        strokeWidth={32}
+        d="M256 48v48m0 320v48m147.08-355.08-33.94 33.94M142.86 369.14l-33.94 33.94M464 256h-48m-320 0H48m355.08 147.08-33.94-33.94M142.86 142.86l-33.94-33.94"
+      />
+      <Circle
+        cx={256}
+        cy={256}
+        r={80}
+        fill="none"
+        stroke={fill}
+        strokeLinecap="round"
+        strokeMiterlimit={10}
+        strokeWidth={32}
+      />
+    </Svg>
+  );
+};

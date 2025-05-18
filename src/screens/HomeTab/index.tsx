@@ -1,11 +1,16 @@
 import * as React from 'react';
 import {useCallback, useMemo, useState} from 'react';
 import FeatureDisplayItem from '../../components/FeatureDisplayItem.tsx';
-import {APODRes, EarthImageRes} from '../../utils/DTO';
+import {
+  APODRes,
+  EarthImageRes,
+  MarWeatherReq,
+  MarWeatherRes,
+  MarWeatherSpec,
+} from '../../utils/DTO';
 import {
   Dimensions,
   FlatList,
-  ListRenderItemInfo,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -23,7 +28,7 @@ import DynamicImage from '../../components/DynamicImage.tsx';
 import {COLORS, THEME_COLORS} from '../../utils/resources/colors.ts';
 import {featureList, SECTION_HEADER, TECHTRANSFER_FILTER} from './mock.ts';
 import AxiosInstance from '../../helper/AxiosInstance.ts';
-import {API_ENDPOINT, convertAPI, getImage} from '../../utils/APIUtils.ts';
+import {API_ENDPOINT, convertAPI} from '../../utils/APIUtils.ts';
 import {baseAPIParams} from '../../navigation/RootApp.tsx';
 import {useQueries, useQuery} from '@tanstack/react-query';
 import {RePressable, ReSectionList} from '../../../App.tsx';
@@ -32,11 +37,73 @@ import FastImage from 'react-native-fast-image';
 import {KeyValue, navRef, ROUTES} from '../../navigation';
 import EarthCarousel from './components/EarthCarousel.tsx';
 import SegmentButtonRow from '../../components/SegmentButtonRow.tsx';
+import {API_KEY} from '@env';
+import {ModifyMarWeatherType} from './type.ts';
+import moment from 'moment';
+import {CloudSVG, SunnySVG, ThunderStormSVG} from '../../assets/svg';
 
 const WIDTH = Dimensions.get('screen').width;
 const EARTH_IMAGE_HEIGHT = WIDTH * 0.6;
 const EARTH_IMAGE_WIDTH = WIDTH - 24 - 32;
 const ACTION_BOARD_HEIGHT = 127;
+
+const WeatherConditionDisplay = ({
+  weatherData,
+}: {
+  weatherData?: MarWeatherSpec;
+}) => {
+  if (!weatherData) {
+    return <View />;
+  }
+  // Determine the condition
+  const condition = (() => {
+    const {HWS, Season} = weatherData;
+    if (HWS.av > 15) {
+      return 'stormy';
+    }
+    if (HWS.av > 8) {
+      return 'dusty';
+    }
+    if (Season === 'summer' && HWS.av > 5) {
+      return 'dusty';
+    }
+    return 'sunny';
+  })();
+
+  const conditionConfig = {
+    sunny: {
+      icon: <SunnySVG width={64} height={64} fill="#FFA500" />,
+      label: 'Sunny',
+      color: '#FFD700',
+      description: 'Clear skies',
+    },
+    dusty: {
+      icon: <CloudSVG width={64} height={64} fill="#A0522D" />,
+      label: 'Dusty',
+      color: '#D2B48C',
+      description: 'Light dust',
+    },
+    stormy: {
+      icon: <ThunderStormSVG width={64} height={64} fill="#800000" />,
+      label: 'Dust Storm',
+      color: '#8B0000',
+      description: 'Severe dust storm',
+    },
+  };
+
+  const currentConfig = conditionConfig[condition];
+
+  return (
+    <View style={styles.weatherIcon}>
+      {currentConfig.icon}
+      <View>
+        <Text style={[styles.weatherCondition, {color: currentConfig.color}]}>
+          {currentConfig.label}
+        </Text>
+      </View>
+    </View>
+  );
+};
 
 const fetchAPOD = async (): Promise<APODRes> => {
   const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.APOD), {
@@ -52,11 +119,6 @@ const fetchTech = async (): Promise<string[][]> => {
       params: {...baseAPIParams, space: ''},
     },
   );
-  // const mapData: string[][][] = [];
-  // while (data.results.length > 0) {
-  //   mapData.push(data.results.slice(0, 5));
-  // }
-  // console.log(mapData);
   return data.results.slice(0, 8);
 };
 
@@ -67,15 +129,40 @@ const fetchEarthImage = async (): Promise<EarthImageRes[]> => {
   return data;
 };
 
-const renderEarthImage = ({item}: ListRenderItemInfo<EarthImageRes>) => {
-  const path = getImage(item.date, item.image);
-  return (
-    <FastImage
-      style={styles.sectionEarthImage}
-      resizeMode={'contain'}
-      source={{uri: path}}
-    />
+const fetchMarsWeather = async (): Promise<ModifyMarWeatherType> => {
+  const params: MarWeatherReq = {
+    api_key: API_KEY,
+    ver: '1.0',
+    feedtype: 'json',
+  };
+  const {data} = await AxiosInstance.get<MarWeatherRes>(
+    convertAPI(API_ENDPOINT.MARS_WEATHER),
+    {
+      params: params,
+    },
   );
+  let keyArr = data.sol_keys;
+  while (keyArr.length > 0) {
+    let len = keyArr.length - 1;
+    if (
+      data.validity_checks[keyArr[len]].AT.valid &&
+      data.validity_checks[keyArr[len]].HWS.valid &&
+      data.validity_checks[keyArr[len]].PRE.valid &&
+      data.validity_checks[keyArr[len]].WD.valid
+    ) {
+      return {
+        title: keyArr[len],
+        ...data[keyArr[len]],
+      } as unknown as ModifyMarWeatherType;
+    }
+    keyArr.pop();
+  }
+  let len = data.sol_keys.length - 1;
+
+  return {
+    title: data.sol_keys[len],
+    ...data[data.sol_keys[len]],
+  } as unknown as ModifyMarWeatherType;
 };
 
 const renderTitle = ({section: {title}}: any) => (
@@ -99,8 +186,8 @@ export default () => {
 
   const result = useQueries({
     queries: [
-      // { queryKey: ['apod', 1], queryFn: fetchAPOD },
-      {queryKey: ['earthImage', 2], queryFn: fetchEarthImage},
+      {queryKey: ['earthImage', 1], queryFn: fetchEarthImage},
+      {queryKey: ['mar_weather', 2], queryFn: fetchMarsWeather},
       {queryKey: ['tech', 3], queryFn: fetchTech},
     ],
   });
@@ -117,6 +204,9 @@ export default () => {
           title = SECTION_HEADER.EARTH;
           break;
         case 1:
+          title = SECTION_HEADER.MAR_WEATHER;
+          break;
+        case 2:
           title = SECTION_HEADER.TECH;
           break;
         default:
@@ -227,46 +317,72 @@ export default () => {
     );
   };
 
-  const renderItem = useCallback(
-    ({item, section}: any) => {
-      const {title} = section;
-      if (title === SECTION_HEADER.EARTH) {
-        return <EarthCarousel data={item} />;
-      }
+  const renderItem = useCallback(({item, section}: any) => {
+    const {title} = section;
+    if (title === SECTION_HEADER.EARTH) {
+      return <EarthCarousel data={item} />;
+    }
 
-      if (title === SECTION_HEADER.MARS) {
-        return <View style={styles.baseSectionContain} />;
-      }
+    if (title === SECTION_HEADER.MAR_WEATHER) {
+      return (
+        <View style={[styles.baseSectionContain]}>
+          <View style={[styles.flex1, styles.weatherContent]}>
+            <View style={styles.marginBottom12}>
+              <Text style={styles.solNumber}>
+                Sol {(item as unknown as ModifyMarWeatherType).title}
+              </Text>
+              <Text style={styles.earthDate}>
+                {moment(
+                  (item as unknown as ModifyMarWeatherType).Last_UTC,
+                ).format('DD/MM/YYYY')}
+              </Text>
+              <Text style={styles.season}>
+                {(item as unknown as ModifyMarWeatherType).Season}
+              </Text>
+            </View>
 
-      if (title === SECTION_HEADER.TECH) {
-        return (
-          <View style={styles.baseSectionContain}>
-            {/*<TechFilterRow*/}
-            {/*  setTechFilter={setTechFilter}*/}
-            {/*  techFilter={techFilter}*/}
-            {/*/>*/}
-            <SegmentButtonRow
-              incompatibleSpace={56}
-              style={styles.segmentStyle}
-              options={TECHTRANSFER_FILTER}
-              layerColor={'#4e5ff8'}
-              textColor={COLORS.neutral['100']}
-            />
-            <FlatList
-              scrollEnabled={false}
-              data={item}
-              renderItem={renderTechItem}
-              style={styles.lisTechContainer}
-              showsVerticalScrollIndicator={false}
-            />
+            <View style={styles.temperatureInfo}>
+              <Text style={styles.tempLabel}>Temperature</Text>
+              <View style={styles.tempRange}>
+                <Text style={styles.minTemp}>
+                  {(item as unknown as ModifyMarWeatherType).AT.mn}°C
+                </Text>
+                <Text style={styles.tempDivider}>to</Text>
+                <Text style={styles.maxTemp}>
+                  {(item as unknown as ModifyMarWeatherType).AT.mx}°C
+                </Text>
+              </View>
+            </View>
+
+            <WeatherConditionDisplay weatherData={item} />
           </View>
-        );
-      }
+        </View>
+      );
+    }
 
-      return <></>;
-    },
-    [techFilter],
-  );
+    if (title === SECTION_HEADER.TECH) {
+      return (
+        <View style={styles.baseSectionContain}>
+          <SegmentButtonRow
+            incompatibleSpace={56}
+            style={styles.segmentStyle}
+            options={TECHTRANSFER_FILTER}
+            layerColor={'#4e5ff8'}
+            textColor={COLORS.neutral['100']}
+          />
+          <FlatList
+            scrollEnabled={false}
+            data={item}
+            renderItem={renderTechItem}
+            style={styles.lisTechContainer}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+      );
+    }
+
+    return <></>;
+  }, []);
 
   return (
     <Animated.View
@@ -291,6 +407,12 @@ export default () => {
 };
 
 const styles = StyleSheet.create({
+  flex1: {
+    flex: 1,
+  },
+  marginBottom12: {
+    marginBottom: 12,
+  },
   container: {
     flex: 1,
     backgroundColor: THEME_COLORS.background,
@@ -506,5 +628,65 @@ const styles = StyleSheet.create({
   techItemImage: {
     width: 100,
     height: '100%',
+  },
+  solNumber: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 2,
+  },
+  earthDate: {
+    fontSize: 14,
+    color: '#a0a0b9',
+    marginBottom: 2,
+  },
+  season: {
+    fontSize: 14,
+    color: COLORS.accent['400'],
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  temperatureInfo: {
+    marginTop: 4,
+  },
+  tempLabel: {
+    fontSize: 12,
+    color: '#a0a0b9',
+    marginBottom: 4,
+  },
+  tempRange: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  minTemp: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.primary['200'],
+  },
+  tempDivider: {
+    fontSize: 12,
+    color: '#a0a0b9',
+    marginHorizontal: 6,
+  },
+  maxTemp: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.error['400'],
+  },
+  weatherIcon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  weatherCondition: {
+    fontSize: 12,
+    color: COLORS.accent['400'],
+    marginTop: 4,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  weatherContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
