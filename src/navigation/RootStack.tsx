@@ -12,6 +12,7 @@ import DetailAPODScreen from '../screens/DetailAPODScreen';
 import APODList from '../screens/ListScreens/APODList';
 import WebViewScreen from '../screens/WebViewScreen';
 import LaunchPadTab from '../screens/LaunchPadTab';
+import DetailMarWeatherScreen from '../screens/DetailMarWeatherScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -60,6 +61,10 @@ const RootNativeStack = () => {
           animation: 'slide_from_bottom',
         }}
         component={WebViewScreen}
+      />
+      <Stack.Screen
+        name={ROUTES.DETAIL_MAR_WEATHER_SCREEN}
+        component={DetailMarWeatherScreen}
       />
     </Stack.Navigator>
   );

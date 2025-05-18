@@ -11,6 +11,7 @@ import {
 import {
   Dimensions,
   FlatList,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -55,7 +56,6 @@ const WeatherConditionDisplay = ({
   if (!weatherData) {
     return <View />;
   }
-  // Determine the condition
   const condition = (() => {
     const {HWS, Season} = weatherData;
     if (HWS.av > 15) {
@@ -294,7 +294,7 @@ export default () => {
       navRef.current?.navigate(ROUTES.DETAIL_TECH_SCREEN, {data: item});
     };
     return (
-      <TouchableOpacity
+      <Pressable
         onPress={goToTechDetail}
         style={styles.techItemContainer}>
         <View style={styles.techItemContent}>
@@ -313,7 +313,7 @@ export default () => {
           style={styles.techItemImage}
           resizeMode="cover"
         />
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
@@ -324,8 +324,13 @@ export default () => {
     }
 
     if (title === SECTION_HEADER.MAR_WEATHER) {
+      const nav = () => {
+        navRef.current?.navigate(ROUTES.DETAIL_MAR_WEATHER_SCREEN, {
+          sol: (item as unknown as ModifyMarWeatherType).title,
+        });
+      };
       return (
-        <View style={[styles.baseSectionContain]}>
+        <TouchableOpacity onPress={nav} style={[styles.baseSectionContain]}>
           <View style={[styles.flex1, styles.weatherContent]}>
             <View style={styles.marginBottom12}>
               <Text style={styles.solNumber}>
@@ -356,7 +361,7 @@ export default () => {
 
             <WeatherConditionDisplay weatherData={item} />
           </View>
-        </View>
+        </TouchableOpacity>
       );
     }
 

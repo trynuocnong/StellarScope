@@ -340,3 +340,102 @@ export const SunnySVG = (props: SvgProps) => {
     </Svg>
   );
 };
+
+export const SearchSVG = ({fill = '#FFF', ...props}: SvgProps) => (
+  <Svg preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512" {...props}>
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeMiterlimit={10}
+      strokeWidth={32}
+      d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80z"
+    />
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeMiterlimit={10}
+      strokeWidth={32}
+      d="M232 160a72 72 0 1 0 72 72 72 72 0 0 0-72-72z"
+    />
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeLinecap="round"
+      strokeMiterlimit={10}
+      strokeWidth={32}
+      d="M283.64 283.64 336 336"
+    />
+  </Svg>
+);
+
+export const MoonSVG = ({fill = '#r000', ...props}: SvgProps) => (
+  <Svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet" {...props}>
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={32}
+      d="M160 136c0-30.62 4.51-61.61 16-88C99.57 81.27 48 159.32 48 248c0 119.29 96.71 216 216 216 88.68 0 166.73-51.57 200-128-26.39 11.49-57.38 16-88 16-119.29 0-216-96.71-216-216z"
+    />
+  </Svg>
+);
+
+export const SpeedometerSVG = ({fill = '#fff', ...props}: SvgProps) => (
+  <Svg preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512" {...props}>
+    <Path d="m326.1 231.9-47.5 75.5a31 31 0 0 1-7 7 30.11 30.11 0 0 1-35-49l75.5-47.5a10.23 10.23 0 0 1 11.7 0 10.06 10.06 0 0 1 2.3 14z" />
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={32}
+      d="M256 64C132.3 64 32 164.2 32 287.9a223.18 223.18 0 0 0 56.3 148.5c1.1 1.2 2.1 2.4 3.2 3.5a25.19 25.19 0 0 0 37.1-.1 173.13 173.13 0 0 1 254.8 0 25.19 25.19 0 0 0 37.1.1l3.2-3.5A223.18 223.18 0 0 0 480 287.9C480 164.2 379.7 64 256 64z"
+    />
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeLinecap="round"
+      strokeMiterlimit={10}
+      strokeWidth={32}
+      d="M256 128v32m160 128h-32m-256 0H96m69.49-90.51-22.63-22.63m203.65 22.63 22.63-22.63"
+    />
+  </Svg>
+);
+
+export const CompassSVG = ({fill = '#fff', ...props}: SvgProps) => (
+  <Svg preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512" {...props}>
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeMiterlimit={10}
+      strokeWidth={32}
+      d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z"
+    />
+    <Path d="m350.67 150.93-117.2 46.88a64 64 0 0 0-35.66 35.66l-46.88 117.2a8 8 0 0 0 10.4 10.4l117.2-46.88a64 64 0 0 0 35.66-35.66l46.88-117.2a8 8 0 0 0-10.4-10.4zM256 280a24 24 0 1 1 24-24 24 24 0 0 1-24 24z" />
+  </Svg>
+);
+
+export const AlertCircleSVG = ({fill = '#000', ...props}: SvgProps) => (
+  <Svg
+    preserveAspectRatio="xMidYMid meet"
+    viewBox="0 0 512 512"
+    {...props}>
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeMiterlimit={10}
+      strokeWidth={32}
+      d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z"
+    />
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={32}
+      d="M250.26 166.05 256 288l5.73-121.95a5.74 5.74 0 0 0-5.79-6h0a5.74 5.74 0 0 0-5.68 6z"
+    />
+    <Path d="M256 367.91a20 20 0 1 1 20-20 20 20 0 0 1-20 20z" />
+  </Svg>
+);
