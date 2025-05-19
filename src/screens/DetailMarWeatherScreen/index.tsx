@@ -2,6 +2,7 @@ import React, {useCallback, useMemo, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -59,6 +60,8 @@ export default () => {
     data: weather,
     error,
     isLoading,
+    isFetching,
+    refetch,
   } = useQuery({
     queryKey: ['weather'],
     queryFn: fetchMarWeather,
@@ -135,6 +138,9 @@ export default () => {
         </View>
       ) : weather ? (
         <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={isFetching} onRefresh={refetch} />
+          }
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}>
