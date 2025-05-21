@@ -1,5 +1,13 @@
 import {BASE_PARAMS} from './index.ts';
 
+export interface WindDirectionSpec {
+  compass_degrees: number;
+  compass_point: string;
+  compass_right: number;
+  compass_up: number;
+  ct: number;
+}
+
 export interface MarWeatherSpec {
   AT: {
     av: number;
@@ -26,20 +34,8 @@ export interface MarWeatherSpec {
   Season: string;
   Southern_season: string;
   WD: {
-    [direction: string]: {
-      compass_degrees: number;
-      compass_point: string;
-      compass_right: number;
-      compass_up: number;
-      ct: number;
-    };
-    most_common: {
-      compass_degrees: number;
-      compass_point: string;
-      compass_right: number;
-      compass_up: number;
-      ct: number;
-    };
+    [direction: string]: WindDirectionSpec;
+    most_common: WindDirectionSpec;
   };
 }
 

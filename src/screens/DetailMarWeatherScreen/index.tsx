@@ -1,6 +1,7 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
   RefreshControl,
   ScrollView,
@@ -28,12 +29,12 @@ import {API_KEY} from '@env';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {PARAMS} from '../../navigation';
 import moment from 'moment';
-import {baseUV, conditionConfig} from './mock.tsx';
+import {conditionConfig} from './mock.tsx';
+import {calculateMarsUVIndexFromData} from './utils.ts';
+import MarsDisplayChart from './components/MarsDisplayChart.tsx';
 
-const estimateUVIndex = (season: string, isDustStorm: boolean): number => {
-  return isDustStorm ? baseUV[season] - 2 : baseUV[season];
-};
-
+const {width: DIMENSION_WIDTH} = Dimensions.get('window');
+const CHART_SIZE = DIMENSION_WIDTH - 66;
 export default () => {
   const {sol} =
     useRoute<RouteProp<PARAMS, 'DetailedMarWeatherScreen'>>().params;
@@ -220,9 +221,8 @@ export default () => {
                 <SunnySVG height={20} width={20} fill={COLORS.primary['300']} />
                 <Text style={styles.detailLabel}>UV Index</Text>
                 <Text style={styles.detailValue}>
-                  {estimateUVIndex(
-                    (weather[selectedSol] as unknown as MarWeatherSpec).Season,
-                    condition === 'stormy',
+                  {calculateMarsUVIndexFromData(
+                    weather[selectedSol] as unknown as MarWeatherSpec,
                   )}
                 </Text>
               </View>
@@ -287,17 +287,19 @@ export default () => {
               Wind direction and intensity visualization from NASA InSight
             </Text>
 
-            <View style={styles.webViewContainer}>
-              {/*<WebView*/}
-              {/*  source={{uri: WIND_ROSE_CHART_URL}}*/}
-              {/*  style={styles.webView}*/}
-              {/*  onLoadStart={() => setWebViewLoading(true)}*/}
-              {/*  onLoadEnd={() => setWebViewLoading(false)}*/}
-              {/*  scrollEnabled={false}*/}
-              {/*  javaScriptEnabled={true}*/}
-              {/*  domStorageEnabled={true}*/}
-              {/*/>*/}
-            </View>
+            {/*<Canvas style={styles.webViewContainer}>*/}
+            {/*  <Group blendMode="multiply">*/}
+            {/*    <Circle cx={CHART_SIZE * 0.33} cy={CHART_SIZE * 0.33} r={CHART_SIZE * 0.33} color="cyan" />*/}
+            {/*    <Circle cx={CHART_SIZE - CHART_SIZE * 0.33} cy={CHART_SIZE * 0.33} r={CHART_SIZE * 0.33} color="magenta" />*/}
+            {/*    <Circle cx={CHART_SIZE / 2} cy={CHART_SIZE - CHART_SIZE * 0.33} r={CHART_SIZE * 0.33} color="yellow" />*/}
+            {/*  </Group>*/}
+            {/*</Canvas>*/}
+
+            <MarsDisplayChart
+              data={Object.values(weather[selectedSol].WD)}
+              size={DIMENSION_WIDTH}
+              style={styles.webViewContainer}
+            />
 
             <Text style={styles.windRoseDescription}>
               This wind rose shows the wind speed and direction measured by
@@ -549,12 +551,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   webViewContainer: {
-    height: 400,
+    width: CHART_SIZE,
+    height: CHART_SIZE,
     borderRadius: 8,
     overflow: 'hidden',
-    backgroundColor: COLORS.neutral['1000'],
     marginBottom: 12,
-    position: 'relative',
   },
   webView: {
     flex: 1,

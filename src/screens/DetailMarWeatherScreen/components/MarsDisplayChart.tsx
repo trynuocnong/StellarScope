@@ -1,81 +1,58 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
+import {StyleProp, ViewStyle} from 'react-native';
 import {
   Canvas,
   Circle,
   Group,
   Line,
-  Text as SkiaText,
-  vec,
   useFont,
+  vec,
 } from '@shopify/react-native-skia';
+import {WindDirectionSpec} from '../../../utils/DTO';
+import {normalizeWindData} from '../utils.ts';
 
-type WDEntry = {
-  compass_degrees: number;
-  compass_point: string;
-  compass_right: number;
-  compass_up: number;
-  ct: number;
-};
+interface WindRiseChartProps {
+  data: WindDirectionSpec[];
+  size?: number;
+  strokeColor?: string;
+  style?: StyleProp<ViewStyle>;
+}
 
-type WDProps = {
-  WD: Record<string, WDEntry>;
-};
+const WindRoseChart = ({
+  data,
+  style,
+  size = 300,
+  strokeColor = '#29b6f6',
+}: WindRiseChartProps) => {
+  const radius = size / 2;
+  const center = vec(radius, radius);
+  const strokeWidth = 2;
 
-const WindRoseChartSkia: React.FC<WDProps> = ({ WD }) => {
-  const data = Object.entries(WD)
-    .filter(([key]) => !isNaN(Number(key)))
-    .map(([_, val]) => val);
+  const normalized = normalizeWindData(data);
 
-  const maxCt = Math.max(...data.map((d) => d.ct));
-  const { width } = Dimensions.get('window');
-  const size = width - 40;
-  const center = size / 2;
-  const radius = center - 20;
-
-  const scale = (ct: number) => (ct / maxCt) * radius;
-  const font = useFont(require('./../../../assets/font/Roboto_Condensed-Medium.ttf'), 12);
 
   return (
-    <Canvas style={{ width: size, height: size }}>
-      <Group transform={[{ translateX: center }, { translateY: center }]}>
-        {/* Grid Circles */}
-        {[0.25, 0.5, 0.75, 1].map((f, i) => (
-          <Circle
-            key={i}
-            cx={0}
-            cy={0}
-            r={radius * f}
-            color="#ddd"
-            style="stroke"
-            strokeWidth={1}
-          />
-        ))}
+    <Canvas style={style}>
+      {/* Background circle */}
+      <Circle cx={center.x} cy={center.y} r={radius - 5} color="#eee" />
 
-        {/* Spokes + Labels */}
-        {data.map((entry, idx) => {
-          const len = scale(entry.ct);
-          const x = entry.compass_right * len;
-          const y = -entry.compass_up * len;
-          const labelX = entry.compass_right * (radius + 10);
-          const labelY = -entry.compass_up * (radius + 10);
+      {/* Wind lines */}
+      <Group>
+        {normalized.map((entry, index) => {
+          const angleRad = (entry.compass_degrees * Math.PI) / 180;
+          const length = radius * entry.ct;
+
+          const x = center.x + length * Math.cos(angleRad);
+          const y = center.y + length * Math.sin(angleRad);
 
           return (
-            <Group key={idx}>
-              <Line
-                p1={vec(0, 0)}
-                p2={vec(x, y)}
-                color="#3399ff"
-                strokeWidth={4}
-              />
-              <SkiaText
-                x={labelX}
-                y={labelY}
-                text={entry.compass_point}
-                color="black"
-                font={font}
-              />
-            </Group>
+            <Line
+              key={index}
+              p1={center}
+              p2={vec(x, y)}
+              color={strokeColor}
+              strokeWidth={strokeWidth}
+            />
           );
         })}
       </Group>
@@ -83,4 +60,4 @@ const WindRoseChartSkia: React.FC<WDProps> = ({ WD }) => {
   );
 };
 
-export default WindRoseChartSkia;
+export default WindRoseChart;
