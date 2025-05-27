@@ -6,17 +6,8 @@ import {
   EarthImageRes,
   MarWeatherReq,
   MarWeatherRes,
-  MarWeatherSpec,
 } from '../../utils/DTO';
-import {
-  Dimensions,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import Animated, {
   LinearTransition,
   useAnimatedScrollHandler,
@@ -27,83 +18,29 @@ import Animated, {
 } from 'react-native-reanimated';
 import DynamicImage from '../../components/DynamicImage.tsx';
 import {COLORS, THEME_COLORS} from '../../utils/resources/colors.ts';
-import {featureList, SECTION_HEADER, TECHTRANSFER_FILTER} from './mock.ts';
+import {featureList, SECTION_HEADER, TECH_CONDITION, TECHTRANSFER_FILTER} from './mock.tsx';
 import AxiosInstance from '../../helper/AxiosInstance.ts';
 import {API_ENDPOINT, convertAPI} from '../../utils/APIUtils.ts';
 import {baseAPIParams} from '../../navigation/RootApp.tsx';
-import {useQueries, useQuery} from '@tanstack/react-query';
+import {
+  DefaultError,
+  useQueries,
+  useQuery,
+  UseQueryResult,
+} from '@tanstack/react-query';
 import {RePressable, ReSectionList} from '../../../App.tsx';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
 import {KeyValue, navRef, ROUTES} from '../../navigation';
 import EarthCarousel from './components/EarthCarousel.tsx';
-import SegmentButtonRow from '../../components/SegmentButtonRow.tsx';
 import {API_KEY} from '@env';
 import {ModifyMarWeatherType} from './type.ts';
-import moment from 'moment';
-import {CloudSVG, SunnySVG, ThunderStormSVG} from '../../assets/svg';
+import MarsWeather from './components/MarsWeather.tsx';
+import TechTransfer from './components/TechTransfer.tsx';
 
 const WIDTH = Dimensions.get('screen').width;
 const EARTH_IMAGE_HEIGHT = WIDTH * 0.6;
 const EARTH_IMAGE_WIDTH = WIDTH - 24 - 32;
 const ACTION_BOARD_HEIGHT = 127;
-
-const WeatherConditionDisplay = ({
-  weatherData,
-}: {
-  weatherData?: MarWeatherSpec;
-}) => {
-  if (!weatherData) {
-    return <View />;
-  }
-  const condition = (() => {
-    const {HWS, Season} = weatherData;
-    if (HWS.av > 15) {
-      return 'stormy';
-    }
-    if (HWS.av > 8) {
-      return 'dusty';
-    }
-    if (Season === 'summer' && HWS.av > 5) {
-      return 'dusty';
-    }
-    return 'sunny';
-  })();
-
-  const conditionConfig = {
-    sunny: {
-      icon: <SunnySVG width={64} height={64} fill="#FFA500" />,
-      label: 'Sunny',
-      color: '#FFD700',
-      description: 'Clear skies',
-    },
-    dusty: {
-      icon: <CloudSVG width={64} height={64} fill="#A0522D" />,
-      label: 'Dusty',
-      color: '#D2B48C',
-      description: 'Light dust',
-    },
-    stormy: {
-      icon: <ThunderStormSVG width={64} height={64} fill="#800000" />,
-      label: 'Dust Storm',
-      color: '#8B0000',
-      description: 'Severe dust storm',
-    },
-  };
-
-  const currentConfig = conditionConfig[condition];
-
-  return (
-    <View style={styles.weatherIcon}>
-      {currentConfig.icon}
-      <View>
-        <Text style={[styles.weatherCondition, {color: currentConfig.color}]}>
-          {currentConfig.label}
-        </Text>
-      </View>
-    </View>
-  );
-};
 
 const fetchAPOD = async (): Promise<APODRes> => {
   const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.APOD), {
@@ -112,9 +49,10 @@ const fetchAPOD = async (): Promise<APODRes> => {
   return data;
 };
 
-const fetchTech = async (): Promise<string[][]> => {
+const fetchTech = async (condition: KeyValue): Promise<string[][]> => {
+  let path: string = TECH_CONDITION[condition.value as string];
   const {data} = await AxiosInstance.get(
-    convertAPI(API_ENDPOINT.TECH_TRANSFER.PATENT),
+    convertAPI(path),
     {
       params: {...baseAPIParams, space: ''},
     },
@@ -180,41 +118,35 @@ export default () => {
   });
 
   const {data: apod} = useQuery<APODRes>({
-    queryKey: ['apod'],
+    queryKey: [SECTION_HEADER.APOD],
     queryFn: fetchAPOD,
   });
 
   const result = useQueries({
     queries: [
-      {queryKey: ['earthImage', 1], queryFn: fetchEarthImage},
-      {queryKey: ['mar_weather', 2], queryFn: fetchMarsWeather},
-      {queryKey: ['tech', 3], queryFn: fetchTech},
+      {queryKey: [SECTION_HEADER.EARTH, 1], queryFn: fetchEarthImage},
+      {queryKey: [SECTION_HEADER.MAR_WEATHER, 2], queryFn: fetchMarsWeather},
+      {
+        queryKey: [SECTION_HEADER.TECH, techFilter],
+        queryFn: () => fetchTech(techFilter),
+      },
     ],
   });
 
   const listData = useMemo(() => {
-    const isComplete = result.every(it => it.isSuccess);
-    if (!isComplete) {
-      return [];
-    }
-    return result.map((item, index) => {
-      let title;
-      switch (index) {
-        case 0:
-          title = SECTION_HEADER.EARTH;
-          break;
-        case 1:
-          title = SECTION_HEADER.MAR_WEATHER;
-          break;
-        case 2:
-          title = SECTION_HEADER.TECH;
-          break;
-        default:
-          title = 'Unknown';
-      }
-
-      return {title, data: [item.data]};
-    });
+    const [earthImage, mar_weather, tech]: [
+      UseQueryResult<EarthImageRes[], unknown>,
+      UseQueryResult<ModifyMarWeatherType, unknown>,
+      UseQueryResult<string[][], unknown>,
+    ] = result;
+    return [
+      {title: SECTION_HEADER.EARTH, data: [earthImage]},
+      {
+        title: SECTION_HEADER.MAR_WEATHER,
+        data: [mar_weather],
+      },
+      {title: SECTION_HEADER.TECH, data: [tech]},
+    ];
   }, [result]);
 
   const imageAnimatedStyle = useAnimatedStyle(() => {
@@ -288,105 +220,37 @@ export default () => {
       </Animated.View>
     );
   }, [actionButtonContainer, apod, imageAnimatedStyle, padTop]);
-
-  const renderTechItem = ({item}: {item: any}) => {
-    const goToTechDetail = () => {
-      navRef.current?.navigate(ROUTES.DETAIL_TECH_SCREEN, {data: item});
-    };
-    return (
-      <Pressable
-        onPress={goToTechDetail}
-        style={styles.techItemContainer}>
-        <View style={styles.techItemContent}>
-          <Text style={styles.techItemTitle} numberOfLines={2}>
-            {item[2]}
-          </Text>
-          <Text style={styles.techItemDescription} numberOfLines={3}>
-            {item[3]}
-          </Text>
-          <View style={styles.techItemFooter}>
-            <Text style={styles.learnMoreText}>Learn more</Text>
-          </View>
-        </View>
-        <FastImage
-          source={{uri: item[10]}}
-          style={styles.techItemImage}
-          resizeMode="cover"
-        />
-      </Pressable>
-    );
-  };
-
   const renderItem = useCallback(({item, section}: any) => {
     const {title} = section;
-    if (title === SECTION_HEADER.EARTH) {
-      return <EarthCarousel data={item} />;
-    }
-
-    if (title === SECTION_HEADER.MAR_WEATHER) {
-      const nav = () => {
-        navRef.current?.navigate(ROUTES.DETAIL_MAR_WEATHER_SCREEN, {
-          sol: (item as unknown as ModifyMarWeatherType).title,
-        });
-      };
-      return (
-        <TouchableOpacity onPress={nav} style={[styles.baseSectionContain]}>
-          <View style={[styles.flex1, styles.weatherContent]}>
-            <View style={styles.marginBottom12}>
-              <Text style={styles.solNumber}>
-                Sol {(item as unknown as ModifyMarWeatherType).title}
-              </Text>
-              <Text style={styles.earthDate}>
-                {moment(
-                  (item as unknown as ModifyMarWeatherType).Last_UTC,
-                ).format('DD/MM/YYYY')}
-              </Text>
-              <Text style={styles.season}>
-                {(item as unknown as ModifyMarWeatherType).Season}
-              </Text>
-            </View>
-
-            <View style={styles.temperatureInfo}>
-              <Text style={styles.tempLabel}>Temperature</Text>
-              <View style={styles.tempRange}>
-                <Text style={styles.minTemp}>
-                  {(item as unknown as ModifyMarWeatherType).AT.mn}°C
-                </Text>
-                <Text style={styles.tempDivider}>to</Text>
-                <Text style={styles.maxTemp}>
-                  {(item as unknown as ModifyMarWeatherType).AT.mx}°C
-                </Text>
-              </View>
-            </View>
-
-            <WeatherConditionDisplay weatherData={item} />
-          </View>
-        </TouchableOpacity>
-      );
-    }
-
-    if (title === SECTION_HEADER.TECH) {
-      return (
-        <View style={styles.baseSectionContain}>
-          <SegmentButtonRow
-            incompatibleSpace={56}
-            style={styles.segmentStyle}
+    switch (title) {
+      case SECTION_HEADER.EARTH: {
+        const earthItem = item as UseQueryResult<EarthImageRes[], DefaultError>;
+        const refreshEarthImage = () => earthItem.refetch();
+        return <EarthCarousel data={earthItem} refresh={refreshEarthImage} />;
+      }
+      case SECTION_HEADER.MAR_WEATHER: {
+        const weatherMars = item as UseQueryResult<
+          ModifyMarWeatherType,
+          DefaultError
+        >;
+        return <MarsWeather data={weatherMars} />;
+      }
+      case SECTION_HEADER.TECH: {
+        const techItem = item as UseQueryResult<string[][], DefaultError>;
+        const select = (keyValue: KeyValue) => {
+          setTechFilter(keyValue);
+        };
+        return (
+          <TechTransfer
             options={TECHTRANSFER_FILTER}
-            layerColor={'#4e5ff8'}
-            textColor={COLORS.neutral['100']}
+            data={techItem}
+            onSelect={select}
           />
-          <FlatList
-            scrollEnabled={false}
-            data={item}
-            renderItem={renderTechItem}
-            style={styles.lisTechContainer}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
-      );
+        );
+      }
+      default:
+        return <></>;
     }
-
-    return <></>;
   }, []);
 
   return (
