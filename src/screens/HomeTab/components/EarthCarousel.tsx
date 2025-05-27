@@ -74,6 +74,7 @@ const EarthCarousel = ({style, data}: EarthCarouselProps) => {
       const space = Math.abs(roundIndex - item);
       const distance = space > 0.4;
       if (roundIndex !== curIndex.current && !distance) {
+        curIndex.current = roundIndex;
         setItemIndex(roundIndex);
       }
     },

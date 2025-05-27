@@ -11,6 +11,7 @@ export const API_ENDPOINT = {
   APOD: 'planetary/apod',
   MSRP: 'mars-photos/api/v1/rovers/curiosity/photos',
   EARTH_IMAGE: 'EPIC/api/natural/images',
+  MARS_WEATHER: 'insight_weather/',
   ASTEROIDS_NEOWS: {
     NEO_FEED: 'neo/rest/v1/feed',
     NEO_BROWSE: 'neo/rest/v1/neo/browse/',

@@ -3,7 +3,6 @@ import {
   AppState,
   InteractionManager,
   Linking,
-  Pressable,
   StyleSheet,
   Text,
   View,
@@ -14,12 +13,8 @@ import {navRef, PARAMS} from '../../navigation';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import DynamicImage from '../../components/DynamicImage.tsx';
 import Animated, {
-  FadeIn,
-  FadeOut,
   LinearTransition,
-  SlideInDown,
   SlideInUp,
-  SlideOutDown,
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
@@ -29,8 +24,6 @@ import {
   hasAndroidPermission,
   savePicture,
 } from '../../utils/FuncUtils.ts';
-import {useZustandLocalStore} from '../../navigation/RootApp.tsx';
-import {Portal} from 'react-native-portalize';
 import Toast from 'react-native-toast-message';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
@@ -38,10 +31,10 @@ const DetailAPODScreen = () => {
   const canPress = useRef(true);
   const [disable, setDisable] = useState(false);
   const [display, setDisplay] = useState(false);
-  const permission = useZustandLocalStore(state => state.imagePermission);
-  const updatePermission = useZustandLocalStore(
-    state => state.onUpdatePermission,
-  );
+  // const permission = useZustandLocalStore(state => state.imagePermission);
+  // const updatePermission = useZustandLocalStore(
+  //   state => state.onUpdatePermission,
+  // );
   const navigation = useNavigation();
   const goBack = () => {
     navRef.current?.goBack();
@@ -60,9 +53,9 @@ const DetailAPODScreen = () => {
       async nextAppState => {
         if (nextAppState === 'active') {
           const latestPermission = await hasAndroidPermission();
-          if (latestPermission !== permission) {
-            updatePermission(latestPermission);
-          }
+          // if (latestPermission !== permission) {
+          //   updatePermission(latestPermission);
+          // }
         }
       },
     );
@@ -70,7 +63,7 @@ const DetailAPODScreen = () => {
     return () => {
       subscription.remove();
     };
-  }, [permission, updatePermission]);
+  }, []);
 
   useEffect(() => {
     return navigation.addListener('beforeRemove', event => {
@@ -83,10 +76,10 @@ const DetailAPODScreen = () => {
 
   const {data} = useRoute<RouteProp<PARAMS, 'DetailedAPODScreen'>>().params;
   const downloadImage = () => {
-    if (!permission) {
-      setDisplay(true);
-      return;
-    }
+    // if (!permission) {
+    //   setDisplay(true);
+    //   return;
+    // }
     if (canPress.current) {
       canPress.current = false;
       setDisable(true);
@@ -94,9 +87,9 @@ const DetailAPODScreen = () => {
         savePicture(data.url).then((value: DownloadsState) => {
           canPress.current = true;
           setDisable(false);
-          if (permission !== value.havePermission) {
-            updatePermission(value.havePermission);
-          }
+          // if (permission !== value.havePermission) {
+          //   updatePermission(value.havePermission);
+          // }
 
           if (!value.havePermission) {
             setDisplay(true);
@@ -182,42 +175,42 @@ const DetailAPODScreen = () => {
         </Animated.Text>
       </RePressable>
 
-      {!permission && display ? (
-        <Portal>
-          <Animated.View
-            entering={FadeIn}
-            exiting={FadeOut}
-            style={[styles.container, styles.portalLayout]}>
-            <Pressable onPress={goBack} style={styles.backgroundLayer} />
-            <Animated.View
-              style={styles.modalContainer}
-              entering={SlideInDown.delay(200)}
-              exiting={SlideOutDown}>
-              <View style={styles.modalRow}>
-                <View style={styles.dialogPlaceholderRow}>
-                  <View style={styles.appLogo} />
-                  <View style={styles.dialogItemRow}>
-                    <Text style={styles.appName}>StellarScope</Text>
-                    <View style={styles.emptySub} />
-                  </View>
-                </View>
-                <View style={styles.switchContain}>
-                  <View style={styles.thumb} />
-                </View>
-              </View>
+      {/*{!permission && display ? (*/}
+      {/*  <Portal>*/}
+      {/*    <Animated.View*/}
+      {/*      entering={FadeIn}*/}
+      {/*      exiting={FadeOut}*/}
+      {/*      style={[styles.container, styles.portalLayout]}>*/}
+      {/*      <Pressable onPress={goBack} style={styles.backgroundLayer} />*/}
+      {/*      <Animated.View*/}
+      {/*        style={styles.modalContainer}*/}
+      {/*        entering={SlideInDown.delay(200)}*/}
+      {/*        exiting={SlideOutDown}>*/}
+      {/*        <View style={styles.modalRow}>*/}
+      {/*          <View style={styles.dialogPlaceholderRow}>*/}
+      {/*            <View style={styles.appLogo} />*/}
+      {/*            <View style={styles.dialogItemRow}>*/}
+      {/*              <Text style={styles.appName}>StellarScope</Text>*/}
+      {/*              <View style={styles.emptySub} />*/}
+      {/*            </View>*/}
+      {/*          </View>*/}
+      {/*          <View style={styles.switchContain}>*/}
+      {/*            <View style={styles.thumb} />*/}
+      {/*          </View>*/}
+      {/*        </View>*/}
 
-              <Text style={styles.dialogTitle}>
-                Please update permission to continue this action
-              </Text>
-              <Text onPress={toSetting} style={styles.dialogText}>
-                Go to setting
-              </Text>
-            </Animated.View>
-          </Animated.View>
-        </Portal>
-      ) : (
-        <></>
-      )}
+      {/*        <Text style={styles.dialogTitle}>*/}
+      {/*          Please update permission to continue this action*/}
+      {/*        </Text>*/}
+      {/*        <Text onPress={toSetting} style={styles.dialogText}>*/}
+      {/*          Go to setting*/}
+      {/*        </Text>*/}
+      {/*      </Animated.View>*/}
+      {/*    </Animated.View>*/}
+      {/*  </Portal>*/}
+      {/*) : (*/}
+      {/*  <></>*/}
+      {/*)}*/}
     </Animated.View>
   );
 };

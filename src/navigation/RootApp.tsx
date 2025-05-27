@@ -26,40 +26,40 @@ export const baseAPIParams = {
   api_key: API_KEY,
 };
 
-export const useZustandStore = create<ZustandStore>()(
-  devtools(set => ({
-    loading: false,
-    globalError: undefined,
-    onLoad: (stateBoolean: boolean) => set(() => ({loading: stateBoolean})),
-    updateError: (error: Error | undefined) =>
-      set(() => ({globalError: error})),
-  })),
-);
+// export const useZustandStore = create<ZustandStore>()(
+//   devtools(set => ({
+//     loading: false,
+//     globalError: undefined,
+//     onLoad: (stateBoolean: boolean) => set(() => ({loading: stateBoolean})),
+//     updateError: (error: Error | undefined) =>
+//       set(() => ({globalError: error})),
+//   })),
+// );
 
-export const useZustandLocalStore = create<ZustandLocalStore>()(
-  devtools(
-    persist(
-      set => ({
-        useName: '',
-        avatar: '',
-        firstTime: false,
-        imagePermission: false,
-        onUpdatePermission: (state: boolean) => set(() => ({imagePermission: state})),
-        updateFirstTime: (value: boolean) => set(() => ({firstTime: value})),
-        updateUserName: (value: string) => set(() => ({useName: value})),
-        updateUserAvatar: (value: string) => set(() => ({avatar: value})),
-      }),
-      {
-        name: 'local-info',
-        storage: createJSONStorage(() => ({
-          getItem: key => mmkvStorage.getString(key) ?? null,
-          setItem: (key, value) => mmkvStorage.set(key, value),
-          removeItem: key => mmkvStorage.delete(key),
-        })),
-      },
-    ),
-  ),
-);
+// export const useZustandLocalStore = create<ZustandLocalStore>()(
+//   devtools(
+//     persist(
+//       set => ({
+//         useName: '',
+//         avatar: '',
+//         firstTime: false,
+//         imagePermission: false,
+//         onUpdatePermission: (state: boolean) => set(() => ({imagePermission: state})),
+//         updateFirstTime: (value: boolean) => set(() => ({firstTime: value})),
+//         updateUserName: (value: string) => set(() => ({useName: value})),
+//         updateUserAvatar: (value: string) => set(() => ({avatar: value})),
+//       }),
+//       {
+//         name: 'local-info',
+//         storage: createJSONStorage(() => ({
+//           getItem: key => mmkvStorage.getString(key) ?? null,
+//           setItem: (key, value) => mmkvStorage.set(key, value),
+//           removeItem: key => mmkvStorage.delete(key),
+//         })),
+//       },
+//     ),
+//   ),
+// );
 export default function () {
 
   return (
