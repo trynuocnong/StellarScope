@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {TECHTRANSFER_FILTER} from '../mock.ts';
+import {TECHTRANSFER_FILTER} from '../mock.tsx';
 import {TechFilterRowProps} from '../../ListScreens/type.ts';
 
 const TechFilterRow = ({

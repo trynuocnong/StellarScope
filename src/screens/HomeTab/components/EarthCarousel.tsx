@@ -15,6 +15,8 @@ import {EarthImageRes} from '../../../utils/DTO';
 import {getImage} from '../../../utils/APIUtils.ts';
 import {THEME_COLORS} from '../../../utils/resources/colors.ts';
 import ImagePrefix from '../../../components/ImagePrefix.tsx';
+import {DefaultError, UseQueryResult} from '@tanstack/react-query';
+import {EarthCarouselProps} from '../type.ts';
 
 const WIDTH = Dimensions.get('screen').width;
 const EARTH_IMAGE_HEIGHT = WIDTH * 0.6;
@@ -42,29 +44,29 @@ const renderEarthImage = ({item}: ListRenderItemInfo<EarthImageRes>) => {
   );
 };
 
-const calItemLayout = (_: ArrayLike<EarthImageRes> | null | undefined, index: number) => ({
+const calItemLayout = (
+  _: ArrayLike<EarthImageRes> | null | undefined,
+  index: number,
+) => ({
   length: 16,
   offset: 16 * index,
   index,
 });
 
-export type EarthCarouselProps = {
-  data: EarthImageRes[];
-  style?: StyleProp<ViewStyle>;
-};
-
-const EarthCarousel = ({style, data}: EarthCarouselProps) => {
+const EarthCarousel = ({style, data, refresh}: EarthCarouselProps) => {
   const [itemIndex, setItemIndex] = React.useState(0);
   const curIndex = React.useRef(itemIndex);
   const indicatorRef = React.useRef<FlatList>(null);
 
   React.useEffect(() => {
-    indicatorRef.current?.scrollToIndex({
-      index: itemIndex,
-      animated: true,
-      viewPosition: 0.5,
-    });
-  }, [itemIndex]);
+    if (data) {
+      indicatorRef.current?.scrollToIndex({
+        index: itemIndex,
+        animated: true,
+        viewPosition: 0.5,
+      });
+    }
+  }, [data, itemIndex]);
 
   const onScroll = React.useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -81,26 +83,29 @@ const EarthCarousel = ({style, data}: EarthCarouselProps) => {
     [],
   );
 
-  const renderItemIndicator = useCallback(({index}: ListRenderItemInfo<EarthImageRes>) => {
-    return (
-      <View
-        key={index}
-        style={[
-          styles.indicator,
-          index === itemIndex
-            ? styles.indicatorActive
-            : styles.indicatorInactive,
-        ]}
-      />
-    );
-  }, [itemIndex]);
+  const renderItemIndicator = useCallback(
+    ({index}: ListRenderItemInfo<EarthImageRes>) => {
+      return (
+        <View
+          key={index}
+          style={[
+            styles.indicator,
+            index === itemIndex
+              ? styles.indicatorActive
+              : styles.indicatorInactive,
+          ]}
+        />
+      );
+    },
+    [itemIndex],
+  );
 
   return (
     <View style={[styles.baseSectionContain, style]}>
       <View style={styles.sectionEarthImageContainer}>
         <FlatList
           horizontal
-          data={data}
+          data={data.data ?? []}
           maxToRenderPerBatch={2}
           pagingEnabled={true}
           renderItem={renderEarthImage}
@@ -114,7 +119,7 @@ const EarthCarousel = ({style, data}: EarthCarouselProps) => {
             horizontal
             getItemLayout={calItemLayout}
             showsHorizontalScrollIndicator={false}
-            data={data}
+            data={data.data ?? []}
             renderItem={renderItemIndicator}
           />
         </View>
