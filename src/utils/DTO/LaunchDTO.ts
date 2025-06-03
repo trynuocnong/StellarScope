@@ -51,6 +51,6 @@ export interface LaunchResults
 export interface LaunchResponse {
   results: LaunchResults[];
   count: number;
-  next: any;
-  previous: any;
+  next: string | null;
+  previous: string | null;
 }

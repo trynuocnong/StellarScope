@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -10,96 +10,60 @@ import {
 } from 'react-native';
 import {COLORS, THEME_COLORS} from '../../utils/resources/colors.ts';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {LaunchResults} from '../../utils/DTO';
-import {LaunchCountdown} from './components/LaunchCountDown.tsx';
+import {LaunchResponse, LaunchResults} from '../../utils/DTO';
 import {LaunchCalendar} from './components/LaunchCalendar.tsx';
 import {LaunchHistory} from './components/LaunchHistory.tsx';
-import {LAUNCH_URL} from '@env';
 import AxiosInstance from '../../helper/AxiosInstance.ts';
-import {convertLAUNCHAPI} from '../../utils/APIUtils.ts';
+import {convertLAUNCHAPI, LAUNCH_API_ENDPOINT} from '../../utils/APIUtils.ts';
+import {KEY_QUERIES, mockLaunchResponse} from './mock.tsx';
+import {useQueries, UseQueryResult} from '@tanstack/react-query';
+
+const fetchUpcomingLaunches = async (): Promise<LaunchResponse> => {
+  const params = {limit: 10};
+  try {
+    const {data} = await AxiosInstance.get<LaunchResponse>(convertLAUNCHAPI(LAUNCH_API_ENDPOINT.LAUNCHES.UPCOMING), {
+      params: params,
+    });
+    return data;
+  } catch (apiError) {
+    console.log(apiError);
+    return mockLaunchResponse;
+  }
+};
+
+// Fetch past launches
+const fetchPastLaunches = async (): Promise<LaunchResponse> => {
+  const params = {limit: 10};
+  try {
+    const {data} = await AxiosInstance.get<LaunchResponse>(convertLAUNCHAPI(LAUNCH_API_ENDPOINT.LAUNCHES.UPCOMING), {
+      params: params,
+    });
+    return data;
+  } catch (apiError) {
+    return mockLaunchResponse;
+  }
+};
 
 export default () => {
-  const [upcomingLaunches, setUpcomingLaunches] = useState<LaunchResults[]>([]);
-  const [pastLaunches, setPastLaunches] = useState<LaunchResults[]>([]);
   const [selectedLaunch, setSelectedLaunch] = useState<LaunchResults | null>(
     null,
   );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'history'>(
     'upcoming',
   );
 
-  useEffect(() => {
-    loadLaunchData();
-  }, []);
+  const result = useQueries({
+    queries: [
+      {queryKey: [KEY_QUERIES.UPCOMING, 1], queryFn: fetchUpcomingLaunches},
+      {queryKey: [KEY_QUERIES.PAST, 2], queryFn: fetchPastLaunches},
+    ],
+  });
 
-  // Fetch upcoming launches
-  const fetchUpcomingLaunches = async () => {
-    const endpoint = 'launches/upcoming';
-    const params = {limit: 10};
-    try {
-      // Try to fetch from the actual API
-        console.log(convertLAUNCHAPI(endpoint));
-        const {data} = await AxiosInstance.get(convertLAUNCHAPI(endpoint), {params: params});
-        console.log(data);
-        return [];
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  // Fetch past launches
-  const fetchPastLaunches = async () => {
-    const endpoint = '/launch/previous';
-    const params = {limit: 10};
-
-    try {
-      // Try to fetch from the actual API
-      try {
-        const queryString = new URLSearchParams(params).toString();
-        const response = await fetch(`${LAUNCH_URL}${endpoint}?${queryString}`);
-        const data = await response.json();
-        console.log(data);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch past launches');
-        }
-
-        return data;
-      } catch (apiError) {
-        console.log(apiError);
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const loadLaunchData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Fetch upcoming launches
-      const upcomingData = await fetchUpcomingLaunches();
-      setUpcomingLaunches(upcomingData.results || []);
-
-      // Set the first upcoming launch as selected by default
-      if (upcomingData.results && upcomingData.results.length > 0) {
-        setSelectedLaunch(upcomingData.results[0]);
-      }
-
-      // Fetch past launches
-      const pastData = await fetchPastLaunches();
-      setPastLaunches(pastData.results || []);
-    } catch (err) {
-      console.error('Error fetching launch data:', err);
-      setError('Could not load launch data. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [upcoming, past]: [
+    UseQueryResult<LaunchResponse, unknown>,
+    UseQueryResult<LaunchResponse, unknown>,
+  ] = result;
 
   const toggleNotifications = () => {
     setNotificationsEnabled(!notificationsEnabled);
@@ -118,10 +82,10 @@ export default () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
         {/* Next Launch Countdown */}
-        {selectedLaunch && !loading && (
+        {upcoming.data && !upcoming.isPending && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Next Launch</Text>
-            <LaunchCountdown launch={selectedLaunch} />
+            {/*<LaunchCountdown launch={selectedLaunch} />*/}
           </View>
         )}
 
@@ -176,26 +140,26 @@ export default () => {
         {/* Tab Content */}
         {activeTab === 'upcoming' ? (
           <LaunchCalendar
-            launches={upcomingLaunches}
+            launches={upcoming.data?.results || []}
             onSelectLaunch={setSelectedLaunch}
-            loading={loading}
+            loading={upcoming.isPending}
           />
-        ) : loading ? (
+        ) : upcoming.isPending ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={COLORS.primary['400']} />
             <Text style={styles.loadingText}>Loading launch history...</Text>
           </View>
         ) : (
-          <LaunchHistory launches={pastLaunches} />
+          <LaunchHistory launches={upcoming.data?.results || []} />
         )}
 
-        {error && (
+        {upcoming.error && (
           <View style={styles.errorContainer}>
             {/*<Ionicons name="alert-circle-outline" size={40} color={COLORS.error['400']} />*/}
-            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.errorText}>{`${upcoming.error}`}</Text>
             <TouchableOpacity
               style={styles.retryButton}
-              onPress={loadLaunchData}>
+              onPress={() => upcoming.refetch}>
               <Text style={styles.retryButtonText}>Retry</Text>
             </TouchableOpacity>
           </View>

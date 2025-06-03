@@ -13,6 +13,13 @@ export const getImage = (date: string, image: string) => {
   return `${NASA_IMAGE_URL}/archive/natural/${year}/${month}/${day}/png/${image}.png`;
 };
 
+export const LAUNCH_API_ENDPOINT = {
+  LAUNCHES: {
+    UPCOMING: 'launches/upcoming',
+    PREVIOUS: 'launches/previous',
+  },
+};
+
 export const NASA_API_ENDPOINT = {
   APOD: 'planetary/apod',
   MSRP: 'mars-photos/api/v1/rovers/curiosity/photos',

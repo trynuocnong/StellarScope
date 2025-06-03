@@ -281,7 +281,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: COLORS.neutral['100'],
     marginRight: 8,
-    animation: 'pulse 1s infinite',
   },
   liveText: {
     fontSize: 16,
