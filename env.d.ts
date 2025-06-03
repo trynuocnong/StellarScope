@@ -1,6 +1,7 @@
 declare module '@env' {
-    export const BASE_URL: string;
-    export const URL_VARIANT: string;
-    export const API_KEY: string;
+    export const NASA_URL: string;
+    export const NASA_IMAGE_URL: string;
+    export const NASA_API_KEY: string;
     export const LAUNCH_URL: string;
+    export const N2YO_API_KEY: string;
 }

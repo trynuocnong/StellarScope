@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "864639348658",
+    "project_id": "stellarscope-aa238",
+    "storage_bucket": "stellarscope-aa238.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:864639348658:android:b876c87164e169850b3eab",
+        "android_client_info": {
+          "package_name": "com.stellarscope"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCN19q20V-x2i9epv9F3qBZ5H4sG557Yo0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

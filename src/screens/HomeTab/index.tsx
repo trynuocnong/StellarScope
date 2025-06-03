@@ -20,7 +20,7 @@ import DynamicImage from '../../components/DynamicImage.tsx';
 import {COLORS, THEME_COLORS} from '../../utils/resources/colors.ts';
 import {featureList, SECTION_HEADER, TECH_CONDITION, TECHTRANSFER_FILTER} from './mock.tsx';
 import AxiosInstance from '../../helper/AxiosInstance.ts';
-import {API_ENDPOINT, convertAPI} from '../../utils/APIUtils.ts';
+import {NASA_API_ENDPOINT, convertNASAAPI} from '../../utils/APIUtils.ts';
 import {baseAPIParams} from '../../navigation/RootApp.tsx';
 import {
   DefaultError,
@@ -32,7 +32,7 @@ import {RePressable, ReSectionList} from '../../../App.tsx';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {KeyValue, navRef, ROUTES} from '../../navigation';
 import EarthCarousel from './components/EarthCarousel.tsx';
-import {API_KEY} from '@env';
+import {NASA_API_KEY} from '@env';
 import {ModifyMarWeatherType} from './type.ts';
 import MarsWeather from './components/MarsWeather.tsx';
 import TechTransfer from './components/TechTransfer.tsx';
@@ -43,7 +43,7 @@ const EARTH_IMAGE_WIDTH = WIDTH - 24 - 32;
 const ACTION_BOARD_HEIGHT = 127;
 
 const fetchAPOD = async (): Promise<APODRes> => {
-  const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.APOD), {
+  const {data} = await AxiosInstance.get(convertNASAAPI(NASA_API_ENDPOINT.APOD), {
     params: baseAPIParams,
   });
   return data;
@@ -52,7 +52,7 @@ const fetchAPOD = async (): Promise<APODRes> => {
 const fetchTech = async (condition: KeyValue): Promise<string[][]> => {
   let path: string = TECH_CONDITION[condition.value as string];
   const {data} = await AxiosInstance.get(
-    convertAPI(path),
+    convertNASAAPI(path),
     {
       params: {...baseAPIParams, space: ''},
     },
@@ -61,7 +61,7 @@ const fetchTech = async (condition: KeyValue): Promise<string[][]> => {
 };
 
 const fetchEarthImage = async (): Promise<EarthImageRes[]> => {
-  const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.EARTH_IMAGE), {
+  const {data} = await AxiosInstance.get(convertNASAAPI(NASA_API_ENDPOINT.EARTH_IMAGE), {
     params: baseAPIParams,
   });
   return data;
@@ -69,12 +69,12 @@ const fetchEarthImage = async (): Promise<EarthImageRes[]> => {
 
 const fetchMarsWeather = async (): Promise<ModifyMarWeatherType> => {
   const params: MarWeatherReq = {
-    api_key: API_KEY,
+    api_key: NASA_API_KEY,
     ver: '1.0',
     feedtype: 'json',
   };
   const {data} = await AxiosInstance.get<MarWeatherRes>(
-    convertAPI(API_ENDPOINT.MARS_WEATHER),
+    convertNASAAPI(NASA_API_ENDPOINT.MARS_WEATHER),
     {
       params: params,
     },

@@ -24,8 +24,8 @@ import {
 import {useQuery} from '@tanstack/react-query';
 import AxiosInstance from '../../helper/AxiosInstance.ts';
 import {MarWeatherReq, MarWeatherRes, MarWeatherSpec} from '../../utils/DTO';
-import {API_ENDPOINT, convertAPI} from '../../utils/APIUtils.ts';
-import {API_KEY} from '@env';
+import {NASA_API_ENDPOINT, convertNASAAPI} from '../../utils/APIUtils.ts';
+import {NASA_API_KEY} from '@env';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {PARAMS} from '../../navigation';
 import moment from 'moment';
@@ -43,12 +43,12 @@ export default () => {
 
   const fetchMarWeather = useCallback(async (): Promise<MarWeatherRes> => {
     const params: MarWeatherReq = {
-      api_key: API_KEY,
+      api_key: NASA_API_KEY,
       ver: '1.0',
       feedtype: 'json',
     };
     const {data} = await AxiosInstance.get<MarWeatherRes>(
-      convertAPI(API_ENDPOINT.MARS_WEATHER),
+      convertNASAAPI(NASA_API_ENDPOINT.MARS_WEATHER),
       {
         params: params,
       },

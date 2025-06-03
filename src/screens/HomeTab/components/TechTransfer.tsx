@@ -36,6 +36,14 @@ const TechTransfer = ({style, data, refresh, options, onSelect}: TechTransferPro
   if (data.isPending) {
     return (
       <View style={styles.baseSectionContain}>
+        <SegmentButtonRow
+          incompatibleSpace={56}
+          style={styles.segmentStyle}
+          options={options}
+          onSelect={onSelect}
+          layerColor={'#4e5ff8'}
+          textColor={COLORS.neutral['100']}
+        />
         <View style={styles.lisTechContainer}>
           <View style={styles.techItemContainer} />
           <View style={styles.techItemContainer} />
@@ -48,6 +56,14 @@ const TechTransfer = ({style, data, refresh, options, onSelect}: TechTransferPro
   if (data.isError) {
     return (
       <View style={[styles.baseSectionContain, styles.alignCenter]}>
+        <SegmentButtonRow
+          incompatibleSpace={56}
+          style={styles.segmentStyle}
+          options={options}
+          onSelect={onSelect}
+          layerColor={'#4e5ff8'}
+          textColor={COLORS.neutral['100']}
+        />
         <Text style={styles.errorText}>Sorry there something wrong with the API</Text>
         <Pressable onPress={refresh} style={styles.reloadButton}>
           <Text style={styles.reloadButtonText}>Reload</Text>

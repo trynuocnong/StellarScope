@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {BASE_URL} from '@env';
+import {NASA_URL} from '@env';
 
 export type ResponseAPI<T> = {
     data: T;
@@ -8,7 +8,7 @@ export type ResponseAPI<T> = {
 }
 
 const AxiosInstance = axios.create({
-    baseURL: BASE_URL,
+    baseURL: NASA_URL,
     timeout: 20000,
     headers: {
         'Content-Type': 'application/json',

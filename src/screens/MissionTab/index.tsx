@@ -69,13 +69,17 @@ export default function () {
   const renderCategories = useCallback(
     (term: KeyValue, index: number) => {
       const onPress = () => {
-        flashRef.current?.scrollToIndex({animated: true, index: 0});
-        InteractionManager.runAfterInteractions(() => {
-          setMissions(undefined);
-          startTransition(() => {
-            setCategory(term);
+        try {
+          flashRef.current?.scrollToIndex({animated: true, index: 0});
+          InteractionManager.runAfterInteractions(() => {
+            setMissions(undefined);
+            startTransition(() => {
+              setCategory(term);
+            });
           });
-        });
+        } catch (error) {
+          console.log(error);
+        }
       };
       const isSelected = term.value === category.value;
       return (
