@@ -14,10 +14,10 @@ export type KeyName<T> = {
 export const ROUTES = {
     // Bottom Tab Routes
     MAIN_BOTTOM_TAB: 'MainBottomTab',
-    HOME_TAB: 'HomeTab',
-    SEARCH_TAB: 'SearchTab',
-    MISSION_TAB: 'MissionTab',
-    LAUNCH_PAD_TAB: 'LaunchPadTab',
+    HOME_TAB: 'Home',
+    SEARCH_TAB: 'Search',
+    MISSION_TAB: 'Mission',
+    LAUNCH_PAD_TAB: 'LaunchPad',
 
     // Stack Routes
     DETAIL_TECH_SCREEN: 'DetailedTech',

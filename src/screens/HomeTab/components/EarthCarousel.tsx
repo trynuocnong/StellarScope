@@ -5,17 +5,14 @@ import {
   ListRenderItemInfo,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  StyleProp,
   StyleSheet,
   Text,
   View,
-  ViewStyle,
 } from 'react-native';
 import {EarthImageRes} from '../../../utils/DTO';
 import {getImage} from '../../../utils/APIUtils.ts';
 import {THEME_COLORS} from '../../../utils/resources/colors.ts';
 import ImagePrefix from '../../../components/ImagePrefix.tsx';
-import {DefaultError, UseQueryResult} from '@tanstack/react-query';
 import {EarthCarouselProps} from '../type.ts';
 
 const WIDTH = Dimensions.get('screen').width;
@@ -59,12 +56,16 @@ const EarthCarousel = ({style, data, refresh}: EarthCarouselProps) => {
   const indicatorRef = React.useRef<FlatList>(null);
 
   React.useEffect(() => {
-    if (data) {
-      indicatorRef.current?.scrollToIndex({
-        index: itemIndex,
-        animated: true,
-        viewPosition: 0.5,
-      });
+    try {
+      if (data.data) {
+        indicatorRef.current?.scrollToIndex({
+          index: itemIndex,
+          animated: true,
+          viewPosition: 0.5,
+        });
+      }
+    } catch (e) {
+      console.error('e', e);
     }
   }, [data, itemIndex]);
 

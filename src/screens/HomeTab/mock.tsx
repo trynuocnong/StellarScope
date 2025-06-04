@@ -2,7 +2,7 @@ import {FeaturesDisplayItemProps} from '../../components/FeatureDisplayItem.tsx'
 import {KeyValue, navRef, ROUTES} from '../../navigation';
 import {CloudSVG, SunnySVG, ThunderStormSVG} from '../../assets/svg';
 import * as React from 'react';
-import {API_ENDPOINT} from '../../utils/APIUtils.ts';
+import {NASA_API_ENDPOINT} from '../../utils/APIUtils.ts';
 
 export const featureList: FeaturesDisplayItemProps[] = [
   {
@@ -89,7 +89,7 @@ export const conditionConfig = {
 };
 
 export const TECH_CONDITION = {
-  [TECHTRANSFER_FILTER[0].value as string]: API_ENDPOINT.TECH_TRANSFER.PATENT,
-  [TECHTRANSFER_FILTER[1].value as string]: API_ENDPOINT.TECH_TRANSFER.SOFTWARE,
-  [TECHTRANSFER_FILTER[2].value as string]: API_ENDPOINT.TECH_TRANSFER.SPIN_OFF,
+  [TECHTRANSFER_FILTER[0].value as string]: NASA_API_ENDPOINT.TECH_TRANSFER.PATENT,
+  [TECHTRANSFER_FILTER[1].value as string]: NASA_API_ENDPOINT.TECH_TRANSFER.SOFTWARE,
+  [TECHTRANSFER_FILTER[2].value as string]: NASA_API_ENDPOINT.TECH_TRANSFER.SPIN_OFF,
 };

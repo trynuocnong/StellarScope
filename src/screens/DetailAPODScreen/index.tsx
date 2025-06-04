@@ -31,10 +31,6 @@ const DetailAPODScreen = () => {
   const canPress = useRef(true);
   const [disable, setDisable] = useState(false);
   const [display, setDisplay] = useState(false);
-  // const permission = useZustandLocalStore(state => state.imagePermission);
-  // const updatePermission = useZustandLocalStore(
-  //   state => state.onUpdatePermission,
-  // );
   const navigation = useNavigation();
   const goBack = () => {
     navRef.current?.goBack();

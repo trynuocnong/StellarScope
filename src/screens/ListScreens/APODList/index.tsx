@@ -17,7 +17,7 @@ import moment from 'moment/moment';
 import {APODFormParams} from '../type.ts';
 import {APODRes} from '../../../utils/DTO';
 import AxiosInstance from '../../../helper/AxiosInstance.ts';
-import {API_ENDPOINT, convertAPI} from '../../../utils/APIUtils.ts';
+import {NASA_API_ENDPOINT, convertNASAAPI} from '../../../utils/APIUtils.ts';
 import {baseAPIParams} from '../../../navigation/RootApp.tsx';
 import CampfireSVG from '../../../assets/svg/campfire.tsx';
 import FormInput from '../../../components/FormInput.tsx';
@@ -31,7 +31,7 @@ const callApi = async (
   count: number = 0,
 ): Promise<APODRes[]> => {
   if (count) {
-    const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.APOD), {
+    const {data} = await AxiosInstance.get(convertNASAAPI(NASA_API_ENDPOINT.APOD), {
       params: {
         ...baseAPIParams,
         count,
@@ -39,7 +39,7 @@ const callApi = async (
     });
     return data;
   }
-  const {data} = await AxiosInstance.get(convertAPI(API_ENDPOINT.APOD), {
+  const {data} = await AxiosInstance.get(convertNASAAPI(NASA_API_ENDPOINT.APOD), {
     params: {
       ...baseAPIParams,
       start_date: startDate,

@@ -1,13 +1,26 @@
-import {BASE_URL, URL_VARIANT} from '@env';
+import {NASA_URL, NASA_IMAGE_URL, LAUNCH_URL} from '@env';
 import AxiosInstance from '../helper/AxiosInstance.ts';
 
-export const convertAPI = (path: string) => BASE_URL.concat(`/${path}`);
-export const getImage = (date: string, image: string) => {
-  const [year, month, day] = date.split(' ')[0].split('-');
-  return `${URL_VARIANT}/archive/natural/${year}/${month}/${day}/png/${image}.png`;
+export const convertNASAAPI = (path: string) => {
+  return new URL(path, NASA_URL).toString();
+};
+export const convertLAUNCHAPI = (path: string) => {
+  return new URL(path, LAUNCH_URL).toString();
 };
 
-export const API_ENDPOINT = {
+export const getImage = (date: string, image: string) => {
+  const [year, month, day] = date.split(' ')[0].split('-');
+  return `${NASA_IMAGE_URL}/archive/natural/${year}/${month}/${day}/png/${image}.png`;
+};
+
+export const LAUNCH_API_ENDPOINT = {
+  LAUNCHES: {
+    UPCOMING: 'launches/upcoming',
+    PREVIOUS: 'launches/previous',
+  },
+};
+
+export const NASA_API_ENDPOINT = {
   APOD: 'planetary/apod',
   MSRP: 'mars-photos/api/v1/rovers/curiosity/photos',
   EARTH_IMAGE: 'EPIC/api/natural/images',
@@ -21,7 +34,7 @@ export const API_ENDPOINT = {
     PATENT: 'techtransfer/patent/',
     PATENT_ISSUE: 'techtransfer/patent_issued/',
     SOFTWARE: 'techtransfer/software/',
-    SPIN_OFF: 'techtransfer/Spinoff/',
+    SPIN_OFF: 'techtransfer/spinoff/',
   },
   SEARCH: {
     DEFAULT: 'default',

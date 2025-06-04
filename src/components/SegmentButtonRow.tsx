@@ -48,7 +48,7 @@ const SegmentButtonRow = ({
       transform: [
         {
           translateX: withTiming(
-            selectedIndex.value === 0 ? 2 : selectedIndex.value * layerWidth,
+            selectedIndex.value === 0 ? 4 : selectedIndex.value * layerWidth,
             {
               duration: 250,
             },
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   padH2: {
-    paddingHorizontal: 2,
+    paddingHorizontal: 4,
   },
   layer: {
     position: 'absolute',

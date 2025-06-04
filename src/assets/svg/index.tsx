@@ -227,24 +227,44 @@ export const QuestionSVG = ({
 export const CalendarSVG = ({
   width = 24,
   height = 24,
-  fill = '#fff',
+  fill = '#000',
   ...props
 }: SvgProps) => (
-  <Svg width={width} height={height} fill="none" {...props}>
+  <Svg width={width} height={height} viewBox="0 0 512 512" {...props}>
+    <Rect
+      width={416}
+      height={384}
+      x={48}
+      y={80}
+      fill="none"
+      stroke={fill}
+      strokeLinejoin="round"
+      strokeWidth={32}
+      rx={48}
+    />
+    <Circle fill={fill} cx={296} cy={232} r={24} />
+    <Circle fill={fill} cx={376} cy={232} r={24} />
+    <Circle fill={fill} cx={296} cy={312} r={24} />
+    <Circle fill={fill} cx={376} cy={312} r={24} />
+    <Circle fill={fill} cx={136} cy={312} r={24} />
+    <Circle fill={fill} cx={216} cy={312} r={24} />
+    <Circle fill={fill} cx={136} cy={392} r={24} />
+    <Circle fill={fill} cx={216} cy={392} r={24} />
+    <Circle fill={fill} cx={296} cy={392} r={24} />
     <Path
+      fill="none"
       stroke={fill}
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeMiterlimit={10}
-      strokeWidth={1.5}
-      d="M8 2v3M16 2v3M3.5 9.09h17M21 8.5V17c0 3-1.5 5-5 5H8c-3.5 0-5-2-5-5V8.5c0-3 1.5-5 5-5h8c3.5 0 5 2 5 5Z"
+      strokeWidth={32}
+      d="M128 48v32m256-32v32"
     />
     <Path
+      fill="none"
       stroke={fill}
-      strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth={2}
-      d="M11.995 13.7h.01M8.294 13.7h.01M8.294 16.7h.01"
+      strokeWidth={32}
+      d="M464 160H48"
     />
   </Svg>
 );
@@ -417,10 +437,7 @@ export const CompassSVG = ({fill = '#fff', ...props}: SvgProps) => (
 );
 
 export const AlertCircleSVG = ({fill = '#000', ...props}: SvgProps) => (
-  <Svg
-    preserveAspectRatio="xMidYMid meet"
-    viewBox="0 0 512 512"
-    {...props}>
+  <Svg preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512" {...props}>
     <Path
       fill="none"
       stroke={fill}
@@ -437,5 +454,74 @@ export const AlertCircleSVG = ({fill = '#000', ...props}: SvgProps) => (
       d="M250.26 166.05 256 288l5.73-121.95a5.74 5.74 0 0 0-5.79-6h0a5.74 5.74 0 0 0-5.68 6z"
     />
     <Path d="M256 367.91a20 20 0 1 1 20-20 20 20 0 0 1-20 20z" />
+  </Svg>
+);
+
+export const NotifyOutLineSVG = ({
+  width = 24,
+  height = 24,
+  fill = '#000',
+  ...props
+}: SvgProps) => (
+  <Svg viewBox="0 0 512 512" height={height} width={width} {...props}>
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeMiterlimit={10}
+      strokeWidth={32}
+      d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z"
+    />
+    <Path d="M365.2 313c-16.33-19.34-27.86-27.47-27.86-80.8 0-48.86-25.78-66.23-47-74.67a11.39 11.39 0 0 1-6.34-6.68C280.29 138.6 269.88 128 256 128s-24.31 10.6-28 22.86a11.35 11.35 0 0 1-6.33 6.68c-21.24 8.46-47 25.8-47 74.67 0 53.33-11.54 61.46-27.87 80.8-6.77 8-.65 23 11.19 23H354C365.77 336 371.94 321 365.2 313zm-144.96 39a4 4 0 0 0-4 4.42C218.49 375.14 235.11 384 256 384c20.67 0 37.14-9.15 39.66-27.52a4 4 0 0 0-4-4.48z" />
+  </Svg>
+);
+
+export const RocketSVG = ({
+  width = 24,
+  height = 24,
+  fill = '#000',
+  ...props
+}: SvgProps) => (
+  <Svg viewBox="0 0 512 512" width={width} height={height} {...props}>
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={32}
+      d="M461.81 53.81a4.4 4.4 0 0 0-3.3-3.39c-54.38-13.3-180 34.09-248.13 102.17a294.9 294.9 0 0 0-33.09 39.08c-21-1.9-42-.3-59.88 7.5-50.49 22.2-65.18 80.18-69.28 105.07a9 9 0 0 0 9.8 10.4l81.07-8.9a180.29 180.29 0 0 0 1.1 18.3 18.15 18.15 0 0 0 5.3 11.09l31.39 31.39a18.15 18.15 0 0 0 11.1 5.3 179.91 179.91 0 0 0 18.19 1.1l-8.89 81a9 9 0 0 0 10.39 9.79c24.9-4 83-18.69 105.07-69.17 7.8-17.9 9.4-38.79 7.6-59.69a293.91 293.91 0 0 0 39.19-33.09c68.38-68 115.47-190.86 102.37-247.95zM298.66 213.67a42.7 42.7 0 1 1 60.38 0 42.65 42.65 0 0 1-60.38 0z"
+    />
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={32}
+      d="M109.64 352a45.06 45.06 0 0 0-26.35 12.84C65.67 382.52 64 448 64 448s65.52-1.67 83.15-19.31A44.73 44.73 0 0 0 160 402.32"
+    />
+  </Svg>
+);
+
+export const Planet = ({width = 24, height = 24, fill = '#000', ...props}: SvgProps) => (
+  <Svg
+    width={width}
+    height={height}
+    viewBox="0 0 512 512"
+    {...props}>
+    <Path
+      fill="none"
+      stroke={fill}
+      strokeMiterlimit={10}
+      strokeWidth={32}
+      d="M413.48 284.46c58.87 47.24 91.61 89 80.31 108.55-17.85 30.85-138.78-5.48-270.1-81.15S.37 149.84 18.21 119c11.16-19.28 62.58-12.32 131.64 14.09"
+    />
+    <Circle
+      cx={256}
+      cy={256}
+      r={160}
+      fill="none"
+      stroke={fill}
+      strokeMiterlimit={10}
+      strokeWidth={32}
+    />
   </Svg>
 );
