@@ -10,11 +10,12 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {NASA_API_KEY} from '@env';
 import {THEME_COLORS} from '../utils/resources/colors.ts';
 
-const mmkvStorage = new MMKV();
+export const mmkvStorage = new MMKV();
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1800000,
+      gcTime: 1800000,
     },
   },
 });

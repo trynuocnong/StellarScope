@@ -98,7 +98,7 @@ export default TechTransfer;
 const styles = StyleSheet.create({
   segmentStyle: {
     marginBottom: 10,
-    backgroundColor: COLORS.neutral['900'],
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderRadius: 8,
     height: 55,
   },

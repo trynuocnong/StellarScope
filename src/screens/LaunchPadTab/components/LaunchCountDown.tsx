@@ -1,20 +1,18 @@
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import {COLORS} from '../../../utils/resources/colors.ts';
+import {CalendarSVG, CompassSVG, RocketSVG} from '../../../assets/svg';
+import ImagePrefix from '../../../components/ImagePrefix.tsx';
+import {getStatusColor} from '../utils.tsx';
+import {LaunchCountdownProps} from '../type.ts';
 
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking } from 'react-native';
-import {LaunchResults} from '../../../utils/DTO';
-import {COLORS, THEME_COLORS} from '../../../utils/resources/colors.ts';
-interface LaunchCountdownProps {
-  launch: LaunchResults;
-}
-
-export const LaunchCountdown: React.FC<LaunchCountdownProps> = ({ launch }) => {
+export const LaunchCountdown: React.FC<LaunchCountdownProps> = ({launch}) => {
   const [timeRemaining, setTimeRemaining] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
-  const [isLive, setIsLive] = useState(false);
 
   useEffect(() => {
     const calculateTimeRemaining = () => {
@@ -24,22 +22,24 @@ export const LaunchCountdown: React.FC<LaunchCountdownProps> = ({ launch }) => {
 
       if (difference <= 0) {
         // Launch time has passed
-        setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setTimeRemaining({days: 0, hours: 0, minutes: 0, seconds: 0});
 
         // Check if launch is happening now (within the last 2 hours)
         const hoursAgo = (now - launchTime) / (1000 * 60 * 60);
-        setIsLive(hoursAgo < 2 && launch.status.name === 'Upcoming');
+        // setIsLive(hoursAgo < 2 && launch.status.name === 'Upcoming');
         return;
       }
 
       // Calculate time units
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const hours = Math.floor(
+        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+      );
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-      setTimeRemaining({ days, hours, minutes, seconds });
-      setIsLive(false);
+      setTimeRemaining({days, hours, minutes, seconds});
+      // setIsLive(false);
     };
 
     // Calculate immediately
@@ -52,67 +52,42 @@ export const LaunchCountdown: React.FC<LaunchCountdownProps> = ({ launch }) => {
     return () => clearInterval(interval);
   }, [launch]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Success':
-        return THEME_COLORS.launchStatus.success;
-      case 'Upcoming':
-        return THEME_COLORS.launchStatus.upcoming;
-      case 'Delayed':
-        return THEME_COLORS.launchStatus.delayed;
-      case 'Scrubbed':
-      case 'Failure':
-        return THEME_COLORS.launchStatus.failed;
-      default:
-        return THEME_COLORS.launchStatus.upcoming;
-    }
-  };
-
-  const openWebcast = () => {
-    if (launch.vidURLs && launch.vidURLs.length > 0) {
-      Linking.openURL(launch.vidURLs[0]);
-    }
-  };
-
   const renderCountdown = () => {
-    if (isLive) {
-      return (
-        <View style={styles.liveContainer}>
-          <View style={styles.liveIndicator} />
-          <Text style={styles.liveText}>LIVE NOW</Text>
-          {launch.webcast_live && (
-            <TouchableOpacity
-              style={styles.watchButton}
-              onPress={openWebcast}
-            >
-              {/*<Ionicons name="play-circle" size={16} color={COLORS.neutral['100']} />*/}
-              <Text style={styles.watchButtonText}>Watch</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      );
-    }
+    // if (isLive) {
+    //   return (
+    //     <View style={styles.liveContainer}>
+    //       <View style={styles.liveIndicator} />
+    //       <Text style={styles.liveText}>LIVE NOW</Text>
+    //       {launch.webcast_live && (
+    //         <TouchableOpacity style={styles.watchButton} onPress={openWebcast}>
+    //           {/*<Ionicons name="play-circle" size={16} color={COLORS.neutral['100']} />*/}
+    //           <Text style={styles.watchButtonText}>Watch</Text>
+    //         </TouchableOpacity>
+    //       )}
+    //     </View>
+    //   );
+    // }
 
-    if (timeRemaining.days === 0 && timeRemaining.hours === 0 &&
-      timeRemaining.minutes === 0 && timeRemaining.seconds === 0) {
-      // Launch has passed
-      return (
-        <View style={styles.pastLaunchContainer}>
-          <Text style={styles.pastLaunchText}>
-            Launched on {new Date(launch.net).toLocaleDateString()}
-          </Text>
-          {launch.vidURLs && launch.vidURLs.length > 0 && (
-            <TouchableOpacity
-              style={styles.replayButton}
-              onPress={openWebcast}
-            >
-              {/*<Ionicons name="play-circle" size={16} color={COLORS.primary['400']} />*/}
-              <Text style={styles.replayButtonText}>Replay</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      );
-    }
+    // if (
+    //   timeRemaining.days === 0 &&
+    //   timeRemaining.hours === 0 &&
+    //   timeRemaining.minutes === 0 &&
+    //   timeRemaining.seconds === 0
+    // ) {
+    //   return (
+    //     <View style={styles.pastLaunchContainer}>
+    //       <Text style={styles.pastLaunchText}>
+    //         Launched on {new Date(launch.net).toLocaleDateString()}
+    //       </Text>
+    //       {launch.vidURLs && launch.vidURLs.length > 0 && (
+    //         <TouchableOpacity style={styles.replayButton} onPress={openWebcast}>
+    //           {/*<Ionicons name="play-circle" size={16} color={COLORS.primary['400']} />*/}
+    //           <Text style={styles.replayButtonText}>Replay</Text>
+    //         </TouchableOpacity>
+    //       )}
+    //     </View>
+    //   );
+    // }
 
     // Show countdown
     return (
@@ -146,36 +121,44 @@ export const LaunchCountdown: React.FC<LaunchCountdownProps> = ({ launch }) => {
             <View
               style={[
                 styles.statusIndicator,
-                { backgroundColor: getStatusColor(launch.status.name) }
+                {backgroundColor: getStatusColor(launch.status.name)},
               ]}
             />
             <Text style={styles.statusText}>{launch.status.name}</Text>
           </View>
         </View>
-        <Image
-          source={{ uri: launch.image }}
+        <ImagePrefix
+          source={{uri: launch.url}}
           style={styles.missionPatch}
           resizeMode="contain"
+          errorNode={<></>}
         />
       </View>
-
       <View style={styles.details}>
         <View style={styles.detailRow}>
-          {/*<Ionicons name="rocket" size={16} color={COLORS.neutral['600']} />*/}
-          <Text style={styles.detailText}>{launch.rocket.name}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          {/*<Ionicons name="location" size={16} color={COLORS.neutral['600']} />*/}
-          <Text style={styles.detailText}>{launch.pad.name}, {launch.pad.location.country}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          {/*<Ionicons name="calendar" size={16} color={COLORS.neutral['600']} />*/}
+          <RocketSVG width={16} height={16} color={COLORS.neutral['600']} />
           <Text style={styles.detailText}>
-            {new Date(launch.net).toLocaleDateString()} at {new Date(launch.net).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {launch.rocket.configuration.full_name}
+          </Text>
+        </View>
+        <View style={styles.detailRow}>
+          <CompassSVG width={16} height={16} color={COLORS.neutral['600']} />
+          <Text
+            style={
+              styles.detailText
+            }>{`${launch.pad.name}, ${launch.pad.location.country}`}</Text>
+        </View>
+        <View style={styles.detailRow}>
+          <CalendarSVG width={16} height={16} color={COLORS.neutral['600']} />
+          <Text style={styles.detailText}>
+            {new Date(launch.net).toLocaleDateString()} at{' '}
+            {new Date(launch.net).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
           </Text>
         </View>
       </View>
-
       {renderCountdown()}
     </View>
   );
@@ -188,7 +171,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 16,
     shadowColor: COLORS.neutral['0'],
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 5,
@@ -228,7 +211,7 @@ const styles = StyleSheet.create({
     height: 60,
     marginLeft: 16,
     borderRadius: 30,
-    backgroundColor: COLORS.neutral['200'],
+    backgroundColor: COLORS.primary['200'],
   },
   details: {
     padding: 16,
