@@ -8,7 +8,6 @@ import {FlashList, ListRenderItemInfo} from '@shopify/flash-list';
 import FastImage from 'react-native-fast-image';
 import {extractImageUrlFromHTML} from '../../utils/FuncUtils.ts';
 import {fetchMission} from '../../utils/APIUtils.ts';
-import MissionEmptyPlaceholder from '../../components/EmptyList/MissionEmptyPlaceholder.tsx';
 
 const SEARCH_TERM: KeyValue[] = [
   {
@@ -144,7 +143,6 @@ export default function () {
       <FlashList
         ref={flashRef}
         contentContainerStyle={styles.flashListContent}
-        ListEmptyComponent={<MissionEmptyPlaceholder />}
         renderItem={renderMissionDetails}
         scrollEnabled={!!missions?.posts}
         data={missions?.posts || []}
