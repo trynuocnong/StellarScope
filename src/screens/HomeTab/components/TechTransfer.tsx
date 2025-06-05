@@ -5,7 +5,14 @@ import SegmentButtonRow from '../../../components/SegmentButtonRow.tsx';
 import {navRef, ROUTES} from '../../../navigation';
 import FastImage from 'react-native-fast-image';
 import {TechTransferProps} from '../type.ts';
+import Skeleton from '../../../components/Skeleton.tsx';
 
+/*
+* 215.61904907226562 20.952392578125 title
+  215.61904907226562 60.5712890625 sub
+  215.61904907226562 17.90478515625
+  100.19049072265625 135.618896484375
+ * */
 const renderTechItem = ({item}: {item: any}) => {
   const goToTechDetail = () => {
     navRef.current?.navigate(ROUTES.DETAIL_TECH_SCREEN, {data: item});
@@ -13,7 +20,7 @@ const renderTechItem = ({item}: {item: any}) => {
   return (
     <Pressable onPress={goToTechDetail} style={styles.techItemContainer}>
       <View style={styles.techItemContent}>
-        <Text style={styles.techItemTitle} numberOfLines={2}>
+        <Text style={styles.techItemTitle} numberOfLines={1}>
           {item[2]}
         </Text>
         <Text style={styles.techItemDescription} numberOfLines={3}>
@@ -32,7 +39,13 @@ const renderTechItem = ({item}: {item: any}) => {
   );
 };
 
-const TechTransfer = ({style, data, refresh, options, onSelect}: TechTransferProps) => {
+const TechTransfer = ({
+  style,
+  data,
+  refresh,
+  options,
+  onSelect,
+}: TechTransferProps) => {
   if (data.isPending) {
     return (
       <View style={styles.baseSectionContain}>
@@ -45,9 +58,45 @@ const TechTransfer = ({style, data, refresh, options, onSelect}: TechTransferPro
           textColor={COLORS.neutral['100']}
         />
         <View style={styles.lisTechContainer}>
-          <View style={styles.techItemContainer} />
-          <View style={styles.techItemContainer} />
-          <View style={styles.techItemContainer} />
+          <View style={styles.skeletonContainer}>
+            <View style={styles.techItemContent}>
+              <Skeleton style={styles.skeletonTitle} />
+              <Skeleton style={styles.skeletonFullSubLine} />
+              <Skeleton style={styles.skeletonFullSubLine} />
+              <Skeleton style={styles.skeletonSubLine} />
+            </View>
+            <Skeleton style={styles.techItemImage} />
+          </View>
+
+          <View style={styles.skeletonContainer}>
+            <View style={styles.techItemContent}>
+              <Skeleton style={styles.skeletonTitle} />
+              <Skeleton style={styles.skeletonFullSubLine} />
+              <Skeleton style={styles.skeletonFullSubLine} />
+              <Skeleton style={styles.skeletonSubLine} />
+            </View>
+            <Skeleton style={styles.techItemImage} />
+          </View>
+
+          <View style={styles.skeletonContainer}>
+            <View style={styles.techItemContent}>
+              <Skeleton style={styles.skeletonTitle} />
+              <Skeleton style={styles.skeletonFullSubLine} />
+              <Skeleton style={styles.skeletonFullSubLine} />
+              <Skeleton style={styles.skeletonSubLine} />
+            </View>
+            <Skeleton style={styles.techItemImage} />
+          </View>
+
+          <View style={styles.skeletonContainer}>
+            <View style={styles.techItemContent}>
+              <Skeleton style={styles.skeletonTitle} />
+              <Skeleton style={styles.skeletonFullSubLine} />
+              <Skeleton style={styles.skeletonFullSubLine} />
+              <Skeleton style={styles.skeletonSubLine} />
+            </View>
+            <Skeleton style={styles.techItemImage} />
+          </View>
         </View>
       </View>
     );
@@ -64,7 +113,9 @@ const TechTransfer = ({style, data, refresh, options, onSelect}: TechTransferPro
           layerColor={'#4e5ff8'}
           textColor={COLORS.neutral['100']}
         />
-        <Text style={styles.errorText}>Sorry there something wrong with the API</Text>
+        <Text style={styles.errorText}>
+          Sorry there something wrong with the API
+        </Text>
         <Pressable onPress={refresh} style={styles.reloadButton}>
           <Text style={styles.reloadButtonText}>Reload</Text>
         </Pressable>
@@ -183,5 +234,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: THEME_COLORS.button.primary.text,
+  },
+  skeletonContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 12,
+    marginBottom: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: THEME_COLORS.primary,
+  },
+  skeletonTitle: {
+    width: '50%',
+    height: 21,
+    marginBottom: 3,
+    backgroundColor: THEME_COLORS.primary,
+  },
+  skeletonFullSubLine: {
+    width: '100%',
+    height: 19,
+    marginBottom: 2,
+    backgroundColor: THEME_COLORS.primary,
+  },
+  skeletonSubLine: {
+    width: '75%',
+    height: 19,
+    marginBottom: 1,
+    backgroundColor: THEME_COLORS.primary,
   },
 });

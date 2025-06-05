@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  LayoutChangeEvent,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {MarWeatherProps} from '../type.ts';
 import moment from 'moment/moment';
 import {COLORS, THEME_COLORS} from '../../../utils/resources/colors.ts';
@@ -60,21 +54,11 @@ const MarsWeather = ({data, style, refresh}: MarWeatherProps) => {
     return (
       <View style={[styles.baseSectionContain, style]}>
         <View style={[styles.flex1, styles.weatherContent]}>
-          <View style={styles.marginBottom12}>
-            <Skeleton style={styles.skeletonTopRow} />
-            <Skeleton style={styles.skeletonSecondMiddleRow} />
-            <Skeleton style={styles.skeletonSecondRow} />
+          <View style={[styles.flex1, styles.marginRight16]}>
+            <Skeleton style={styles.skeletonTitle} />
+            <Skeleton style={styles.skeletonSub} />
+            <Skeleton style={styles.skeletonSub} />
           </View>
-
-          <View style={styles.temperatureInfo}>
-            <Text style={styles.tempLabel}>Temperature</Text>
-            <View style={styles.tempRange}>
-              <Skeleton style={styles.skeletonSecondFirstCol} />
-              <Skeleton style={styles.skeletonSecondMiddleCol} />
-              <Skeleton style={styles.skeletonSecondFirstCol} />
-            </View>
-          </View>
-
           <Skeleton style={styles.skeletonIcon} />
         </View>
       </View>
@@ -98,29 +82,19 @@ const MarsWeather = ({data, style, refresh}: MarWeatherProps) => {
     <Pressable onPress={nav} style={[styles.baseSectionContain, style]}>
       <View style={[styles.flex1, styles.weatherContent]}>
         <View style={styles.marginBottom12}>
-          <Text style={styles.solNumber}>
-            Sol {data.data.title}
-          </Text>
+          <Text style={styles.solNumber}>Sol {data.data.title}</Text>
           <Text style={styles.earthDate}>
             {moment(data.data?.Last_UTC).format('DD/MM/YYYY')}
           </Text>
-          <Text style={styles.season}>
-            {data.data?.Season}
-          </Text>
+          <Text style={styles.season}>{data.data?.Season}</Text>
         </View>
 
         <View style={styles.temperatureInfo}>
           <Text style={styles.tempLabel}>Temperature</Text>
           <View style={styles.tempRange}>
-            <Text style={styles.minTemp}>
-              {data.data?.AT.mn}°C
-            </Text>
-            <Text style={styles.tempDivider}>
-              to
-            </Text>
-            <Text style={styles.maxTemp}>
-              {data.data?.AT.mx}°C
-            </Text>
+            <Text style={styles.minTemp}>{data.data?.AT.mn}°C</Text>
+            <Text style={styles.tempDivider}>to</Text>
+            <Text style={styles.maxTemp}>{data.data?.AT.mx}°C</Text>
           </View>
         </View>
 
@@ -140,6 +114,9 @@ const styles = StyleSheet.create({
   },
   marginBottom12: {
     marginBottom: 12,
+  },
+  marginRight16: {
+    marginRight: 16,
   },
   alignCenter: {
     justifyContent: 'center',
@@ -239,36 +216,22 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: THEME_COLORS.button.primary.text,
   },
-  skeletonTopRow: {
-    width: 75,
-    height: 27,
-    backgroundColor: COLORS.primary['600']
-  },
-  skeletonSecondMiddleRow: {
-    width: 76,
-    height: 15,
-    marginVertical: 2,
-    backgroundColor: COLORS.primary['600']
-  },
-  skeletonSecondRow: {
-    width: 76,
-    height: 15,
-    backgroundColor: COLORS.primary['600']
-  },
-  skeletonSecondFirstCol: {
-    width: 60,
+  skeletonTitle: {
+    width: '50%',
     height: 21,
-    marginHorizontal: 2,
-    backgroundColor: COLORS.primary['600']
+    marginBottom: 3,
+    backgroundColor: COLORS.primary['600'],
   },
-  skeletonSecondMiddleCol: {
-    width: 10,
+  skeletonSub: {
+    width: '100%',
     height: 16,
-    backgroundColor: COLORS.primary['600']
+    marginBottom: 3,
+    backgroundColor: COLORS.primary['600'],
   },
   skeletonIcon: {
     width: 64,
-    height: 84,
-    backgroundColor: COLORS.primary['600']
+    height: 60,
+    borderRadius: 8,
+    backgroundColor: COLORS.primary['600'],
   },
 });
