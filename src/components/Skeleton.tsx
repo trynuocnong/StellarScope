@@ -1,51 +1,48 @@
-import React, {ReactNode, useEffect} from 'react';
-import {StyleSheet, View, ViewProps} from 'react-native';
+import React, {useEffect} from 'react';
+import {StyleSheet} from 'react-native';
 import Animated, {
-  interpolateColor,
+  Easing,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import {COLORS, THEME_COLORS} from '../utils/resources/colors.ts';
+import {COLORS} from '../utils/resources/colors.ts';
 
-export default function ({ children, style }: { children?: ReactNode, style?: ViewProps['style'] }) {
-  const onGoingValue = useSharedValue(0);
+export interface SkeletonProps {
+  children?: React.ReactNode;
+  style?: any;
+}
 
-  // Start the animation when the component mountsd
+const Skeleton = ({style, children}: SkeletonProps) => {
+  const opacity = useSharedValue(0.3);
+
   useEffect(() => {
-    onGoingValue.value = withRepeat(withTiming(1, { duration: 2000 }), -1, true);
-    //eslint-disable-next-line
-  }, []);
+    opacity.value = withRepeat(
+      withTiming(0.6, {
+        duration: 800,
+        easing: Easing.inOut(Easing.ease),
+      }),
+      -1,
+      true,
+    );
+  }, [opacity]);
 
-  const skeletonStyles = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      onGoingValue.value, // Use the animated shared value here
-      [0, 1],
-      [
-        THEME_COLORS.background,
-        COLORS.primary['500'],
-        COLORS.primary['400'],
-        COLORS.primary['500'],
-        THEME_COLORS.background,  // #8e8e8e - Lightest
-      ],
-    ),
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
   }));
 
   return (
-    <Animated.View style={[styles.container, style, skeletonStyles]}>
-      <View style={styles.hidden}>{children}</View>
+    <Animated.View style={[styles.skeleton, animatedStyle, style]}>
+      {children}
     </Animated.View>
   );
-}
+};
+
+export default Skeleton;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 0,
-    alignSelf: 'baseline',
-    borderRadius: 3,
-  },
-  hidden: {
-    opacity: 0,
+  skeleton: {
+    backgroundColor: COLORS.primary['50'],
   },
 });

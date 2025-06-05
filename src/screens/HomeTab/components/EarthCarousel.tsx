@@ -14,10 +14,37 @@ import {getImage} from '../../../utils/APIUtils.ts';
 import {THEME_COLORS} from '../../../utils/resources/colors.ts';
 import ImagePrefix from '../../../components/ImagePrefix.tsx';
 import {EarthCarouselProps} from '../type.ts';
+import {DefaultError, UseQueryResult} from '@tanstack/react-query';
+import Skeleton from '../../../components/Skeleton.tsx';
+import {AlertCircleSVG} from '../../../assets/svg';
 
 const WIDTH = Dimensions.get('screen').width;
 const EARTH_IMAGE_HEIGHT = WIDTH * 0.6;
 const EARTH_IMAGE_WIDTH = WIDTH - 24 - 32;
+
+const RenderSkeleton = (
+  mock: UseQueryResult<EarthImageRes[], DefaultError>,
+) => {
+  const {data, isPending, isError, refetch, error} = mock;
+  const refresh = () => refetch();
+  if (isPending) {
+    return <Skeleton style={styles.skeletonContainer} />;
+  }
+  if (!data || isError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Failed to load: {error.message}</Text>
+        <AlertCircleSVG width={32} height={32} fill={THEME_COLORS.error} />
+        <Text
+          onPress={refresh}
+          style={[styles.reloadText, styles.reloadButton]}>
+          Reload
+        </Text>
+      </View>
+    );
+  }
+  return <></>;
+};
 
 const RenderError = ({path}: {path: string}) => {
   return (
@@ -50,7 +77,7 @@ const calItemLayout = (
   index,
 });
 
-const EarthCarousel = ({style, data, refresh}: EarthCarouselProps) => {
+const EarthCarousel = ({style, data}: EarthCarouselProps) => {
   const [itemIndex, setItemIndex] = React.useState(0);
   const curIndex = React.useRef(itemIndex);
   const indicatorRef = React.useRef<FlatList>(null);
@@ -109,6 +136,7 @@ const EarthCarousel = ({style, data, refresh}: EarthCarouselProps) => {
           data={data.data ?? []}
           maxToRenderPerBatch={2}
           pagingEnabled={true}
+          ListEmptyComponent={<RenderSkeleton {...data} />}
           renderItem={renderEarthImage}
           onScroll={onScroll}
         />
@@ -136,6 +164,10 @@ const styles = StyleSheet.create({
     width: EARTH_IMAGE_WIDTH,
     height: EARTH_IMAGE_HEIGHT,
     backgroundColor: THEME_COLORS.black,
+  },
+  skeletonContainer: {
+    width: EARTH_IMAGE_WIDTH,
+    height: EARTH_IMAGE_HEIGHT,
   },
   baseSectionContain: {
     borderBottomRightRadius: 16,

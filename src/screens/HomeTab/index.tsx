@@ -1,12 +1,7 @@
 import * as React from 'react';
 import {useCallback, useMemo, useState} from 'react';
 import FeatureDisplayItem from '../../components/FeatureDisplayItem.tsx';
-import {
-  APODRes,
-  EarthImageRes,
-  MarWeatherReq,
-  MarWeatherRes,
-} from '../../utils/DTO';
+import {APODRes, EarthImageRes} from '../../utils/DTO';
 import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import Animated, {
   LinearTransition,
@@ -18,10 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import DynamicImage from '../../components/DynamicImage.tsx';
 import {COLORS, THEME_COLORS} from '../../utils/resources/colors.ts';
-import {featureList, SECTION_HEADER, TECH_CONDITION, TECHTRANSFER_FILTER} from './mock.tsx';
-import AxiosInstance from '../../helper/AxiosInstance.ts';
-import {NASA_API_ENDPOINT, convertNASAAPI} from '../../utils/APIUtils.ts';
-import {baseAPIParams} from '../../navigation/RootApp.tsx';
+import {featureList, SECTION_HEADER, TECHTRANSFER_FILTER} from './mock.tsx';
 import {
   DefaultError,
   useQueries,
@@ -32,76 +24,20 @@ import {RePressable, ReSectionList} from '../../../App.tsx';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {KeyValue, navRef, ROUTES} from '../../navigation';
 import EarthCarousel from './components/EarthCarousel.tsx';
-import {NASA_API_KEY} from '@env';
 import {ModifyMarWeatherType} from './type.ts';
 import MarsWeather from './components/MarsWeather.tsx';
 import TechTransfer from './components/TechTransfer.tsx';
+import {
+  fetchAPOD,
+  fetchEarthImage,
+  fetchMarsWeather,
+  fetchTech,
+} from './utils.tsx';
 
 const WIDTH = Dimensions.get('screen').width;
 const EARTH_IMAGE_HEIGHT = WIDTH * 0.6;
 const EARTH_IMAGE_WIDTH = WIDTH - 24 - 32;
 const ACTION_BOARD_HEIGHT = 127;
-
-const fetchAPOD = async (): Promise<APODRes> => {
-  const {data} = await AxiosInstance.get(convertNASAAPI(NASA_API_ENDPOINT.APOD), {
-    params: baseAPIParams,
-  });
-  return data;
-};
-
-const fetchTech = async (condition: KeyValue): Promise<string[][]> => {
-  let path: string = TECH_CONDITION[condition.value as string];
-  const {data} = await AxiosInstance.get(
-    convertNASAAPI(path),
-    {
-      params: {...baseAPIParams, space: ''},
-    },
-  );
-  return data.results.slice(0, 8);
-};
-
-const fetchEarthImage = async (): Promise<EarthImageRes[]> => {
-  const {data} = await AxiosInstance.get(convertNASAAPI(NASA_API_ENDPOINT.EARTH_IMAGE), {
-    params: baseAPIParams,
-  });
-  return data;
-};
-
-const fetchMarsWeather = async (): Promise<ModifyMarWeatherType> => {
-  const params: MarWeatherReq = {
-    api_key: NASA_API_KEY,
-    ver: '1.0',
-    feedtype: 'json',
-  };
-  const {data} = await AxiosInstance.get<MarWeatherRes>(
-    convertNASAAPI(NASA_API_ENDPOINT.MARS_WEATHER),
-    {
-      params: params,
-    },
-  );
-  let keyArr = data.sol_keys;
-  while (keyArr.length > 0) {
-    let len = keyArr.length - 1;
-    if (
-      data.validity_checks[keyArr[len]].AT.valid &&
-      data.validity_checks[keyArr[len]].HWS.valid &&
-      data.validity_checks[keyArr[len]].PRE.valid &&
-      data.validity_checks[keyArr[len]].WD.valid
-    ) {
-      return {
-        title: keyArr[len],
-        ...data[keyArr[len]],
-      } as unknown as ModifyMarWeatherType;
-    }
-    keyArr.pop();
-  }
-  let len = data.sol_keys.length - 1;
-
-  return {
-    title: data.sol_keys[len],
-    ...data[data.sol_keys[len]],
-  } as unknown as ModifyMarWeatherType;
-};
 
 const renderTitle = ({section: {title}}: any) => (
   <Text style={styles.sectionTitle}>{title}</Text>

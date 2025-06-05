@@ -6,6 +6,7 @@ import {COLORS, THEME_COLORS} from '../../../utils/resources/colors.ts';
 import {MarWeatherSpec} from '../../../utils/DTO';
 import {conditionConfig} from '../mock.tsx';
 import {navRef, ROUTES} from '../../../navigation';
+import Skeleton from '../../../components/Skeleton.tsx';
 
 const WeatherConditionDisplay = ({
   weatherData,
@@ -42,56 +43,64 @@ const WeatherConditionDisplay = ({
     </View>
   );
 };
-const MarsWeather = ({data, style, refresh} : MarWeatherProps) => {
+const MarsWeather = ({data, style, refresh}: MarWeatherProps) => {
   const nav = () => {
     navRef.current?.navigate(ROUTES.DETAIL_MAR_WEATHER_SCREEN, {
       sol: data.data?.title || '',
     });
   };
+
   if (data.isPending) {
-    return <View style={[styles.baseSectionContain, style]}  />;
+    return (
+      <View style={[styles.baseSectionContain, style]}>
+        <View style={[styles.flex1, styles.weatherContent]}>
+          <View style={[styles.flex1, styles.marginRight16]}>
+            <Skeleton style={styles.skeletonTitle} />
+            <Skeleton style={styles.skeletonSub} />
+            <Skeleton style={styles.skeletonSub} />
+          </View>
+          <Skeleton style={styles.skeletonIcon} />
+        </View>
+      </View>
+    );
   }
 
   if (data.isError) {
-    return <View style={[styles.baseSectionContain, styles.alignCenter, style]}  >
-      <Text style={styles.errorText}>Sorry there something wrong with the API</Text>
-      <Pressable onPress={refresh} style={styles.reloadButton}>
-        <Text style={styles.reloadButtonText}>Reload</Text>
-      </Pressable>
-    </View>;
+    return (
+      <View style={[styles.baseSectionContain, styles.alignCenter, style]}>
+        <Text style={styles.errorText}>
+          Sorry there something wrong with the API
+        </Text>
+        <Pressable onPress={refresh} style={styles.reloadButton}>
+          <Text style={styles.reloadButtonText}>Reload</Text>
+        </Pressable>
+      </View>
+    );
   }
 
   return (
     <Pressable onPress={nav} style={[styles.baseSectionContain, style]}>
       <View style={[styles.flex1, styles.weatherContent]}>
         <View style={styles.marginBottom12}>
-          <Text style={styles.solNumber}>
-            Sol {data.data.title}
-          </Text>
+          <Text style={styles.solNumber}>Sol {data.data.title}</Text>
           <Text style={styles.earthDate}>
-            {moment(data.data?.Last_UTC).format(
-              'DD/MM/YYYY',
-            )}
+            {moment(data.data?.Last_UTC).format('DD/MM/YYYY')}
           </Text>
-          <Text style={styles.season}>
-            {data.data?.Season}
-          </Text>
+          <Text style={styles.season}>{data.data?.Season}</Text>
         </View>
 
         <View style={styles.temperatureInfo}>
           <Text style={styles.tempLabel}>Temperature</Text>
           <View style={styles.tempRange}>
-            <Text style={styles.minTemp}>
-              {data.data?.AT.mn}°C
-            </Text>
+            <Text style={styles.minTemp}>{data.data?.AT.mn}°C</Text>
             <Text style={styles.tempDivider}>to</Text>
-            <Text style={styles.maxTemp}>
-              {data.data?.AT.mx}°C
-            </Text>
+            <Text style={styles.maxTemp}>{data.data?.AT.mx}°C</Text>
           </View>
         </View>
 
-        <WeatherConditionDisplay weatherData={data.data} />
+        <View>
+          <WeatherConditionDisplay weatherData={data.data} />
+        </View>
       </View>
     </Pressable>
   );
@@ -105,6 +114,9 @@ const styles = StyleSheet.create({
   },
   marginBottom12: {
     marginBottom: 12,
+  },
+  marginRight16: {
+    marginRight: 16,
   },
   alignCenter: {
     justifyContent: 'center',
@@ -203,5 +215,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: THEME_COLORS.button.primary.text,
+  },
+  skeletonTitle: {
+    width: '50%',
+    height: 21,
+    marginBottom: 3,
+    backgroundColor: COLORS.primary['600'],
+  },
+  skeletonSub: {
+    width: '100%',
+    height: 16,
+    marginBottom: 3,
+    backgroundColor: COLORS.primary['600'],
+  },
+  skeletonIcon: {
+    width: 64,
+    height: 60,
+    borderRadius: 8,
+    backgroundColor: COLORS.primary['600'],
   },
 });

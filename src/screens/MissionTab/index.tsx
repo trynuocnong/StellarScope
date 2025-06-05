@@ -1,68 +1,53 @@
-import React, {useCallback, useEffect, useRef, useState, useTransition} from 'react';
-import {InteractionManager, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Mission, MissionTrackerRes} from '../../utils/DTO/MissionDTO.ts';
+import React, {useCallback, useRef, useState, useTransition} from 'react';
+import {
+  InteractionManager,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {Mission} from '../../utils/DTO/MissionDTO.ts';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {KeyValue, navRef, ROUTES} from '../../navigation';
 import {THEME_COLORS} from '../../utils/resources/colors.ts';
 import {FlashList, ListRenderItemInfo} from '@shopify/flash-list';
 import FastImage from 'react-native-fast-image';
 import {extractImageUrlFromHTML} from '../../utils/FuncUtils.ts';
-import {fetchMission} from '../../utils/APIUtils.ts';
-import MissionEmptyPlaceholder from '../../components/EmptyList/MissionEmptyPlaceholder.tsx';
-
-const SEARCH_TERM: KeyValue[] = [
-  {
-    label: 'Active',
-    value: '10828',
-  },
-  {
-    label: 'Future',
-    value: '10873',
-  },
-  {label: 'Past', value: '10842'},
-];
+import {SEARCH_TERM} from './mock.ts';
+import MissionPlaceholder from './components/MissionPlaceholder.tsx';
+import {useInfiniteQuery} from '@tanstack/react-query';
+import {fetchMission} from './utils.ts';
 
 export default function () {
-  const [missions, setMissions] = useState<MissionTrackerRes | undefined>(
-    undefined,
-  );
-  const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
   const [category, setCategory] = useState<KeyValue>(SEARCH_TERM[0]);
   const flashRef = useRef<FlashList<Mission>>(null);
   const [, startTransition] = useTransition();
-  useEffect(() => {
-    fetchMission(1, category.value.toString()).then(result => {
-      if (!result) {
-        setError('Sorry, we could not find mission');
-        return;
-      }
-      setMissions(result.data);
-    });
-  }, [category.value]);
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    isPending,
+    isError,
+    error,
+    isRefetching,
+  } = useInfiniteQuery({
+    queryKey: ['mission', category],
+    queryFn: ({pageParam}) =>
+      fetchMission(pageParam, category.value.toString()),
+    initialPageParam: 1,
+    getNextPageParam: lastPage =>
+      +lastPage.page < +lastPage.pages ? +lastPage.page + 1 : undefined,
+  });
 
   const handleRefresh = async () => {
-    setRefreshing(true);
-    fetchMission(1, category.value.toString()).then(result => {
-      if (!result) {
-        setError('Sorry, we could not find mission');
-        return;
-      }
-      setMissions(result.data);
-      setRefreshing(false);
-    });
+    refetch();
   };
 
   const onEndReached = async () => {
-    if (missions) {
-      fetchMission((+missions?.page + 1), category.value.toString()).then(result => {
-        if (!result) {
-          setError('Sorry, we could not find mission');
-          return;
-        }
-        const arr = [...missions.posts, ...result.data.posts];
-        setMissions({...missions, posts: arr, page: result.data.page});
-      });
+    if (hasNextPage) {
+      fetchNextPage();
     }
   };
 
@@ -72,13 +57,12 @@ export default function () {
         try {
           flashRef.current?.scrollToIndex({animated: true, index: 0});
           InteractionManager.runAfterInteractions(() => {
-            setMissions(undefined);
             startTransition(() => {
               setCategory(term);
             });
           });
-        } catch (error) {
-          console.log(error);
+        } catch (apiError) {
+          console.log(apiError);
         }
       };
       const isSelected = term.value === category.value;
@@ -106,7 +90,9 @@ export default function () {
         navRef.current?.navigate(ROUTES.WEBVIEW_SCREEN, {url: item.link});
       };
       return (
-        <TouchableOpacity onPress={toWeb} style={styles.missionDetailsContainer}>
+        <TouchableOpacity
+          onPress={toWeb}
+          style={styles.missionDetailsContainer}>
           <View style={styles.missionHeader}>
             <Text style={styles.missionDetailName}>{item.title}</Text>
           </View>
@@ -144,12 +130,21 @@ export default function () {
       <FlashList
         ref={flashRef}
         contentContainerStyle={styles.flashListContent}
-        ListEmptyComponent={<MissionEmptyPlaceholder />}
         renderItem={renderMissionDetails}
-        scrollEnabled={!!missions?.posts}
-        data={missions?.posts || []}
-        refreshing={refreshing}
+        scrollEnabled={!!data}
+        data={data?.pages.flatMap(page => page.posts) || []}
+        refreshing={isRefetching}
+        keyExtractor={(item, index) => `${item.title}-${index}`}
         onEndReachedThreshold={0.4}
+        estimatedItemSize={100}
+        ListEmptyComponent={
+          <MissionPlaceholder
+            isPending={isPending}
+            isError={isError}
+            error={error}
+            refresh={handleRefresh}
+          />
+        }
         onEndReached={onEndReached}
         onRefresh={handleRefresh}
       />

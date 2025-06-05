@@ -1,5 +1,6 @@
 import {NASA_URL, NASA_IMAGE_URL, LAUNCH_URL} from '@env';
 import AxiosInstance from '../helper/AxiosInstance.ts';
+import {MissionTrackerRes} from './DTO/MissionDTO.ts';
 
 export const convertNASAAPI = (path: string) => {
   return new URL(path, NASA_URL).toString();
@@ -40,14 +41,4 @@ export const NASA_API_ENDPOINT = {
     DEFAULT: 'default',
   },
   ASSET: 'asset/',
-};
-
-export const fetchMission = async (page: number, filter: string) => {
-  try {
-    return await AxiosInstance.get(
-      `https://www.nasa.gov/wp-json/nasa-hds/v1/faceted-filter-query?search=&terms%5B%5D=${filter}&taxonomy=mission-terms&post_type=mission&page=${page}`,
-    );
-  } catch (e) {
-    return undefined;
-  }
 };

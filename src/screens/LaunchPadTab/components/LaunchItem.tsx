@@ -18,8 +18,7 @@ const LaunchItem = ({item, onPress}: LaunchItemProps) => {
 
   return (
     <TouchableOpacity onPress={onItemPress} style={styles.launchItem}>
-      <View
-        style={[styles.launchDate, {backgroundColor: COLORS.primary['500']}]}>
+      <View style={styles.launchDate}>
         <Text style={styles.launchMonth}>{month}</Text>
         <Text style={styles.launchDay}>{day}</Text>
         <View
@@ -77,6 +76,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
     position: 'relative',
     overflow: 'hidden',
+    backgroundColor: COLORS.primary['500'],
   },
   launchMonth: {
     fontSize: 12,
