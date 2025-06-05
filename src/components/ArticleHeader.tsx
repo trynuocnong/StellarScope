@@ -2,6 +2,7 @@ import React, {ReactNode} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {navRef} from '../navigation';
 import {ArrowPrevSVG} from '../assets/svg';
+import {COLORS, THEME_COLORS} from '../utils/resources/colors.ts';
 
 export type ArticleHeaderProps = {
   name: string;
@@ -14,16 +15,12 @@ const ArticleHeader = ({name, action}: ArticleHeaderProps) => {
   };
 
   return (
-    <View
-      style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.titleContainer}>
         <Pressable onPress={_onBackPress}>
-          <ArrowPrevSVG fill={'#0D2A80'} />
+          <ArrowPrevSVG fill={COLORS.neutral['400']} />
         </Pressable>
-        <Text
-          style={styles.titleText}>
-          {name}
-        </Text>
+        <Text style={styles.titleText}>{name}</Text>
       </View>
 
       {action && (
@@ -46,15 +43,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: 'white',
+    backgroundColor: THEME_COLORS.background,
   },
   titleContainer: {flexDirection: 'row', gap: 12},
   titleText: {
-  fontSize: 20,
+    fontSize: 20,
     lineHeight: 24,
-  fontWeight: 700,
-  textTransform: 'capitalize',
-  flex:1,
+    fontWeight: 700,
+    textTransform: 'capitalize',
+    flex: 1,
+    color: COLORS.neutral['400'],
   },
   actionContainer: {flexDirection: 'row', gap: 8},
 });
