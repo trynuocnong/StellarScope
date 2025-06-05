@@ -136,6 +136,7 @@ export default function () {
         refreshing={isRefetching}
         keyExtractor={(item, index) => `${item.title}-${index}`}
         onEndReachedThreshold={0.4}
+        estimatedItemSize={100}
         ListEmptyComponent={
           <MissionPlaceholder
             isPending={isPending}

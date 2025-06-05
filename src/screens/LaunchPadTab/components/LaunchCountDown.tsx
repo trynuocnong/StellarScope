@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {COLORS} from '../../../utils/resources/colors.ts';
-import {CalendarSVG, CompassSVG, RocketSVG} from '../../../assets/svg';
+import {AlertCircleSVG, CalendarSVG, CompassSVG, RocketSVG} from '../../../assets/svg';
 import ImagePrefix from '../../../components/ImagePrefix.tsx';
 import {getStatusColor} from '../utils.tsx';
 import {LaunchCountdownProps} from '../type.ts';
 
-export const LaunchCountdown: React.FC<LaunchCountdownProps> = ({launch}) => {
+export const LaunchCountdown = ({launch}: LaunchCountdownProps) => {
   const [timeRemaining, setTimeRemaining] = useState({
     days: 0,
     hours: 0,
@@ -128,10 +128,10 @@ export const LaunchCountdown: React.FC<LaunchCountdownProps> = ({launch}) => {
           </View>
         </View>
         <ImagePrefix
-          source={{uri: launch.url}}
+          source={{uri: launch.image.image_url}}
           style={styles.missionPatch}
-          resizeMode="contain"
-          errorNode={<></>}
+          resizeMode="cover"
+          errorNode={<AlertCircleSVG fill={COLORS.primary['600']} />}
         />
       </View>
       <View style={styles.details}>

@@ -12,6 +12,7 @@ import SegmentButtonRow from '../../../components/SegmentButtonRow.tsx';
 import {LAUNCHPAD_OPTIONS} from '../mock.tsx';
 import FilterItem from './FilterItem.tsx';
 import {LaunchTabHeaderProps} from '../type.ts';
+import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
 
 const LaunchTabHeader = ({
   selectLaunch,
@@ -46,10 +47,10 @@ const LaunchTabHeader = ({
 
       <View style={styles.scrollContent}>
         {selectLaunch ? (
-          <View style={styles.section}>
+          <Animated.View entering={FadeIn} exiting={FadeOut} style={styles.section}>
             <Text style={styles.sectionTitle}>Next Launch</Text>
             <LaunchCountdown launch={selectLaunch} />
-          </View>
+          </Animated.View>
         ) : (
           <></>
         )}

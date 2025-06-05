@@ -4,12 +4,13 @@ import {COLORS, THEME_COLORS} from '../../utils/resources/colors.ts';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {LaunchResponse, LaunchResults} from '../../utils/DTO';
 import {KEY_QUERIES} from './mock.tsx';
-import {useQueries, UseQueryResult} from '@tanstack/react-query';
+import {DefaultError, useQueries, UseQueryResult} from '@tanstack/react-query';
 import {fetchPastLaunches, fetchUpcomingLaunches} from './utils.tsx';
 import {KeyValue} from '../../navigation';
 import {LaunchPadActiveType} from './type.ts';
 import LaunchTabHeader from './components/LaunchTabHeader.tsx';
 import LaunchItem from './components/LaunchItem.tsx';
+import LaunchPadPlaceholder from './components/LaunchPadPlaceholder.tsx';
 
 export default () => {
   const [selectedLaunch, setSelectedLaunch] = useState<
@@ -29,8 +30,8 @@ export default () => {
   };
 
   const [upcoming, past]: [
-    UseQueryResult<LaunchResponse, unknown>,
-    UseQueryResult<LaunchResponse, unknown>,
+    UseQueryResult<LaunchResponse, DefaultError>,
+    UseQueryResult<LaunchResponse, DefaultError>,
   ] = result;
 
   const data = (): LaunchResults[] => {
@@ -44,7 +45,9 @@ export default () => {
 
     if (filter) {
       return results.filter(item =>
-        item.launch_service_provider.name.toLowerCase().includes(filter.toLowerCase()),
+        item.launch_service_provider.name
+          .toLowerCase()
+          .includes(filter.toLowerCase()),
       );
     }
     return results;
@@ -77,7 +80,10 @@ export default () => {
       <FlatList
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
+        refreshing={
+          activeTab === 'upcoming' ? upcoming.isRefetching : past.isRefetching
+        }
         ListHeaderComponent={
           <LaunchTabHeader
             filter={filter}
@@ -85,6 +91,13 @@ export default () => {
             launchResults={totalData()}
             selectLaunch={selectedLaunch}
             onOption={onOption}
+          />
+        }
+        ListEmptyComponent={
+          <LaunchPadPlaceholder
+            upcoming={upcoming}
+            past={past}
+            currentTab={activeTab}
           />
         }
         data={data()}

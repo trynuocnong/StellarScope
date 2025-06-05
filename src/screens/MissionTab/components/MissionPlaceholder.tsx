@@ -82,6 +82,8 @@ const styles = StyleSheet.create({
     paddingStart: 16,
     paddingEnd: 16,
     marginBottom: 24,
+    borderWidth: 1,
+    borderColor: THEME_COLORS.primary,
   },
   skeletonTitle: {
     width: 120,

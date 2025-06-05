@@ -4,13 +4,11 @@ import RootStack from './RootStack.tsx';
 import {Host} from 'react-native-portalize';
 import Toast from 'react-native-toast-message';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {MMKV} from 'react-native-mmkv';
 import {toastConfig} from './components/ToastConfig.tsx';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {NASA_API_KEY} from '@env';
 import {THEME_COLORS} from '../utils/resources/colors.ts';
 
-export const mmkvStorage = new MMKV();
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

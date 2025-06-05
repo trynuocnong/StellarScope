@@ -1,7 +1,8 @@
 import {Dispatch, SetStateAction} from 'react';
-import {LaunchResults} from '../../utils/DTO';
+import {LaunchResponse, LaunchResults} from '../../utils/DTO';
 import {ListRenderItemInfo} from 'react-native';
 import {KeyValue} from '../../navigation';
+import {DefaultError, UseQueryResult} from '@tanstack/react-query';
 
 export type LaunchPadActiveType = 'upcoming' | 'history';
 
@@ -25,3 +26,9 @@ export type LaunchTabHeaderProps = {
   filter: string;
   setFilterText: Dispatch<SetStateAction<string>>;
 };
+
+export interface LaunchPadPlaceholderProps {
+  currentTab: LaunchPadActiveType;
+  upcoming: UseQueryResult<LaunchResponse, DefaultError>;
+  past: UseQueryResult<LaunchResponse, DefaultError>;
+}

@@ -5,7 +5,6 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {navRef, ROUTES} from '.';
 import MainTab from './components/MainTab';
 import HomeTab from '../screens/HomeTab';
-import SearchTab from '../screens/SearchTab';
 import MissionTab from '../screens/MissionTab';
 import DetailTechScreen from '../screens/DetailTechScreen';
 import DetailAPODScreen from '../screens/DetailAPODScreen';
