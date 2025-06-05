@@ -10,8 +10,8 @@ import {
   View,
 } from 'react-native';
 import {EarthImageRes} from '../../../utils/DTO';
-import {getImage} from '../../../utils/APIUtils.ts';
-import {THEME_COLORS} from '../../../utils/resources/colors.ts';
+import {getImage, NETWORK_STATUS} from '../../../utils/APIUtils.ts';
+import {COLORS, THEME_COLORS} from '../../../utils/resources/colors.ts';
 import ImagePrefix from '../../../components/ImagePrefix.tsx';
 import {EarthCarouselProps} from '../type.ts';
 import {DefaultError, UseQueryResult} from '@tanstack/react-query';
@@ -26,6 +26,7 @@ const RenderSkeleton = (
   mock: UseQueryResult<EarthImageRes[], DefaultError>,
 ) => {
   const {data, isPending, isError, refetch, error} = mock;
+  console.log('error log', error);
   const refresh = () => refetch();
   if (isPending) {
     return <Skeleton style={styles.skeletonContainer} />;
@@ -33,7 +34,9 @@ const RenderSkeleton = (
   if (!data || isError) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Failed to load: {error.message}</Text>
+        <Text style={styles.errorText}>
+          Failed to load: {NETWORK_STATUS[error?.status]}
+        </Text>
         <AlertCircleSVG width={32} height={32} fill={THEME_COLORS.error} />
         <Text
           onPress={refresh}
@@ -218,12 +221,15 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     backgroundColor: THEME_COLORS.background,
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 10,
   },
   errorText: {
     color: 'red',
     fontWeight: 'bold',
     marginBottom: 5,
+    flex: 1,
   },
   errorPath: {
     color: '#444',
@@ -234,11 +240,12 @@ const styles = StyleSheet.create({
   reloadButton: {
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: '#cc0000',
+    width: 180,
+    backgroundColor: COLORS.primary['400'],
     borderRadius: 4,
   },
   reloadText: {
-    color: '#fff',
+    color: COLORS.primary['600'],
     fontWeight: 'bold',
   },
 });
