@@ -33,6 +33,7 @@ import {
   fetchMarsWeather,
   fetchTech,
 } from './utils.tsx';
+import {AxiosError} from 'axios';
 
 const WIDTH = Dimensions.get('screen').width;
 const EARTH_IMAGE_HEIGHT = WIDTH * 0.6;
@@ -60,20 +61,53 @@ export default () => {
 
   const result = useQueries({
     queries: [
-      {queryKey: [SECTION_HEADER.EARTH, 1], queryFn: fetchEarthImage},
-      {queryKey: [SECTION_HEADER.MAR_WEATHER, 2], queryFn: fetchMarsWeather},
+      {
+        queryKey: [SECTION_HEADER.EARTH, 1],
+        queryFn: fetchEarthImage,
+      } as const satisfies {
+        queryKey: readonly unknown[];
+        queryFn: () => Promise<EarthImageRes[]>;
+        select?: never;
+      },
+      {
+        queryKey: [SECTION_HEADER.MAR_WEATHER, 2],
+        queryFn: fetchMarsWeather,
+      } as const satisfies {
+        queryKey: readonly unknown[];
+        queryFn: () => Promise<ModifyMarWeatherType>;
+        select?: never;
+      },
       {
         queryKey: [SECTION_HEADER.TECH, techFilter],
         queryFn: () => fetchTech(techFilter),
+      } as const satisfies {
+        queryKey: readonly unknown[];
+        queryFn: () => Promise<string[][]>;
+        select?: never;
       },
-    ],
-  });
+    ] as const,
+  }) as [
+    UseQueryResult<EarthImageRes[], AxiosError>,
+    UseQueryResult<ModifyMarWeatherType, AxiosError>,
+    UseQueryResult<string[][], AxiosError>
+  ];
+
+  // const result = useQueries({
+  //   queries: [
+  //     {queryKey: [SECTION_HEADER.EARTH, 1], queryFn: fetchEarthImage},
+  //     {queryKey: [SECTION_HEADER.MAR_WEATHER, 2], queryFn: fetchMarsWeather},
+  //     {
+  //       queryKey: [SECTION_HEADER.TECH, techFilter],
+  //       queryFn: () => fetchTech(techFilter),
+  //     },
+  //   ],
+  // });
 
   const listData = useMemo(() => {
     const [earthImage, mar_weather, tech]: [
-      UseQueryResult<EarthImageRes[], unknown>,
-      UseQueryResult<ModifyMarWeatherType, unknown>,
-      UseQueryResult<string[][], unknown>,
+      UseQueryResult<EarthImageRes[], AxiosError>,
+      UseQueryResult<ModifyMarWeatherType, AxiosError>,
+      UseQueryResult<string[][], AxiosError>,
     ] = result;
     return [
       {title: SECTION_HEADER.EARTH, data: [earthImage]},
@@ -132,35 +166,35 @@ export default () => {
           style={[styles.imageHeaderContainer, imageAnimatedStyle]}>
           <DynamicImage uri={apod?.url || ''} onHeightChange={updatePadTop} />
         </RePressable>
-        <Animated.View
-          layout={LinearTransition.springify().damping(10)}
-          style={actionButtonContainer}>
-          <View style={[styles.actionContainer]}>
-            <View style={styles.logoActionHighlight}>
-              <Text style={styles.logoTextHighlight}>🚀</Text>
-            </View>
+        {/*<Animated.View*/}
+        {/*  layout={LinearTransition.springify().damping(10)}*/}
+        {/*  style={actionButtonContainer}>*/}
+        {/*  <View style={[styles.actionContainer]}>*/}
+        {/*    <View style={styles.logoActionHighlight}>*/}
+        {/*      <Text style={styles.logoTextHighlight}>🚀</Text>*/}
+        {/*    </View>*/}
 
-            <View style={styles.actionHolderContain}>
-              {featureList.map(item => (
-                <FeatureDisplayItem
-                  key={item.name}
-                  name={item.name}
-                  icon={item.icon}
-                  onPress={item.onPress}
-                />
-              ))}
-            </View>
-          </View>
-        </Animated.View>
-        <View style={styles.headerLayer} />
+        {/*    <View style={styles.actionHolderContain}>*/}
+        {/*      {featureList.map(item => (*/}
+        {/*        <FeatureDisplayItem*/}
+        {/*          key={item.name}*/}
+        {/*          name={item.name}*/}
+        {/*          icon={item.icon}*/}
+        {/*          onPress={item.onPress}*/}
+        {/*        />*/}
+        {/*      ))}*/}
+        {/*    </View>*/}
+        {/*  </View>*/}
+        {/*</Animated.View>*/}
+        {/*<View style={styles.headerLayer} />*/}
       </Animated.View>
     );
-  }, [actionButtonContainer, apod, imageAnimatedStyle, padTop]);
+  }, [apod, imageAnimatedStyle, padTop]);
   const renderItem = useCallback(({item, section}: any) => {
     const {title} = section;
     switch (title) {
       case SECTION_HEADER.EARTH: {
-        const earthItem = item as UseQueryResult<EarthImageRes[], DefaultError>;
+        const earthItem = item as UseQueryResult<EarthImageRes[], AxiosError>;
         const refreshEarthImage = () => earthItem.refetch();
         return <EarthCarousel data={earthItem} refresh={refreshEarthImage} />;
       }

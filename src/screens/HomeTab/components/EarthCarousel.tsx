@@ -14,16 +14,17 @@ import {getImage, NETWORK_STATUS} from '../../../utils/APIUtils.ts';
 import {COLORS, THEME_COLORS} from '../../../utils/resources/colors.ts';
 import ImagePrefix from '../../../components/ImagePrefix.tsx';
 import {EarthCarouselProps} from '../type.ts';
-import {DefaultError, UseQueryResult} from '@tanstack/react-query';
+import {UseQueryResult} from '@tanstack/react-query';
 import Skeleton from '../../../components/Skeleton.tsx';
 import {AlertCircleSVG} from '../../../assets/svg';
+import {AxiosError} from 'axios';
 
 const WIDTH = Dimensions.get('screen').width;
 const EARTH_IMAGE_HEIGHT = WIDTH * 0.6;
 const EARTH_IMAGE_WIDTH = WIDTH - 24 - 32;
 
 const RenderSkeleton = (
-  mock: UseQueryResult<EarthImageRes[], DefaultError>,
+  mock: UseQueryResult<EarthImageRes[], AxiosError>,
 ) => {
   const {data, isPending, isError, refetch, error} = mock;
   console.log('error log', error);
@@ -35,7 +36,7 @@ const RenderSkeleton = (
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>
-          Failed to load: {NETWORK_STATUS[error?.status]}
+          Failed to load {error.code ? `${NETWORK_STATUS[+error.code]}` : ''}
         </Text>
         <AlertCircleSVG width={32} height={32} fill={THEME_COLORS.error} />
         <Text

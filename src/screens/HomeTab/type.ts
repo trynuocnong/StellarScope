@@ -2,6 +2,7 @@ import {EarthImageRes, MarsPhoto, MarWeatherSpec} from '../../utils/DTO';
 import {DefaultError, UseQueryResult} from '@tanstack/react-query';
 import {StyleProp, ViewStyle} from 'react-native';
 import {KeyValue} from '../../navigation';
+import {AxiosError} from 'axios';
 
 export interface Title {
   title: string;
@@ -18,7 +19,7 @@ type BaseItemListProps = {
 };
 
 export type EarthCarouselProps = {
-  data: UseQueryResult<EarthImageRes[], DefaultError>;
+  data: UseQueryResult<EarthImageRes[], AxiosError>;
 } & BaseItemListProps;
 
 export type MarWeatherProps = {
